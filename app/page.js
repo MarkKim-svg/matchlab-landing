@@ -143,7 +143,8 @@ export default function Home() {
         <Anim delay={500}>
           <p style={{ fontSize: 16, color: "#888", lineHeight: 1.8, maxWidth: 520, margin: "0 auto 20px", fontFamily: F, fontWeight: 300 }}>
             20개 리그·컵대회 경기를 AI가 데이터로 분석하고<br />
-            <span style={{ color: "#FEE500", fontWeight: 600 }}>카카오톡으로 바로</span> 보내드립니다
+            <span style={{ color: "#FEE500", fontWeight: 600 }}>카카오톡으로 바로</span> 보내드립니다<br />
+            채널 추가만 하면 매일 경기 전 AI 분석이 카톡으로 갑니다
           </p>
           <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 48, flexWrap: "wrap" }}>
             {["📊 배당 괴리 탐지", "🏅 부상/라인업 반영", "🤖 AI 심층 리포트", "💬 리그별 카톡 수신"].map((t, i) => (
@@ -154,7 +155,7 @@ export default function Home() {
         <Anim delay={700}>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
             <a href="http://pf.kakao.com/_sThZX" target="_blank" rel="noopener noreferrer" className="cb" style={{ background: "#FEE500", color: "#1a1a1a", padding: "16px 40px", borderRadius: 10, fontSize: 15, fontWeight: 700, textDecoration: "none", letterSpacing: 1, fontFamily: F, transition: "all 0.3s", boxShadow: "0 4px 24px #FEE50030", display: "flex", alignItems: "center", gap: 8 }}>
-              💬 카카오톡으로 무료 구독
+              💬 채널 추가하고 분석 받기
             </a>
             <a href="#sample" style={{ border: "1px solid #333", color: "#aaa", padding: "16px 36px", borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: "none", letterSpacing: 1, fontFamily: F }}>샘플 리포트 ↓</a>
           </div>
@@ -336,8 +337,8 @@ export default function Home() {
         <Anim delay={200}>
           <div style={{ fontSize: 11, letterSpacing: 4, color: "#FEE500", marginBottom: 20, textTransform: "uppercase" }}>Subscribe Free</div>
           <h2 style={{ fontFamily: F, fontSize: "clamp(28px,4vw,42px)", fontWeight: 700, marginBottom: 12 }}>
-            카카오톡으로<br />
-            <span style={{ color: "#FEE500" }}>바로 받아보기</span>
+            채널 추가하면 매일<br />
+            <span style={{ color: "#FEE500" }}>AI 분석 리포트가 알림으로 갑니다</span>
           </h2>
           <p style={{ fontSize: 15, color: "#666", marginBottom: 16, fontFamily: F, lineHeight: 1.8 }}>
             채널 추가만 하면 리그별 분석이 카톡으로 바로 도착합니다<br />
@@ -352,7 +353,7 @@ export default function Home() {
 
           <div style={{ marginTop: 8 }}>
             <a href="http://pf.kakao.com/_sThZX" target="_blank" rel="noopener noreferrer" className="cb" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#FEE500", color: "#1a1a1a", border: "none", padding: "18px 48px", borderRadius: 12, fontSize: 17, fontWeight: 800, fontFamily: F, cursor: "pointer", letterSpacing: 1, transition: "all 0.3s", boxShadow: "0 4px 24px #FEE50030", textDecoration: "none" }}>
-              💬 카카오톡 채널 추가하기
+              💬 채널 추가하고 분석 받기
             </a>
           </div>
           <div style={{ fontSize: 11, color: "#444", marginTop: 20, lineHeight: 1.8 }}>

@@ -68,6 +68,26 @@ const supportedLeagues = [
   { group: "기타", color: "#ffaa00", items: ["K League", "J League", "MLS", "Eredivisie", "Liga Portugal", "Super Lig", "Belgian Pro"] },
 ];
 
+function MatchLabIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 160 160" fill="none">
+      <circle cx="80" cy="80" r="62" stroke="#F2F0ED" strokeWidth="2.5" fill="none" />
+      <path d="M80 42 L100 56 L93 78 L67 78 L60 56 Z" stroke="#F2F0ED" strokeWidth="1.5" fill="none" />
+      <line x1="80" y1="42" x2="80" y2="18" stroke="#F2F0ED" strokeWidth="1" opacity="0.12" />
+      <line x1="100" y1="56" x2="122" y2="42" stroke="#F2F0ED" strokeWidth="1" opacity="0.12" />
+      <line x1="60" y1="56" x2="38" y2="42" stroke="#F2F0ED" strokeWidth="1" opacity="0.12" />
+      <line x1="93" y1="78" x2="112" y2="96" stroke="#F2F0ED" strokeWidth="1" opacity="0.12" />
+      <line x1="67" y1="78" x2="48" y2="96" stroke="#F2F0ED" strokeWidth="1" opacity="0.12" />
+      <path d="M48 96 L60 116 L100 116 L112 96" stroke="#F2F0ED" strokeWidth="1" fill="none" opacity="0.12" />
+      <polyline points="28,115 48,98 62,104 80,82 100,88 120,65 142,52"
+        stroke="#00E676" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="80" cy="82" r="4" fill="#00E676" />
+      <circle cx="120" cy="65" r="4" fill="#00E676" />
+      <circle cx="142" cy="52" r="4.5" fill="#00E676" />
+    </svg>
+  );
+}
+
 function Stars({ count }) {
   return <span style={{ letterSpacing: 2 }}>{"⭐".repeat(count)}</span>;
 }
@@ -93,7 +113,7 @@ export default function Home() {
       {/* NAV */}
       <nav style={{ padding: "20px 40px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #1a1a1a", backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 50, background: "#0a0a0aee" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 24 }}>⚽</span>
+          <MatchLabIcon size={28} />
           <span style={{ fontFamily: F, fontSize: 22, fontWeight: 800, letterSpacing: 3, background: "linear-gradient(135deg,#00ff88,#00cc66)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>MATCHLAB</span>
         </div>
         <a href="http://pf.kakao.com/_sThZX" target="_blank" rel="noopener noreferrer" className="cb" style={{ background: "#FEE500", color: "#1a1a1a", padding: "10px 24px", borderRadius: 8, fontSize: 12, fontWeight: 700, textDecoration: "none", letterSpacing: 1, fontFamily: F, transition: "all 0.3s", display: "flex", alignItems: "center", gap: 6 }}>
@@ -201,7 +221,7 @@ export default function Home() {
 
             <div style={{ background: "#B2C7D9", borderRadius: 16, padding: "20px 16px", position: "relative" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>⚽</div>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}><MatchLabIcon size={18} /></div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#333", fontFamily: F }}>MATCHLAB</span>
               </div>
               <div style={{ background: "#fff", borderRadius: 12, padding: "16px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", maxHeight: 360, overflow: "hidden", position: "relative" }}>
@@ -242,7 +262,7 @@ export default function Home() {
           <div style={{ fontSize: 11, letterSpacing: 4, color: "#555", marginBottom: 16, textTransform: "uppercase" }}>Sample Report</div>
           <div style={{ border: "1px solid #1a1a1a", borderRadius: 12, overflow: "hidden", background: "#0d0d0d", animation: "glow 4s infinite" }}>
             <div style={{ padding: "24px 28px 20px", borderBottom: "1px solid #1a1a1a", background: "linear-gradient(135deg,#0f0f0f,#111)" }}>
-              <div style={{ fontSize: 18, marginBottom: 6 }}>⚽ MATCHLAB</div>
+              <div style={{ fontSize: 18, marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}><MatchLabIcon size={22} /><span>MATCHLAB</span></div>
               <div style={{ fontFamily: F, fontSize: 20, fontWeight: 700 }}>{`${sampleReport.league} | ${sampleReport.home} vs ${sampleReport.away}`}</div>
               <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>{sampleReport.date} KST</div>
             </div>

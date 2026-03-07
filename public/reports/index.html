@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATCHLAB — Archive</title>
+<meta property="og:title" content="MATCHLAB Archive">
+<meta property="og:description" content="AI 축구 분석 리포트 아카이브 (53경기)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0B0F1A;
+  --card-bg: #111827;
+  --card-border: rgba(255,255,255,0.06);
+  --accent: #00FF88;
+  --accent-dim: rgba(0,255,136,0.1);
+  --accent-mid: rgba(0,255,136,0.2);
+  --text: #E8ECF1;
+  --text-secondary: #8B9BB4;
+  --text-muted: #4B5C73;
+  --positive: #00FF88;
+  --negative: #FF6B6B;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,136,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,0.015) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+/* Header */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 20px;
+}
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #00FF88, #00CC6A);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: #0B0F1A;
+  font-family: 'JetBrains Mono', monospace;
+}
+.logo-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* View toggle */
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.toggle-btn.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.toggle-btn:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+/* Calendar */
+#calendar-section {
+  margin-bottom: 24px;
+}
+.cal-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--card-border);
+}
+.cal-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.cal-nav {
+  display: flex;
+  gap: 8px;
+}
+.cal-nav button {
+  width: 32px; height: 32px;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.cal-nav button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 8px 12px 12px;
+  gap: 2px;
+}
+.cal-dow {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 8px 0;
+  font-weight: 600;
+}
+.cal-day {
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: default;
+  position: relative;
+  transition: all 0.2s;
+}
+.cal-day.current-month {
+  color: var(--text-secondary);
+}
+.cal-day.today {
+  color: var(--text);
+  font-weight: 700;
+}
+.cal-day.has-match {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 600;
+}
+.cal-day.has-match::after {
+  content: '';
+  display: block;
+  width: 5px; height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin: 2px auto 0;
+}
+.cal-day.has-match:hover {
+  background: var(--accent-dim);
+}
+.cal-day.selected {
+  background: var(--accent-mid);
+  color: var(--accent);
+}
+
+/* List */
+#list-section { }
+.date-group {
+  margin-bottom: 16px;
+}
+.date-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+.match-card {
+  display: block;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.match-card:hover {
+  border-color: var(--accent-mid);
+  background: rgba(17,24,39,0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.match-teams {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.match-vs {
+  color: var(--text-muted);
+  font-weight: 400;
+  margin: 0 4px;
+}
+.match-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Footer */
+.page-footer {
+  text-align: center;
+  padding: 32px 0 16px;
+}
+.cta-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background: var(--accent);
+  color: #0B0F1A;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+.cta-btn:hover {
+  box-shadow: 0 0 24px rgba(0,255,136,0.3);
+  transform: translateY(-1px);
+}
+.footer-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+  .page { padding: 12px 10px 48px; }
+  .cal-grid { padding: 4px 6px 8px; gap: 1px; }
+  .cal-day { padding: 6px 2px; font-size: 12px; }
+  .match-card { padding: 12px 14px; }
+  .match-teams { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="top-bar">
+    <div class="logo-group">
+      <div class="logo-icon">M</div>
+      <div class="logo-text">MATCHLAB</div>
+    </div>
+    <div class="badge">ARCHIVE</div>
+  </div>
+
+  <div class="view-toggle">
+    <button class="toggle-btn active" data-view="both">All</button>
+    <button class="toggle-btn" data-view="calendar">Calendar</button>
+    <button class="toggle-btn" data-view="list">List</button>
+  </div>
+
+  <div id="calendar-section">
+    <div class="cal-card">
+      <div class="cal-header">
+        <div class="cal-nav">
+          <button id="cal-prev">&lt;</button>
+        </div>
+        <div class="cal-title" id="cal-title"></div>
+        <div class="cal-nav">
+          <button id="cal-next">&gt;</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+  </div>
+
+  <div id="list-section"></div>
+
+  <div class="page-footer">
+    <a href="http://pf.kakao.com/_sThZX" class="cta-btn">KakaoTalk Subscribe</a>
+    <div class="footer-sub">AI Match Analysis Reports</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const MATCHES = [{"date": "2026-03-07", "home": "부천Fc 1995", "away": "대전 시티즌", "filename": "2026-03-07_부천fc-1995_vs_대전-시티즌.html"}, {"date": "2026-03-07", "home": "부천 Fc 1995", "away": "대전 시티즌", "filename": "2026-03-07_부천-fc-1995_vs_대전-시티즌.html"}, {"date": "2026-03-07", "home": "광주Fc", "away": "인천 유나이티드", "filename": "2026-03-07_광주fc_vs_인천-유나이티드.html"}, {"date": "2026-03-07", "home": "광주 Fc", "away": "인천 유나이티드", "filename": "2026-03-07_광주-fc_vs_인천-유나이티드.html"}, {"date": "2026-03-07", "home": "Wrexham", "away": "Chelsea", "filename": "2026-03-07_wrexham_vs_chelsea.html"}, {"date": "2026-03-07", "home": "Vfl Wolfsburg", "away": "Hamburger Sv", "filename": "2026-03-07_vfl-wolfsburg_vs_hamburger-sv.html"}, {"date": "2026-03-07", "home": "Urawa", "away": "Mito Hollyhock", "filename": "2026-03-07_urawa_vs_mito-hollyhock.html"}, {"date": "2026-03-07", "home": "Union St Gilloise", "away": "Genk", "filename": "2026-03-07_union-st-gilloise_vs_genk.html"}, {"date": "2026-03-07", "home": "Toulouse", "away": "Marseille", "filename": "2026-03-07_toulouse_vs_marseille.html"}, {"date": "2026-03-07", "home": "Sc Freiburg", "away": "Bayer Leverkusen", "filename": "2026-03-07_sc-freiburg_vs_bayer-leverkusen.html"}, {"date": "2026-03-07", "home": "Sc Braga", "away": "Sporting Cp", "filename": "2026-03-07_sc-braga_vs_sporting-cp.html"}, {"date": "2026-03-07", "home": "Rb Leipzig", "away": "Fc Augsburg", "filename": "2026-03-07_rb-leipzig_vs_fc-augsburg.html"}, {"date": "2026-03-07", "home": "Psv Eindhoven", "away": "Az Alkmaar", "filename": "2026-03-07_psv-eindhoven_vs_az-alkmaar.html"}, {"date": "2026-03-07", "home": "Osasuna", "away": "Mallorca", "filename": "2026-03-07_osasuna_vs_mallorca.html"}, {"date": "2026-03-07", "home": "Oh 루벤", "away": "Kvc 베스테를로", "filename": "2026-03-07_oh-루벤_vs_kvc-베스테를로.html"}, {"date": "2026-03-07", "home": "Oh 뢰번", "away": "Kvc 베스테를로", "filename": "2026-03-07_oh-뢰번_vs_kvc-베스테를로.html"}, {"date": "2026-03-07", "home": "Newcastle", "away": "Manchester City", "filename": "2026-03-07_newcastle_vs_manchester-city.html"}, {"date": "2026-03-07", "home": "New York City Fc", "away": "Orlando City Sc", "filename": "2026-03-07_new-york-city-fc_vs_orlando-city-sc.html"}, {"date": "2026-03-07", "home": "New England Revolution", "away": "Houston Dynamo", "filename": "2026-03-07_new-england-revolution_vs_houston-dynamo.html"}, {"date": "2026-03-07", "home": "Nantes", "away": "Angers", "filename": "2026-03-07_nantes_vs_angers.html"}, {"date": "2026-03-07", "home": "Moreirense", "away": "Nacional", "filename": "2026-03-07_moreirense_vs_nacional.html"}, {"date": "2026-03-07", "home": "Mansfield Town", "away": "Arsenal", "filename": "2026-03-07_mansfield-town_vs_arsenal.html"}, {"date": "2026-03-07", "home": "Levante", "away": "Girona", "filename": "2026-03-07_levante_vs_girona.html"}, {"date": "2026-03-07", "home": "Kashima", "away": "Tokyo Verdy", "filename": "2026-03-07_kashima_vs_tokyo-verdy.html"}, {"date": "2026-03-07", "home": "Juventus", "away": "Pisa", "filename": "2026-03-07_juventus_vs_pisa.html"}, {"date": "2026-03-07", "home": "Jef United Chiba", "away": "Kashiwa Reysol", "filename": "2026-03-07_jef-united-chiba_vs_kashiwa-reysol.html"}, {"date": "2026-03-07", "home": "Groningen", "away": "Ajax", "filename": "2026-03-07_groningen_vs_ajax.html"}, {"date": "2026-03-07", "home": "Fsv Mainz 05", "away": "Vfb Stuttgart", "filename": "2026-03-07_fsv-mainz-05_vs_vfb-stuttgart.html"}, {"date": "2026-03-07", "home": "Fc Tokyo", "away": "Yokohama F Marinos", "filename": "2026-03-07_fc-tokyo_vs_yokohama-f-marinos.html"}, {"date": "2026-03-07", "home": "Excelsior", "away": "Heerenveen", "filename": "2026-03-07_excelsior_vs_heerenveen.html"}, {"date": "2026-03-07", "home": "Estoril", "away": "Casa Pia", "filename": "2026-03-07_estoril_vs_casa-pia.html"}, {"date": "2026-03-07", "home": "Dender", "away": "Charleroi", "filename": "2026-03-07_dender_vs_charleroi.html"}, {"date": "2026-03-07", "home": "Dc United", "away": "Inter Miami", "filename": "2026-03-07_dc-united_vs_inter-miami.html"}, {"date": "2026-03-07", "home": "Cerezo Osaka", "away": "Shimizu S Pulse", "filename": "2026-03-07_cerezo-osaka_vs_shimizu-s-pulse.html"}, {"date": "2026-03-07", "home": "Cagliari", "away": "Como", "filename": "2026-03-07_cagliari_vs_como.html"}, {"date": "2026-03-07", "home": "Beikta", "away": "Galatasaray", "filename": "2026-03-07_beikta_vs_galatasaray.html"}, {"date": "2026-03-07", "home": "Baakehir", "away": "Gztepe", "filename": "2026-03-07_baakehir_vs_gztepe.html"}, {"date": "2026-03-07", "home": "Avispa Fukuoka", "away": "Nagoya Grampus", "filename": "2026-03-07_avispa-fukuoka_vs_nagoya-grampus.html"}, {"date": "2026-03-07", "home": "Auxerre", "away": "Strasbourg", "filename": "2026-03-07_auxerre_vs_strasbourg.html"}, {"date": "2026-03-07", "home": "Atletico Madrid", "away": "Real Sociedad", "filename": "2026-03-07_atletico-madrid_vs_real-sociedad.html"}, {"date": "2026-03-07", "home": "Athletic Club", "away": "Barcelona", "filename": "2026-03-07_athletic-club_vs_barcelona.html"}, {"date": "2026-03-07", "home": "Atalanta", "away": "Udinese", "filename": "2026-03-07_atalanta_vs_udinese.html"}, {"date": "2026-03-07", "home": "Alverca", "away": "Avs", "filename": "2026-03-07_alverca_vs_avs.html"}, {"date": "2026-03-07", "home": "1 Fc Kln", "away": "Borussia Dortmund", "filename": "2026-03-07_1-fc-kln_vs_borussia-dortmund.html"}, {"date": "2026-03-07", "home": "1 Fc Heidenheim", "away": "1899 Hoffenheim", "filename": "2026-03-07_1-fc-heidenheim_vs_1899-hoffenheim.html"}, {"date": "2026-03-06", "home": "Wolves", "away": "Liverpool", "filename": "2026-03-06_wolves_vs_liverpool.html"}, {"date": "2026-03-06", "home": "Raal La Louvire", "away": "Antwerp", "filename": "2026-03-06_raal-la-louvire_vs_antwerp.html"}, {"date": "2026-03-06", "home": "Paris Saint Germain", "away": "Monaco", "filename": "2026-03-06_paris-saint-germain_vs_monaco.html"}, {"date": "2026-03-06", "home": "Napoli", "away": "Torino", "filename": "2026-03-06_napoli_vs_torino.html"}, {"date": "2026-03-06", "home": "Heracles", "away": "Utrecht", "filename": "2026-03-06_heracles_vs_utrecht.html"}, {"date": "2026-03-06", "home": "Famalicao", "away": "Arouca", "filename": "2026-03-06_famalicao_vs_arouca.html"}, {"date": "2026-03-06", "home": "Celta Vigo", "away": "Real Madrid", "filename": "2026-03-06_celta-vigo_vs_real-madrid.html"}, {"date": "2026-03-06", "home": "Bayern Mnchen", "away": "Borussia Mnchengladbach", "filename": "2026-03-06_bayern-mnchen_vs_borussia-mnchengladbach.html"}];
+  const DATES = ["2026-03-06", "2026-03-07"];
+  const dateSet = new Set(DATES);
+
+  // Group by date
+  const byDate = {};
+  MATCHES.forEach(m => {
+    if (!byDate[m.date]) byDate[m.date] = [];
+    byDate[m.date].push(m);
+  });
+
+  // Calendar state
+  const today = new Date();
+  let calYear = today.getFullYear();
+  let calMonth = today.getMonth();
+  let selectedDate = null;
+
+  const MONTH_NAMES = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December'
+  ];
+  const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  function renderCalendar() {
+    const title = document.getElementById('cal-title');
+    const grid = document.getElementById('cal-grid');
+    title.textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+
+    let html = DOW.map(d => '<div class="cal-dow">' + d + '</div>').join('');
+
+    const firstDay = new Date(calYear, calMonth, 1);
+    let startDow = firstDay.getDay();
+    startDow = startDow === 0 ? 6 : startDow - 1; // Monday-based
+
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const todayStr = today.getFullYear() + '-' +
+      String(today.getMonth()+1).padStart(2,'0') + '-' +
+      String(today.getDate()).padStart(2,'0');
+
+    // Empty cells before first day
+    for (let i = 0; i < startDow; i++) {
+      html += '<div class="cal-day"></div>';
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = calYear + '-' +
+        String(calMonth+1).padStart(2,'0') + '-' +
+        String(d).padStart(2,'0');
+      const classes = ['cal-day', 'current-month'];
+      if (dateStr === todayStr) classes.push('today');
+      if (dateSet.has(dateStr)) classes.push('has-match');
+      if (dateStr === selectedDate) classes.push('selected');
+      const clickAttr = dateSet.has(dateStr)
+        ? ' onclick="window._selectDate(\''+dateStr+'\')"'
+        : '';
+      html += '<div class="' + classes.join(' ') + '"' + clickAttr + '>' + d + '</div>';
+    }
+
+    grid.innerHTML = html;
+  }
+
+  window._selectDate = function(dateStr) {
+    selectedDate = selectedDate === dateStr ? null : dateStr;
+    renderCalendar();
+    renderList();
+    if (selectedDate) {
+      const el = document.getElementById('date-' + selectedDate);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    calMonth--;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    renderCalendar();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    calMonth++;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    renderCalendar();
+  });
+
+  // List
+  function renderList() {
+    const container = document.getElementById('list-section');
+    const sortedDates = Object.keys(byDate).sort().reverse();
+    const datesToShow = selectedDate ? [selectedDate] : sortedDates;
+
+    if (datesToShow.length === 0 || (selectedDate && !byDate[selectedDate])) {
+      container.innerHTML = '<div class="empty-state">No reports yet</div>';
+      return;
+    }
+
+    let html = '';
+    datesToShow.forEach(date => {
+      const matches = byDate[date];
+      if (!matches) return;
+      const d = new Date(date + 'T00:00:00');
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const label = date + ' (' + dayNames[d.getDay()] + ')';
+      html += '<div class="date-group" id="date-' + date + '">';
+      html += '<div class="date-label">' + label + '</div>';
+      matches.forEach(m => {
+        html += '<a class="match-card" href="' + m.filename + '">';
+        html += '<div class="match-teams">' +
+          m.home + '<span class="match-vs"> vs </span>' + m.away + '</div>';
+        html += '<div class="match-meta">' + m.date + '</div>';
+        html += '</a>';
+      });
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  // View toggle
+  const toggleBtns = document.querySelectorAll('.toggle-btn');
+  const calSection = document.getElementById('calendar-section');
+  const listSection = document.getElementById('list-section');
+
+  toggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggleBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const view = btn.dataset.view;
+      calSection.style.display = (view === 'list') ? 'none' : '';
+      listSection.style.display = (view === 'calendar') ? 'none' : '';
+    });
+  });
+
+  // Initial render
+  if (DATES.length > 0) {
+    const latestDate = DATES[DATES.length - 1];
+    const ld = new Date(latestDate + 'T00:00:00');
+    calYear = ld.getFullYear();
+    calMonth = ld.getMonth();
+  }
+  renderCalendar();
+  renderList();
+})();
+</script>
+</body>
+</html>

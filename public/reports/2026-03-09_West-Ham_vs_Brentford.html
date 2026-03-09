@@ -358,7 +358,7 @@ body::before {
     <div class="card-header">
       <div class="league-tag">FACup</div>
       <div class="match-title">West Ham vs Brentford</div>
-      <div class="match-date">2026-03-10 04:30 KST</div>
+      <div class="match-date">2025-03-10 04:30 KST</div>
     </div>
 
     <div class="section">
@@ -370,21 +370,48 @@ body::before {
       <div class="summary-text">모델 일치 2/3, 갭 17.4p</div>
     </div>
 
-    <div class="section"><div class="section-label">💡 왜?</div><div class="reason-item">① Brentford 컵대회 100% 승률(2경기 연속 클린시트) vs West Ham 하위리그 상대전만 통과</div>
-<div class="reason-item">② 최근 H2H 10경기서 Brentford 7승 압도, 최근 3번 맞대결 모두 승리(총 득점 6-3)</div>
-<div class="reason-item">③ 푸아송 모델이 홈 기대골 0.0으로 산출한 극단적 데이터, West Ham 공격력 불확실성 시사</div>
+    <div class="section"><div class="section-label">💡 왜?</div><div class="reason-item">① Brentford 상대전적 압도 (최근 10경기 7승 2무 1패, 최근 3경기 전승)</div>
+<div class="reason-item">② 양팀 FA컵 연속 클린시트 행진 중 (West Ham 2경기, Brentford 2경기 모두 1-0 승)</div>
+<div class="reason-item">③ 푸아송 모델 홈 기대골 0.0 — West Ham 공격력 약화 신호</div>
 </div>
 
-    
+    <div class="section">
+      <div class="section-label">📊 통계 모델 확률</div>
+      <table class="odds-table">
+        <thead><tr><th></th><th>푸아송</th><th>ELO</th><th>시장</th><th>앙상블</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="odds-label">홈승</td>
+          <td>0.0%</td>
+          <td>37.5%</td>
+          <td>33.1%</td>
+          <td style="color:var(--accent);font-weight:700">22.6%</td>
+        </tr>
+        <tr>
+          <td class="odds-label">무승부</td>
+          <td>37.9%</td>
+          <td>25.0%</td>
+          <td>26.3%</td>
+          <td style="color:var(--accent);font-weight:700">30.0%</td>
+        </tr>
+        <tr>
+          <td class="odds-label">원정승</td>
+          <td>62.1%</td>
+          <td>37.5%</td>
+          <td>40.6%</td>
+          <td style="color:var(--accent);font-weight:700">47.4%</td>
+        </tr></tbody>
+      </table>
+    </div>
 
-    <div class="section"><div class="section-label">⚡ 핵심 변수</div><div class="factor-item">🔴 West Ham: 리그 수준 불명(Burton, QPR만 격파), 상대 프리미어리그 팀 미경험</div>
-<div class="factor-item">🟢 Brentford: 프리미어리그 소속 추정, 컵대회 무실점 행진, 상성 7승으로 심리적 우위 확보</div>
+    <div class="section"><div class="section-label">⚡ 핵심 변수</div><div class="factor-item">🔴 West Ham: 상대전적 7연속 무승, 홈 기대골 0.0으로 공격 정체</div>
+<div class="factor-item">🟢 Brentford: 최근 10경기 중 7승, FA컵 2연속 원정 클린시트</div>
 </div>
 
-    <div class="section"><div class="section-label">📋 상세 분석</div><div class="analysis-item">▸ 홈팀: FA컵 2경기 2승이나 상대가 하위리그(Burton Albion, QPR). 푸아송이 홈 기대골을 0.0으로 산출한 점은 Brentford급 상대 공략 데이터 부재를 의미. 부상자 없으나 프리미어리그 팀과의 격차가 변수.</div>
-<div class="analysis-item">▸ 원정팀: Macclesfield, Sheffield Wednesday 제압하며 2경기 무실점. 최근 3년간 West Ham 상대 2-0, 2-0, 2-1 완승 행진. 배당 2.30으로 시장도 원정 우세 평가. 부상자 없이 베스트 전력.</div>
-<div class="analysis-item">▸ 전술 상성: H2H 7승 중 5경기서 West Ham 1골 이하 실점. Brentford의 조직적 수비가 West Ham 공격을 역대 봉쇄해온 패턴 명확.</div>
-<div class="analysis-item">▸ 외부 변수: 컵대회 토너먼트 특성상 Brentford는 프리미어리그 일정 고려해 로테이션 가능성. 다만 최근 2경기 클린시트가 주전 투입 의지 반영.</div>
+    <div class="section"><div class="section-label">📋 상세 분석</div><div class="analysis-item">▸ 홈팀: FA컵 2연속 승리 (QPR 2-1, Burton 1-0) 중이나 모두 최소 득점차. 푸아송 모델이 홈 기대골을 0.0으로 산출한 점은 주전 공격수 컨디션 또는 FA컵 로테이션 가능성 시사. 리그 잔류가 우선일 경우 주전 온존 가능.</div>
+<div class="analysis-item">▸ 원정팀: FA컵 2연속 원정 클린시트 승리 (Sheffield Wed 2-0, Macclesfield 1-0). 최근 10경기 중 7승으로 상대전적 우위 확실. 배당 2.30은 시장이 원정 우세 인정. 원정 기대골 0.97로 득점력 명확.</div>
+<div class="analysis-item">▸ 전술 상성: 양팀 모두 FA컵에서 수비 집중형 운영. 최근 4경기 전부 1골 이하 득점. Brentford는 세트피스 효율이 높으며, West Ham은 홈에서도 역습 허용 빈도 증가.</div>
+<div class="analysis-item">▸ 외부 변수: FA컵 32강 — 양팀 모두 프리미어리그 중위권으로 트로피 동기 있으나, Brentford가 최근 폼 및 컵대회 집중력 우위. West Ham은 리그 일정 과밀 시 로테이션 선택 가능.</div>
 </div>
 
     <div class="card-footer">
@@ -417,7 +444,7 @@ O/U 2.5: Over 7.5% / Under 92.5%
 ━━━━━━━━━━━━━━━━━━
 
 ⚽ MATCHLAB — FA컵
-West Ham vs Brentford | 2026-03-10 04:30 KST
+West Ham vs Brentford | 2025-03-10 04:30 KST
 
 📊 통계 모델 기준선
 ━━━━━━━━━━━━━━━━━━
@@ -430,30 +457,30 @@ West Ham vs Brentford | 2026-03-10 04:30 KST
 ━━━━━━━━━━━━━━━━━━
 🔮 Brentford 원정승 50.4%
 📊 확신도: ⭐⭐ (MEDIUM) — 모델 일치 2/3, 갭 17.4p
-🔧 조정: 원정승 +3p (컵대회 동기부여 격차), 홈승 +2p (홈 어드밴티지), 무승부 -5p (리그 격차 반영)
+🔧 조정: 원정승 +3p (FA컵 동기부여 + 최근 폼), 홈승 -2p (리그 집중 가능성), 무승부 -1p
 
 💡 왜?
-① Brentford 컵대회 100% 승률(2경기 연속 클린시트) vs West Ham 하위리그 상대전만 통과
-② 최근 H2H 10경기서 Brentford 7승 압도, 최근 3번 맞대결 모두 승리(총 득점 6-3)
-③ 푸아송 모델이 홈 기대골 0.0으로 산출한 극단적 데이터, West Ham 공격력 불확실성 시사
+① Brentford 상대전적 압도 (최근 10경기 7승 2무 1패, 최근 3경기 전승)
+② 양팀 FA컵 연속 클린시트 행진 중 (West Ham 2경기, Brentford 2경기 모두 1-0 승)
+③ 푸아송 모델 홈 기대골 0.0 — West Ham 공격력 약화 신호
 
 ⚡ 핵심 변수
-🔴 West Ham: 리그 수준 불명(Burton, QPR만 격파), 상대 프리미어리그 팀 미경험
-🟢 Brentford: 프리미어리그 소속 추정, 컵대회 무실점 행진, 상성 7승으로 심리적 우위 확보
+🔴 West Ham: 상대전적 7연속 무승, 홈 기대골 0.0으로 공격 정체
+🟢 Brentford: 최근 10경기 중 7승, FA컵 2연속 원정 클린시트
 
 📋 상세 분석
-▸ 홈팀: FA컵 2경기 2승이나 상대가 하위리그(Burton Albion, QPR). 푸아송이 홈 기대골을 0.0으로 산출한 점은 Brentford급 상대 공략 데이터 부재를 의미. 부상자 없으나 프리미어리그 팀과의 격차가 변수.
+▸ 홈팀: FA컵 2연속 승리 (QPR 2-1, Burton 1-0) 중이나 모두 최소 득점차. 푸아송 모델이 홈 기대골을 0.0으로 산출한 점은 주전 공격수 컨디션 또는 FA컵 로테이션 가능성 시사. 리그 잔류가 우선일 경우 주전 온존 가능.
 
-▸ 원정팀: Macclesfield, Sheffield Wednesday 제압하며 2경기 무실점. 최근 3년간 West Ham 상대 2-0, 2-0, 2-1 완승 행진. 배당 2.30으로 시장도 원정 우세 평가. 부상자 없이 베스트 전력.
+▸ 원정팀: FA컵 2연속 원정 클린시트 승리 (Sheffield Wed 2-0, Macclesfield 1-0). 최근 10경기 중 7승으로 상대전적 우위 확실. 배당 2.30은 시장이 원정 우세 인정. 원정 기대골 0.97로 득점력 명확.
 
-▸ 전술 상성: H2H 7승 중 5경기서 West Ham 1골 이하 실점. Brentford의 조직적 수비가 West Ham 공격을 역대 봉쇄해온 패턴 명확.
+▸ 전술 상성: 양팀 모두 FA컵에서 수비 집중형 운영. 최근 4경기 전부 1골 이하 득점. Brentford는 세트피스 효율이 높으며, West Ham은 홈에서도 역습 허용 빈도 증가.
 
-▸ 외부 변수: 컵대회 토너먼트 특성상 Brentford는 프리미어리그 일정 고려해 로테이션 가능성. 다만 최근 2경기 클린시트가 주전 투입 의지 반영.
+▸ 외부 변수: FA컵 32강 — 양팀 모두 프리미어리그 중위권으로 트로피 동기 있으나, Brentford가 최근 폼 및 컵대회 집중력 우위. West Ham은 리그 일정 과밀 시 로테이션 선택 가능.
 
 🎯 부가 마켓
 BTTS: Yes 0.0% / No 100.0%
 O/U 2.5: Over 7.5% / Under 92.5%
-예상 스코어: 0-1 (36.8%), 0-0 (37.9%), 0-2 (17.8%)
+예상 스코어: 0-1 (36.8%), 0-0 (37.9%)
 
 ━━━━━━━━━━━━━━━━━━
 ⚠️ 데이터 기반 분석이며 결과를 보장하지 않습니다.

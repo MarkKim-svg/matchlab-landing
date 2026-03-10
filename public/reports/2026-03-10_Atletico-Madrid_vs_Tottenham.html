@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MATCHLAB — Atletico Madrid vs Tottenham</title>
 <meta property="og:title" content="MATCHLAB | Atletico Madrid vs Tottenham">
-<meta property="og:description" content="Atletico Madrid 홈승 67.1%">
+<meta property="og:description" content="Atletico Madrid 홈승 64.3%">
 <meta property="og:type" content="article">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -364,22 +364,54 @@ body::before {
     <div class="section">
       <div class="section-label">🤖 AI 예측</div>
       <div class="prediction-box">
-        <div class="prediction-text">Atletico Madrid 홈승 67.1%</div>
+        <div class="prediction-text">Atletico Madrid 홈승 64.3%</div>
         <div class="confidence"><span class="confidence-stars">⭐⭐⭐⭐⭐</span><span class="confidence-label">(100%)</span></div>
       </div>
-      
+      <div class="summary-text">모델 일치 3/3, 갭 38.8p</div>
     </div>
 
-    <div class="section"><div class="section-label">💡 왜?</div><div class="reason-item">① 토트넘 최근 6경기 전패(득점 6실점 15, 평균 실점 2.5골), 프리미어리그 강등권 1p 위 역대급 위기</div>
-<div class="reason-item">② 아틀레티코 최근 5경기 4승(12골 득점, 홈 4연승), 홈에서 A. Sørloth 5골로 공격력 확인</div>
-<div class="reason-item">③ 토트넘 핵심 공격진 J. Maddison·D. Kulusevski·M. Kudus 결장, 중원 R. Bentancur 결장으로 조직력 붕괴</div>
+    <div class="section"><div class="section-label">💡 왜?</div><div class="reason-item">① 토트넘 리그 11경기 무승, 강등권 1점 차 vs 아틀레티코 최근 5경기 4승 폼</div>
+<div class="reason-item">② 토트넘 D. Kulusevski(무릎), J. Maddison(ACL) 등 핵심 7명 결장 , 공격력 마비</div>
+<div class="reason-item">③ A. Sørloth 2026년 11골, 유럽 5대 리그 2위 vs 토트넘 수비 약체(최근 5경기 평균 실점 2.4골)</div>
 </div>
 
-    
+    <div class="section">
+      <div class="section-label">📊 통계 모델 확률</div>
+      <table class="odds-table">
+        <thead><tr><th></th><th>푸아송</th><th>ELO</th><th>시장</th><th>앙상블</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="odds-label">홈승</td>
+          <td>75.2%</td>
+          <td>37.5%</td>
+          <td>54.8%</td>
+          <td style="color:var(--accent);font-weight:700">59.3%</td>
+        </tr>
+        <tr>
+          <td class="odds-label">무승부</td>
+          <td>9.6%</td>
+          <td>25.0%</td>
+          <td>25.7%</td>
+          <td style="color:var(--accent);font-weight:700">20.5%</td>
+        </tr>
+        <tr>
+          <td class="odds-label">원정승</td>
+          <td>6.8%</td>
+          <td>37.5%</td>
+          <td>19.5%</td>
+          <td style="color:var(--accent);font-weight:700">20.2%</td>
+        </tr></tbody>
+      </table>
+    </div>
 
-    
+    <div class="section"><div class="section-label">⚡ 핵심 변수</div><div class="factor-item">🔴 Tottenham: 전 대회 5연패 중 , 창조력 부재( J. Maddison ACL 장기 결장 ), 리그 11경기 무승 신기록</div>
+<div class="factor-item">🟢 Atletico Madrid:</div>
+</div>
 
-    
+    <div class="section"><div class="section-label">📋 상세 분석</div><div class="analysis-item">▸ 홈팀: 최근 5경기 4승1패, 평균 득점 2.4골.</div>
+<div class="analysis-item">▸ 원정팀: 리그 11경기 무승으로 강등권 1점 차 지만 UCL에선 별개. PSG에만 패배, 리그 페이즈 4위 직행 . 하지만 핵심 10명 부상(J. Maddison ACL, D. Kulusevski 무릎 등) 으로 공격 옵션 고갈. G. Vicario(8경기 평점 7.49) 선방 의존도 극대화 예상.</div>
+<div class="analysis-item">▸ 외부 변수:</div>
+</div>
 
     <div class="card-footer">
       <div class="disclaimer">⚠️ 데이터 기반 정보이며, 결과를 보장하지 않습니다.</div>
@@ -392,31 +424,92 @@ body::before {
   </div>
 </div>
 
-<textarea id="kakao-text" style="position:absolute;left:-9999px;" readonly>🏆 MATCHLAB — 챔피언스리그
-📅 2026-03-10
+<textarea id="kakao-text" style="position:absolute;left:-9999px;" readonly>📊 통계 모델 상세
 ━━━━━━━━━━━━━━━━━━
+기대골: 홈 3.72 — 원정 1.12
+
+         푸아송   ELO    시장    앙상블
+홈승      75.2%   37.5%   54.8%   59.3%
+무승부     9.6%   25.0%   25.7%   20.5%
+원정승     6.8%   37.5%   19.5%   20.2%
+
+가장 확률 높은 스코어:
+  3-1 (7.6%)
+  4-1 (7.1%)
+  3-0 (6.8%)
+
+BTTS: Yes 60.1% / No 39.9%
+O/U 2.5: Over 77.7% / Under 22.3%
+━━━━━━━━━━━━━━━━━━
+
+⚽ MATCHLAB — UCL
 Atletico Madrid vs Tottenham | 2026-03-11 05:00 KST
 
-📊 통계 모델 확률
-홈승 59.3% | 무 20.5% | 원정승 20.2%
-모델 일치: 3/3 | 신뢰도: VERY_HIGH
-예상 스코어: 3-1
-BTTS 60% | O2.5 78%
+📊 통계 모델 기준선
+━━━━━━━━━━━━━━━━━━
+         푸아송   ELO    시장    앙상블
+홈승      75.2%   37.5%  54.8%  59.3%
+무승부     9.6%   25.0%  25.7%  20.5%
+원정승     6.8%   37.5%  19.5%  20.2%
 
-🤖 AI 예측
-🔮 Atletico Madrid 홈승 67.1%
-확신도: ⭐⭐⭐⭐⭐
+🤖 AI 최종 예측
+━━━━━━━━━━━━━━━━━━
+🔮 Atletico Madrid 홈승 64.3%
+📊 확신도: ⭐⭐⭐⭐⭐ (VERY_HIGH) — 모델 일치 3/3, 갭 38.8p
+🔧 조정: 홈승 +5p (토트넘 10명 부상 위기, 리그 5연패 맥락), 원정승 -3p
 
 💡 왜?
-① 토트넘 최근 6경기 전패(득점 6실점 15, 평균 실점 2.5골), 프리미어리그 강등권 1p 위 역대급 위기
-② 아틀레티코 최근 5경기 4승(12골 득점, 홈 4연승), 홈에서 A. Sørloth 5골로 공격력 확인
-③ 토트넘 핵심 공격진 J. Maddison·D. Kulusevski·M. Kudus 결장, 중원 R. Bentancur 결장으로 조직력 붕괴
+① 
+토트넘 리그 11경기 무승, 강등권 1점 차
+ vs 
+아틀레티코 최근 5경기 4승 폼
 
-📎 상세 분석: https://matchlab-landing.vercel.app/reports/2026-03-10_Atletico-Madrid_vs_Tottenham.html
+② 
+토트넘 D. Kulusevski(무릎), J. Maddison(ACL) 등 핵심 7명 결장
+, 공격력 마비
+③ 
+A. Sørloth 2026년 11골, 유럽 5대 리그 2위
+ vs 토트넘 수비 약체(최근 5경기 평균 실점 2.4골)
+
+⚡ 핵심 변수
+🔴 Tottenham: 
+전 대회 5연패 중
+, 창조력 부재(
+J. Maddison ACL 장기 결장
+), 
+리그 11경기 무승 신기록
+
+🟢 Atletico Madrid: 
+홈 5경기 중 4승
+, 
+A. Sørloth 2026년 11골
+, UCL 플레이오프 7-4 돌파
+
+📋 상세 분석
+▸ 홈팀: 최근 5경기 4승1패, 평균 득점 2.4골. 
+A. Sørloth 2026년 11골
+ 폭발적 폼. 
+시메오네 4-3-3 빌드업 중시 전술
+ 안착. A. Griezmann(9경기 1골 2도움) 교체 카드 대기.
+▸ 원정팀: 
+리그 11경기 무승으로 강등권 1점 차
+지만 UCL에선 별개. 
+PSG에만 패배, 리그 페이즈 4위 직행
+. 하지만 
+핵심 10명 부상(J. Maddison ACL, D. Kulusevski 무릎 등)
+으로 공격 옵션 고갈. G. Vicario(8경기 평점 7.49) 선방 의존도 극대화 예상.
+▸ 외부 변수: 
+토트넘 감독 Igor Tudor 3연패로 경질 압박
+, 팀 사기 저하. 16강 1차전 원정 상황에서 실점 최소화 우선 가능성.
+
+🎯 부가 마켓
+BTTS: Yes 60.1% / No 39.9%
+O/U 2.5: Over 77.7% / Under 22.3%
+예상 스코어: 3-1 (7.6%)
 
 ━━━━━━━━━━━━━━━━━━
-🏆 MATCHLAB | AI + 통계 모델 축구 분석
-#MATCHLAB #UCL</textarea>
+⚠️ 데이터 기반 분석이며 결과를 보장하지 않습니다.
+⚽ MATCHLAB | AI + 통계 모델 축구 분석</textarea>
 
 <div id="copy-toast" style="display:none;position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#00FF88;color:#0B0F1A;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;z-index:1001;animation:fadeOut 2s forwards;">
   Copied!

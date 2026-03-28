@@ -1,81 +1,79 @@
+"use client";
+import { useEffect, useState } from "react";
 import { KAKAO_CHANNEL_URL } from "@/lib/constants";
-import KakaoMockup from "./KakaoMockup";
 
-const LEAGUES = [
-  { name: "EPL", className: "bg-[#f3e8ff] text-[#7c3aed]" },
-  { name: "La Liga", className: "bg-[#fff7ed] text-[#c2410c]" },
-  { name: "Serie A", className: "bg-[#dbeafe] text-[#1d4ed8]" },
-  { name: "Bundesliga", className: "bg-[#fee2e2] text-[#dc2626]" },
-  { name: "Ligue 1", className: "bg-[#dcfce7] text-[#16a34a]" },
-  { name: "UCL", className: "bg-[#e0e7ff] text-[#4338ca]" },
-  { name: "UEL", className: "bg-[#fef3c7] text-[#b45309]" },
+const LEAGUES = ["EPL","La Liga","Serie A","Bundesliga","Ligue 1","UCL","UEL"];
+
+const BUBBLES = [
+  { w:"w-64 h-64", bg:"bg-emerald-500/[0.04]", pos:"top-[5%] left-[2%]", anim:"float-slow 12s" },
+  { w:"w-40 h-40", bg:"bg-emerald-400/[0.06]", pos:"top-[60%] right-[5%]", anim:"float-medium 8s" },
+  { w:"w-20 h-20", bg:"bg-gold-400/[0.08]", pos:"top-[25%] right-[20%]", anim:"float-fast 6s" },
+  { w:"w-32 h-32", bg:"bg-emerald-500/[0.05]", pos:"bottom-[10%] left-[15%]", anim:"float-medium 10s" },
+  { w:"w-16 h-16", bg:"bg-gold-400/[0.06]", pos:"top-[40%] left-[30%]", anim:"float-slow 14s" },
+  { w:"w-24 h-24", bg:"bg-emerald-400/[0.04]", pos:"top-[15%] right-[35%]", anim:"float-fast 9s" },
 ];
 
-const KakaoSvg = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.22 4.65 6.6l-.96 3.56c-.08.28.24.52.48.36l4.2-2.78c.53.06 1.07.1 1.63.1 5.52 0 10-3.58 10-7.84C22 6.58 17.52 3 12 3z" />
-  </svg>
-);
-
 export default function Hero() {
+  const [count, setCount] = useState(0);
+  const [bouncing, setBouncing] = useState(false);
+
+  useEffect(() => {
+    const target = 68, step = target / (1500 / 16);
+    let c = 0;
+    const t = setInterval(() => { c += step; if (c >= target) { setCount(target); clearInterval(t); } else setCount(Math.floor(c)); }, 16);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBouncing(true);
+      setTimeout(() => setBouncing(false), 600);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="px-6 pt-[72px] pb-14 max-w-[1120px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_360px] gap-14 items-center min-h-[calc(100vh-56px)]">
-      {/* Left: Content */}
-      <div className="flex flex-col gap-5 text-center md:text-left">
-        <div className="flex flex-wrap gap-1.5 justify-center md:justify-start">
-          {LEAGUES.map((l) => (
-            <span
-              key={l.name}
-              className={`${l.className} text-[11px] font-semibold px-2.5 py-1 rounded-full`}
-            >
-              {l.name}
-            </span>
-          ))}
+    <section className="bg-bg-900 lab-grid px-6 py-24 md:py-32 relative overflow-hidden">
+      {BUBBLES.map((b, i) => (
+        <div key={i} className={`bubble ${b.w} ${b.bg} ${b.pos}`} style={{animation:`${b.anim} ease-in-out infinite`}} />
+      ))}
+
+      <div className="max-w-[900px] mx-auto text-center relative z-10">
+        <div className="flex flex-wrap gap-2 justify-center mb-8">
+          {LEAGUES.map((l) => <span key={l} className="border border-bg-700 text-[#94A3B8] text-[11px] font-semibold px-3 py-1 rounded-full">{l}</span>)}
         </div>
 
-        <div className="text-[13px] font-semibold text-ml-accent tracking-[0.04em]">
-          AI FOOTBALL ANALYSIS
+        {/* Headline — font hierarchy */}
+        <div className="mb-6">
+          <div className="font-body font-normal text-xl text-[#94A3B8] mb-3">매일 아침,</div>
+          <div className="font-body font-[800] text-[48px] md:text-[56px] leading-[1.1] tracking-[-1px]">
+            <span className="text-emerald-400 emerald-glow">AI가 골라주는</span>{" "}
+            <span className="text-[#F1F5F9]">오늘의 경기</span>
+          </div>
         </div>
 
-        <h1 className="text-[32px] md:text-[46px] font-[900] leading-[1.12] tracking-[-0.035em] break-keep">
-          AI가 오늘의<br />축구를 <em className="not-italic text-ml-accent">읽습니다</em>
-        </h1>
-
-        <p className="text-[17px] leading-[1.7] text-ml-sub max-w-[460px] break-keep mx-auto md:mx-0">
-          매일 30경기를 직접 분석할 시간이 없다면.
-          AI가 12개 리그를 데이터로 읽고, 가장 확률 높은 경기를 골라 보내드립니다.
+        <p className="font-body font-normal text-base text-[#94A3B8] max-w-[560px] mx-auto mb-10 break-keep leading-[1.7]">
+          12개 리그, 매일 30경기를 분석하고 가장 맞출 확률 높은 경기를 카톡으로 보내드립니다
         </p>
 
-        <div className="flex flex-wrap gap-3 mt-1 justify-center md:justify-start">
-          <a
-            href={KAKAO_CHANNEL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-ml-kakao text-[#1a1a1a] text-base font-bold px-8 py-3.5 rounded-full hover:brightness-95 hover:-translate-y-px transition-all"
-          >
-            <KakaoSvg />
+        {/* 68% — Outfit 800, shimmer */}
+        <div className="flex items-baseline gap-3 justify-center mb-10">
+          <span className="font-outfit font-[800] text-[80px] md:text-[96px] leading-none tracking-[-2px] gold-shimmer">{count}%</span>
+          <span className="text-[15px] text-[#94A3B8]">고확신 경기 평균 적중률</span>
+        </div>
+
+        <div className="flex flex-wrap gap-3 justify-center mb-6">
+          <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer"
+            className="bg-emerald-500 hover:bg-emerald-700 text-white text-base font-bold px-8 py-3.5 rounded-lg transition-all">
             무료로 시작하기
           </a>
-          <a
-            href="#dashboard"
-            className="inline-flex items-center text-ml-accent text-base font-semibold px-8 py-3.5 rounded-full border-2 border-ml-accent hover:bg-ml-accent-light transition-all"
-          >
+          <button
+            onClick={() => document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })}
+            className={`bg-transparent border border-[#F1F5F9]/30 text-[#F1F5F9] text-base font-semibold px-8 py-3.5 rounded-lg hover:bg-white/10 transition-all cursor-pointer ${bouncing ? "animate-[subtle-bounce_0.6s_ease-in-out]" : ""}`}>
             적중률 보기
-          </a>
+          </button>
         </div>
-
-        <div className="flex items-center gap-3 text-[13px] text-ml-muted justify-center md:justify-start">
-          <span>회원가입 필요 없음</span>
-          <span>·</span>
-          <span>완전 무료</span>
-          <span>·</span>
-          <span>언제든 구독 취소</span>
-        </div>
-      </div>
-
-      {/* Right: Kakao Mockup */}
-      <div className="mx-auto md:mx-0">
-        <KakaoMockup />
+        <div className="text-[13px] text-[#64748B]">회원가입 필요 없음 · 완전 무료 · 언제든 구독 취소</div>
       </div>
     </section>
   );

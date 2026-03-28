@@ -17,7 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={outfit.variable}>
-      <body className={`${outfit.className} bg-ml-bg text-ml-text`}>
+      <body className="font-body bg-bg-900 text-[#F1F5F9]">
         {children}
         <Analytics />
       </body>

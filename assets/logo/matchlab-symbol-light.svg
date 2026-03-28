@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 2 66 76" width="330" height="380">
+  <path d="M10,10 L10,66 Q10,74 18,74 L54,74 Q62,74 62,66 L62,10" fill="none" stroke="#0F5D45" stroke-width="2.2" stroke-linejoin="round"/>
+  <line x1="8" y1="10" x2="64" y2="10" stroke="#0F5D45" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M62,10 L66,6" fill="none" stroke="#0F5D45" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="10" y1="32" x2="17" y2="32" stroke="#0F5D45" stroke-width="1" opacity="0.15"/>
+  <line x1="10" y1="48" x2="17" y2="48" stroke="#0F5D45" stroke-width="1" opacity="0.15"/>
+  <circle cx="25" cy="61" r="12" fill="#0F5D45"/>
+  <polygon points="25,53.5 30.5,56.5 29,62.5 21,62.5 19.5,56.5" fill="#edece6" opacity="0.3"/>
+  <circle cx="49" cy="61" r="11" fill="#0F5D45" opacity="0.55"/>
+  <path d="M49,50 Q54,61 49,72" fill="none" stroke="#edece6" stroke-width="1.2" opacity="0.3"/>
+  <line x1="38" y1="61" x2="60" y2="61" stroke="#edece6" stroke-width="0.8" opacity="0.25"/>
+  <circle cx="36" cy="43" r="8" fill="#0F5D45" opacity="0.28"/>
+  <path d="M32.5,37 Q36,42.5 32.5,48" fill="none" stroke="#edece6" stroke-width="0.8" opacity="0.35"/>
+  <path d="M39.5,37 Q36,42.5 39.5,48" fill="none" stroke="#edece6" stroke-width="0.8" opacity="0.35"/>
+</svg>

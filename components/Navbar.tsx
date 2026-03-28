@@ -2,33 +2,18 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "1rem 2rem",
-        borderBottom: "1px solid #222",
-        background: "#0a0a0a",
-      }}
-    >
-      <Link href="/" style={{ color: "#fff", fontSize: "1.25rem", fontWeight: 700, textDecoration: "none" }}>
-        MATCHLAB
-      </Link>
-      <Link
-        href="/login"
-        style={{
-          background: "#2563eb",
-          color: "#fff",
-          padding: "0.5rem 1.25rem",
-          borderRadius: "0.375rem",
-          textDecoration: "none",
-          fontSize: "0.875rem",
-          fontWeight: 600,
-        }}
-      >
-        Pro 시작하기
-      </Link>
+    <nav className="sticky top-0 z-50 bg-white/[0.88] backdrop-blur-[12px] border-b border-ml-border px-6">
+      <div className="max-w-[1120px] mx-auto flex justify-between items-center h-14">
+        <Link href="/" className="font-[800] text-lg tracking-[-0.02em]">
+          MATCHLAB
+        </Link>
+        <a
+          href="#pricing"
+          className="bg-ml-accent hover:bg-ml-accent-hover text-white text-[13px] font-semibold px-5 py-2 rounded-full transition-colors"
+        >
+          Pro 시작하기
+        </a>
+      </div>
     </nav>
   );
 }

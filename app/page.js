@@ -3,7 +3,7 @@ import Hero from "@/components/landing/Hero";
 import PreviewSection from "@/components/landing/PreviewSection";
 import UserFlow from "@/components/landing/UserFlow";
 import RealResults from "@/components/landing/RealResults";
-import Dashboard from "@/components/landing/Dashboard";
+import DashboardSection from "@/components/landing/DashboardSection";
 import AIModel from "@/components/landing/AIModel";
 import HowItWorks from "@/components/landing/HowItWorks";
 import PlansSection from "@/components/landing/PlansSection";
@@ -20,7 +20,7 @@ export default function Home() {
         <PreviewSection />
         <UserFlow />
         <RealResults />
-        <Dashboard />
+        <DashboardSection />
         <AIModel />
         <HowItWorks />
         <PlansSection />

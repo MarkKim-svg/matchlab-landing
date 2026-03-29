@@ -1,0 +1,133 @@
+import { Client } from "@notionhq/client";
+
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
+const DATABASE_ID = process.env.NOTION_PREDICTIONS_DB_ID!;
+
+export interface Prediction {
+  date: string;
+  match: string;
+  league: string;
+  prediction: string;
+  confidence: number;
+  confidenceLabel: string;
+  result: string;
+  isCorrect: boolean | null;
+  isProOnly: boolean;
+}
+
+export interface DashboardData {
+  overall: { hitRate: number; correct: number; total: number };
+  highConfidence: { hitRate: number; correct: number; total: number };
+  byLeague: Array<{ league: string; hitRate: number; correct: number; total: number }>;
+  byConfidence: Array<{ stars: number; label: string; hitRate: number; correct: number; total: number }>;
+  recentPredictions: Prediction[];
+}
+
+async function fetchAllPredictions() {
+  const results = [];
+  let hasMore = true;
+  let startCursor: string | undefined = undefined;
+
+  while (hasMore) {
+    const response = await notion.databases.query({
+      database_id: DATABASE_ID,
+      start_cursor: startCursor,
+      page_size: 100,
+      sorts: [{ property: "날짜", direction: "descending" }],
+    });
+
+    results.push(...response.results);
+    hasMore = response.has_more;
+    startCursor = response.next_cursor ?? undefined;
+  }
+
+  return results;
+}
+
+function parsePrediction(page: any): Prediction | null {
+  const props = page.properties;
+
+  const match = props["경기"]?.title?.[0]?.plain_text ?? "";
+  const date = props["날짜"]?.date?.start ?? "";
+  const league = props["리그"]?.select?.name ?? "";
+  const prediction = props["예측"]?.select?.name ?? "";
+
+  const confidenceLabel = props["확신도"]?.select?.name ?? "";
+  const confidence = [...confidenceLabel].filter(c => c === "⭐").length;
+
+  const hitStatus = props["적중여부"]?.select?.name ?? "";
+  let isCorrect: boolean | null = null;
+  if (hitStatus === "적중") isCorrect = true;
+  else if (hitStatus === "미적중") isCorrect = false;
+
+  const result = props["실제결과"]?.rich_text?.map((t: any) => t.plain_text).join("") ?? "";
+
+  if (!date || !match) return null;
+
+  return {
+    date,
+    match,
+    league,
+    prediction,
+    confidence,
+    confidenceLabel,
+    result,
+    isCorrect,
+    isProOnly: confidence >= 4,
+  };
+}
+
+function calcHitRate(predictions: Prediction[]): { hitRate: number; correct: number; total: number } {
+  const judged = predictions.filter(p => p.isCorrect !== null);
+  const correct = judged.filter(p => p.isCorrect === true).length;
+  const total = judged.length;
+  const hitRate = total > 0 ? Math.round((correct / total) * 1000) / 10 : 0;
+  return { hitRate, correct, total };
+}
+
+export async function getDashboardData(period: string = "all"): Promise<DashboardData> {
+  const pages = await fetchAllPredictions();
+  let predictions = pages.map(parsePrediction).filter((p): p is Prediction => p !== null);
+
+  if (period !== "all") {
+    const now = new Date();
+    const days = period === "7d" ? 7 : period === "30d" ? 30 : 0;
+    if (days > 0) {
+      const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      const cutoffStr = cutoff.toISOString().split("T")[0];
+      predictions = predictions.filter(p => p.date >= cutoffStr);
+    }
+  }
+
+  const overall = calcHitRate(predictions);
+
+  const highConf = predictions.filter(p => p.confidence >= 4);
+  const highConfidence = calcHitRate(highConf);
+
+  const leagueMap = new Map<string, Prediction[]>();
+  predictions.forEach(p => {
+    if (!p.league) return;
+    if (!leagueMap.has(p.league)) leagueMap.set(p.league, []);
+    leagueMap.get(p.league)!.push(p);
+  });
+  const byLeague = Array.from(leagueMap.entries())
+    .map(([league, preds]) => ({ league, ...calcHitRate(preds) }))
+    .sort((a, b) => b.total - a.total);
+
+  const confMap = new Map<number, Prediction[]>();
+  predictions.forEach(p => {
+    if (p.confidence === 0) return;
+    if (!confMap.has(p.confidence)) confMap.set(p.confidence, []);
+    confMap.get(p.confidence)!.push(p);
+  });
+  const starLabels: Record<number, string> = { 1: "⭐", 2: "⭐⭐", 3: "⭐⭐⭐", 4: "⭐⭐⭐⭐", 5: "⭐⭐⭐⭐⭐" };
+  const byConfidence = Array.from(confMap.entries())
+    .map(([stars, preds]) => ({ stars, label: starLabels[stars] || "", ...calcHitRate(preds) }))
+    .sort((a, b) => a.stars - b.stars);
+
+  const recentPredictions = predictions
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 20);
+
+  return { overall, highConfidence, byLeague, byConfidence, recentPredictions };
+}

@@ -1,10 +1,24 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getDashboardData } from "@/lib/notion";
 
-export async function GET() {
-  // TODO: Supabase에서 오늘 날짜 대시보드 데이터 조회
-  return NextResponse.json({
-    status: "ok",
-    message: "Sprint 2에서 구현 예정",
-    data: null,
-  });
+export const revalidate = 3600;
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const period = searchParams.get("period") || "all";
+
+    if (!["7d", "30d", "all"].includes(period)) {
+      return NextResponse.json({ error: "Invalid period. Use 7d, 30d, or all." }, { status: 400 });
+    }
+
+    const data = await getDashboardData(period);
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Dashboard API error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch dashboard data" },
+      { status: 500 }
+    );
+  }
 }

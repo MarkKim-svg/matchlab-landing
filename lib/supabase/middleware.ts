@@ -26,7 +26,18 @@ export async function updateSession(request: NextRequest) {
   );
 
   // 세션 갱신 (토큰 리프레시)
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // /pro/* 경로 보호: 비로그인 시 /login으로 리다이렉트
+  if (!user && request.nextUrl.pathname.startsWith("/pro")) {
+    const url = request.nextUrl.clone();
+    const redirectTo = request.nextUrl.pathname + request.nextUrl.search;
+    url.pathname = "/login";
+    url.searchParams.set("redirect", redirectTo);
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }

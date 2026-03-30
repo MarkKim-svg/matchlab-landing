@@ -1,6 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const BeakerIcon = () => (
   <svg viewBox="4 2 66 76" className="w-6 h-7" fill="none">
@@ -12,12 +16,78 @@ const BeakerIcon = () => (
 );
 
 export default function Navbar() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [nickname, setNickname] = useState<string>("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // 스크롤 감지
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", h);
     return () => window.removeEventListener("scroll", h);
   }, []);
+
+  // 유저 정보 로드
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        // profiles 테이블에서 닉네임 조회
+        const { data } = await supabase
+          .from("profiles")
+          .select("nickname")
+          .eq("id", user.id)
+          .single();
+
+        if (data?.nickname) {
+          setNickname(data.nickname);
+        } else {
+          // fallback: 이메일 앞부분 또는 provider 이름
+          setNickname(
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.email?.split("@")[0] ||
+            "사용자"
+          );
+        }
+      }
+    }
+    load();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (!session?.user) {
+        setNickname("");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // 바깥 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <nav className={`sticky top-0 z-50 px-6 transition-all duration-300 ${scrolled ? "bg-[#0F172A]/95 backdrop-blur-lg border-b border-[#334155]" : "bg-transparent border-b border-transparent"}`}>
@@ -26,13 +96,65 @@ export default function Navbar() {
           <BeakerIcon />
           <span className="font-display font-bold text-xl tracking-[-1.5px] text-[#F1F5F9]">MATCHLAB</span>
         </Link>
+
         <div className="flex items-center gap-4">
           <a href="#dashboard" className="text-[14px] font-medium text-[#94A3B8] hover:text-emerald-400 transition-colors font-body hidden md:block">적중률</a>
-          <a href="#pricing" className="bg-emerald-500 hover:bg-emerald-700 text-white text-[15px] font-bold px-6 py-2 rounded-lg transition-colors font-body">
-            Pro 시작하기
-          </a>
+
+          {user ? (
+            /* ── 로그인 상태 ── */
+            <div ref={menuRef} className="relative">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-500/40
+                           hover:bg-emerald-500/10 transition-colors cursor-pointer"
+              >
+                <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold shrink-0">
+                  {nickname.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-bg-100 max-w-[100px] truncate hidden sm:block">
+                  {nickname}
+                </span>
+                <ChevronDown />
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-xl shadow-lg overflow-hidden">
+                  <button
+                    disabled
+                    className="w-full text-left px-4 py-2.5 text-sm text-bg-200 cursor-not-allowed"
+                  >
+                    마이페이지
+                  </button>
+                  <div className="h-px bg-bg-700" />
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-4 py-2.5 text-sm text-error hover:bg-bg-700 transition-colors cursor-pointer"
+                  >
+                    로그아웃
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ── 비로그인 상태 ── */
+            <Link
+              href="/login"
+              className="text-[14px] font-medium px-4 py-1.5 rounded-lg border border-emerald-500 text-emerald-400
+                         hover:bg-emerald-500 hover:text-white transition-colors font-body"
+            >
+              로그인
+            </Link>
+          )}
         </div>
       </div>
     </nav>
+  );
+}
+
+function ChevronDown() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-bg-200">
+      <path d="m6 9 6 6 6-6"/>
+    </svg>
   );
 }

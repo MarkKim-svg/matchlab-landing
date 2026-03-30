@@ -119,12 +119,13 @@ export default function Navbar() {
 
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-xl shadow-lg overflow-hidden">
-                  <button
-                    disabled
-                    className="w-full text-left px-4 py-2.5 text-sm text-bg-200 cursor-not-allowed"
+                  <Link
+                    href="/mypage"
+                    onClick={() => setMenuOpen(false)}
+                    className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors"
                   >
                     마이페이지
-                  </button>
+                  </Link>
                   <div className="h-px bg-bg-700" />
                   <button
                     onClick={handleSignOut}

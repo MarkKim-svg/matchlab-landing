@@ -30,8 +30,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // /pro/* 경로 보호: 비로그인 시 /login으로 리다이렉트
-  if (!user && request.nextUrl.pathname.startsWith("/pro")) {
+  // 보호 경로: 비로그인 시 /login으로 리다이렉트
+  const isProtected =
+    request.nextUrl.pathname.startsWith("/pro") ||
+    request.nextUrl.pathname.startsWith("/mypage");
+  if (!user && isProtected) {
     const url = request.nextUrl.clone();
     const redirectTo = request.nextUrl.pathname + request.nextUrl.search;
     url.pathname = "/login";

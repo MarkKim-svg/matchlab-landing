@@ -18,12 +18,14 @@ export default function LoginContent() {
 
   const supabase = createClient();
 
-  const callbackUrl = `${location.origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
+  function getCallbackUrl() {
+    return `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
+  }
 
   async function handleOAuth(provider: "kakao" | "google") {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: callbackUrl },
+      options: { redirectTo: getCallbackUrl() },
     });
     if (error) setError(getErrorMessage(error.message));
   }
@@ -47,7 +49,7 @@ export default function LoginContent() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: callbackUrl },
+        options: { emailRedirectTo: getCallbackUrl() },
       });
       if (error) {
         setError(getErrorMessage(error.message));

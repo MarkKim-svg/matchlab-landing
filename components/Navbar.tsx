@@ -99,6 +99,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <a href="#dashboard" className="text-[14px] font-medium text-[#94A3B8] hover:text-emerald-400 transition-colors font-body hidden md:block">적중률</a>
+          <Link href="/matches/today" className="text-[14px] font-medium text-[#94A3B8] hover:text-emerald-400 transition-colors font-body hidden md:block">오늘의 분석</Link>
 
           {user ? (
             /* ── 로그인 상태 ── */

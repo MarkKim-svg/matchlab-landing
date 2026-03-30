@@ -320,8 +320,10 @@ export default function MatchesDatePage() {
                     const locked = m.isProOnly && !isPro;
                     const [home, away] = splitTeams(m.match);
                     const best = getBestEnsemble(m);
+                    const leagueColor = LEAGUE_CONFIG[m.league]?.color ?? "#334155";
 
-                    const cardInner = (
+                    // public header: league badge + teams (always visible)
+                    const cardHeader = (
                       <>
                         {/* league badge */}
                         <div className="mb-3 flex items-center justify-between">
@@ -337,21 +339,28 @@ export default function MatchesDatePage() {
                           <span className="text-base font-semibold text-white sm:text-lg">{away}</span>
                           <TeamLogo teamId={m.awayTeamId} teamName={away} size={32} />
                         </div>
+                      </>
+                    );
 
-                        {/* prediction */}
+                    // prediction + result (blurred for locked cards)
+                    const cardDetails = (
+                      <>
                         <div className="mb-2 text-center">
                           <span className="text-sm font-medium text-emerald-400">
                             {best.label}
                             {best.pct && ` ${best.pct}`}
                           </span>
                         </div>
-
-                        {/* result */}
                         <div className="text-center">
                           <ResultBadge isCorrect={m.isCorrect} />
                         </div>
                       </>
                     );
+
+                    const cardStyle = {
+                      borderLeftColor: leagueColor,
+                      backgroundImage: `linear-gradient(to bottom, ${leagueColor}18, transparent 6px)`,
+                    };
 
                     if (locked) {
                       return (
@@ -362,16 +371,22 @@ export default function MatchesDatePage() {
                           rel="noopener noreferrer"
                           className="block"
                         >
-                          <div className="relative overflow-hidden rounded-xl border border-[#334155] bg-[#1E293B] p-5">
-                            <div className="pointer-events-none select-none" style={{ filter: "blur(12px)" }}>
-                              {cardInner}
-                            </div>
-                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
-                              <span className="text-3xl">🔒</span>
-                              <p className="mt-2 text-sm font-semibold text-white">Pro 전용 분석</p>
-                              <span className="mt-2 inline-block rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 transition">
-                                Pro 시작하기 — 월 9,900원
-                              </span>
+                          <div
+                            className="overflow-hidden rounded-xl border border-[#334155] border-l-4 bg-[#1E293B] p-5"
+                            style={cardStyle}
+                          >
+                            {cardHeader}
+                            <div className="relative">
+                              <div className="pointer-events-none select-none" style={{ filter: "blur(12px)" }}>
+                                {cardDetails}
+                              </div>
+                              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+                                <span className="text-2xl">🔒</span>
+                                <p className="mt-1 text-xs font-semibold text-white">Pro 전용 분석</p>
+                                <span className="mt-1.5 inline-block rounded-lg bg-emerald-600 px-3 py-1 text-[11px] font-medium text-white hover:bg-emerald-500 transition">
+                                  Pro 시작하기 — 월 9,900원
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </a>
@@ -380,8 +395,12 @@ export default function MatchesDatePage() {
 
                     return (
                       <Link key={m.id} href={`/report/${m.id}`}>
-                        <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-5 transition hover:border-emerald-500/60 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]">
-                          {cardInner}
+                        <div
+                          className="rounded-xl border border-[#334155] border-l-4 bg-[#1E293B] p-5 transition hover:border-emerald-500/60 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                          style={cardStyle}
+                        >
+                          {cardHeader}
+                          {cardDetails}
                         </div>
                       </Link>
                     );

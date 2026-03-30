@@ -65,7 +65,7 @@ export default function Hero() {
         </div>
 
         <div className="flex flex-wrap gap-3 justify-center mb-6">
-          <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer"
+          <a href="/login"
             className="bg-emerald-500 hover:bg-emerald-700 text-white text-[15px] font-bold px-8 py-3.5 rounded-lg transition-all font-body">
             무료로 시작하기
           </a>

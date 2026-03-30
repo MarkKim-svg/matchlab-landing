@@ -44,7 +44,7 @@ export default function PlansSection() {
             <div className="font-display font-bold text-[42px] tracking-[-2px] text-[#F1F5F9]">0<small className="text-base font-normal text-[#94A3B8] font-body tracking-normal">원/월</small></div>
             <div className="text-sm text-[#94A3B8] mt-1 font-body">카톡 채널 추가만 하면</div>
             <ul className="mt-5 mb-6 space-y-1.5">{FREE_FEATURES.map((f) => <li key={f} className="text-sm flex items-center gap-2 text-[#94A3B8] font-body"><span className="text-emerald-500 font-bold">✓</span> {f}</li>)}</ul>
-            <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="block w-full py-3.5 rounded-lg text-[15px] font-bold text-center bg-transparent border border-bg-700 text-[#94A3B8] hover:border-emerald-500 hover:text-emerald-500 transition-all font-body">무료로 시작하기</a>
+            <a href="/login" className="block w-full py-3.5 rounded-lg text-[15px] font-bold text-center bg-transparent border border-bg-700 text-[#94A3B8] hover:border-emerald-500 hover:text-emerald-500 transition-all font-body">무료로 시작하기</a>
           </div>
           <div className="relative bg-bg-800 border-2 border-emerald-500 rounded-2xl px-7 py-9 neon-card card-hover">
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-full font-body">추천</div>

@@ -9,7 +9,7 @@ export function useHitRate() {
     fetch("/api/dashboard?period=all")
       .then((r) => r.json())
       .then((data) => {
-        const rate = data?.high_confidence?.hit_rate;
+        const rate = data?.highConfidence?.hitRate ?? data?.high_confidence?.hit_rate;
         if (typeof rate === "number") setHitRate(rate);
       })
       .catch(() => {});

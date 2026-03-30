@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { KAKAO_CHANNEL_URL } from "@/lib/constants";
+import { useHitRate } from "@/lib/useHitRate";
 
 const LEAGUES = ["EPL","La Liga","Serie A","Bundesliga","Ligue 1","UCL","UEL"];
 const BUBBLES = [
@@ -13,18 +14,30 @@ const BUBBLES = [
 ];
 
 export default function Hero() {
+  const hitRate = useHitRate();
   const [count, setCount] = useState(0);
   const [bouncing, setBouncing] = useState(false);
+
   useEffect(() => {
-    const target = 68, step = target / (1500 / 16);
+    if (hitRate === null) return;
+    const target = hitRate;
+    const duration = 1500;
+    const step = target / (duration / 16);
     let c = 0;
-    const t = setInterval(() => { c += step; if (c >= target) { setCount(target); clearInterval(t); } else setCount(Math.floor(c)); }, 16);
+    const t = setInterval(() => {
+      c += step;
+      if (c >= target) { setCount(target); clearInterval(t); }
+      else setCount(parseFloat(c.toFixed(1)));
+    }, 16);
     return () => clearInterval(t);
-  }, []);
+  }, [hitRate]);
+
   useEffect(() => {
     const i = setInterval(() => { setBouncing(true); setTimeout(() => setBouncing(false), 600); }, 3000);
     return () => clearInterval(i);
   }, []);
+
+  const display = hitRate === null ? "—%" : `${count.toFixed(1)}%`;
 
   return (
     <section className="bg-bg-900 lab-grid px-6 py-24 md:py-32 relative overflow-hidden">
@@ -47,7 +60,7 @@ export default function Hero() {
         </p>
 
         <div className="flex items-baseline gap-3 justify-center mb-10">
-          <span className="font-display font-bold text-[72px] md:text-[96px] leading-[0.9] tracking-[-4px] gold-shimmer">{count}%</span>
+          <span className="font-display font-bold text-[72px] md:text-[96px] leading-[0.9] tracking-[-4px] gold-shimmer">{display}</span>
           <span className="font-body font-normal text-sm text-[#64748B] tracking-[0.5px]">고확신 경기 평균 적중률</span>
         </div>
 

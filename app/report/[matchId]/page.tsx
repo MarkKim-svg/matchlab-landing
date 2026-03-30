@@ -5,24 +5,24 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { KAKAO_CHANNEL_URL } from "@/lib/constants";
-import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate } from "@/components/match-ui";
+import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
 
 // --------------- probability bar ---------------
 
 function ProbBar({ label, value, highlight }: { label: string; value: string; highlight: boolean }) {
-  const pct = parseFloat(value) || 0;
+  const { num, display } = fmtPct(value);
   return (
     <div className="flex items-center gap-3">
       <span className="w-16 text-right text-sm text-slate-400 shrink-0">{label}</span>
       <div className="flex-1 h-6 rounded-full bg-slate-700 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${highlight ? "bg-emerald-500" : "bg-slate-500"}`}
-          style={{ width: `${Math.min(pct, 100)}%` }}
+          style={{ width: `${Math.min(num, 100)}%` }}
         />
       </div>
       <span className={`w-14 text-sm font-medium shrink-0 ${highlight ? "text-emerald-400" : "text-slate-300"}`}>
-        {value ? `${value}%` : "-"}
+        {display}
       </span>
     </div>
   );
@@ -31,10 +31,10 @@ function ProbBar({ label, value, highlight }: { label: string; value: string; hi
 // --------------- model row ---------------
 
 function ModelRow({ name, home, away }: { name: string; home: string; away: string }) {
-  const h = parseFloat(home) || 0;
-  const a = parseFloat(away) || 0;
-  const homeHighlight = h >= a;
-  const awayHighlight = a > h;
+  const hPct = fmtPct(home);
+  const aPct = fmtPct(away);
+  const homeHighlight = hPct.num >= aPct.num;
+  const awayHighlight = aPct.num > hPct.num;
 
   return (
     <div className="py-3 border-b border-[#334155] last:border-0">
@@ -45,11 +45,11 @@ function ModelRow({ name, home, away }: { name: string; home: string; away: stri
           <div className="flex-1 h-4 rounded-full bg-slate-700 overflow-hidden">
             <div
               className={`h-full rounded-full ${homeHighlight ? "bg-emerald-500" : "bg-slate-500"}`}
-              style={{ width: `${Math.min(h, 100)}%` }}
+              style={{ width: `${Math.min(hPct.num, 100)}%` }}
             />
           </div>
           <span className={`text-xs font-medium w-12 text-right ${homeHighlight ? "text-emerald-400" : "text-slate-400"}`}>
-            {home ? `${home}%` : "-"}
+            {hPct.display}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -57,11 +57,11 @@ function ModelRow({ name, home, away }: { name: string; home: string; away: stri
           <div className="flex-1 h-4 rounded-full bg-slate-700 overflow-hidden">
             <div
               className={`h-full rounded-full ${awayHighlight ? "bg-emerald-500" : "bg-slate-500"}`}
-              style={{ width: `${Math.min(a, 100)}%` }}
+              style={{ width: `${Math.min(aPct.num, 100)}%` }}
             />
           </div>
           <span className={`text-xs font-medium w-12 text-right ${awayHighlight ? "text-emerald-400" : "text-slate-400"}`}>
-            {away ? `${away}%` : "-"}
+            {aPct.display}
           </span>
         </div>
       </div>

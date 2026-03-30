@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { KAKAO_CHANNEL_URL } from "@/lib/constants";
-import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate } from "@/components/match-ui";
+import { KAKAO_CHANNEL_URL, LEAGUE_CONFIG } from "@/lib/constants";
+import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
 
 // --------------- helpers ---------------
@@ -21,14 +21,14 @@ function shiftDate(dateStr: string, days: number): string {
 }
 
 function getBestEnsemble(p: MatchPrediction): { label: string; pct: string } {
-  const home = parseFloat(p.ensemble.home) || 0;
-  const away = parseFloat(p.ensemble.away) || 0;
-  const draw = parseFloat(p.ensemble.draw) || 0;
-  const max = Math.max(home, away, draw);
+  const home = fmtPct(p.ensemble.home);
+  const away = fmtPct(p.ensemble.away);
+  const draw = fmtPct(p.ensemble.draw);
+  const max = Math.max(home.num, away.num, draw.num);
   if (max === 0) return { label: p.prediction, pct: "" };
-  if (max === home) return { label: "홈승", pct: `${p.ensemble.home}%` };
-  if (max === away) return { label: "원정승", pct: `${p.ensemble.away}%` };
-  return { label: "무승부", pct: `${p.ensemble.draw}%` };
+  if (max === home.num) return { label: "홈승", pct: home.display };
+  if (max === away.num) return { label: "원정승", pct: away.display };
+  return { label: "무승부", pct: draw.display };
 }
 
 // --------------- confidence sections ---------------
@@ -74,6 +74,8 @@ export default function MatchesDatePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string>("free");
+  const [selectedLeague, setSelectedLeague] = useState<string>("전체");
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   // auth check
   useEffect(() => {
@@ -119,20 +121,42 @@ export default function MatchesDatePage() {
 
   const isPro = userPlan === "pro";
 
+  // reset league filter when date changes
+  useEffect(() => {
+    setSelectedLeague("전체");
+  }, [dateStr]);
+
+  // unique leagues for filter
+  const leagues = useMemo(() => {
+    const set = new Set(matches.map((m) => m.league).filter(Boolean));
+    return Array.from(set);
+  }, [matches]);
+
+  // filtered matches
+  const filteredMatches = useMemo(() => {
+    if (selectedLeague === "전체") return matches;
+    return matches.filter((m) => m.league === selectedLeague);
+  }, [matches, selectedLeague]);
+
   // nav
   const goDate = (d: string) => router.push(`/matches/${d}`);
 
   // group by confidence
   const grouped = CONF_SECTIONS.map((sec) => ({
     ...sec,
-    matches: matches.filter((m) => m.confidence === sec.stars),
+    matches: filteredMatches.filter((m) => m.confidence === sec.stars),
   })).filter((g) => g.matches.length > 0);
 
   return (
     <main className="min-h-screen bg-[#0F172A] text-white">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        {/* ---- home link ---- */}
+        <Link href="/" className="mb-4 inline-block text-sm text-slate-400 hover:text-emerald-400 transition">
+          ← MATCHLAB 홈
+        </Link>
+
         {/* ---- header ---- */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center justify-between">
             <button
               onClick={() => goDate(shiftDate(dateStr, -1))}
@@ -142,11 +166,26 @@ export default function MatchesDatePage() {
             </button>
 
             <div className="text-center">
-              <h1 className="text-lg font-bold sm:text-xl">{formatKoreanDate(dateStr)}</h1>
+              <h1
+                className="text-lg font-bold sm:text-xl cursor-pointer inline-flex items-center gap-1.5"
+                onClick={() => dateInputRef.current?.showPicker()}
+              >
+                {formatKoreanDate(dateStr)}
+                <span className="text-base">📅</span>
+              </h1>
+              <input
+                ref={dateInputRef}
+                type="date"
+                className="sr-only"
+                value={dateStr}
+                onChange={(e) => {
+                  if (e.target.value) goDate(e.target.value);
+                }}
+              />
               {!isToday && (
                 <button
                   onClick={() => goDate(getKSTToday())}
-                  className="mt-1 text-xs text-emerald-400 hover:underline"
+                  className="mt-1 block mx-auto text-xs text-emerald-400 hover:underline"
                 >
                   오늘로 이동
                 </button>
@@ -173,6 +212,50 @@ export default function MatchesDatePage() {
             </p>
           )}
         </div>
+
+        {/* ---- league filter ---- */}
+        {!loading && !error && leagues.length > 1 && (
+          <div className="mb-6 -mx-4 px-4 overflow-x-auto">
+            <div className="flex gap-2 flex-nowrap pb-1">
+              <button
+                onClick={() => setSelectedLeague("전체")}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                  selectedLeague === "전체"
+                    ? "bg-emerald-600 text-white"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                }`}
+              >
+                전체
+              </button>
+              {leagues.map((league) => {
+                const config = LEAGUE_CONFIG[league];
+                return (
+                  <button
+                    key={league}
+                    onClick={() => setSelectedLeague(league)}
+                    className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                      selectedLeague === league
+                        ? "bg-emerald-600 text-white"
+                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    }`}
+                  >
+                    {config && (
+                      <img
+                        src={config.logo}
+                        alt={league}
+                        width={16}
+                        height={16}
+                        className="rounded-full bg-white p-0.5 object-contain"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                    )}
+                    {league}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ---- loading ---- */}
         {loading && (

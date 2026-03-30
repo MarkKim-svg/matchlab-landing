@@ -47,14 +47,14 @@ export function LeagueBadge({ league }: { league: string }) {
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium text-white/90"
-      style={{ backgroundColor: config.color + "33" }}
+      style={{ backgroundColor: config.color + "55" }}
     >
       <img
         src={config.logo}
         alt={league}
         width={16}
         height={16}
-        className="object-contain"
+        className="rounded-full bg-white p-0.5 object-contain"
         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
       />
       {league}
@@ -88,4 +88,10 @@ export function formatKoreanDate(dateStr: string): string {
 
 export function getKSTToday(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+}
+
+/** Normalize a value like "40.2%" or "40.2" to { num: 40.2, display: "40.2%" } */
+export function fmtPct(value: string): { num: number; display: string } {
+  const num = parseFloat(value) || 0;
+  return { num, display: value ? `${num}%` : "-" };
 }

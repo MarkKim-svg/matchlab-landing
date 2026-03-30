@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDashboardData } from "@/lib/notion";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export async function GET(request: NextRequest) {

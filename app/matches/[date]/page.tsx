@@ -4,13 +4,11 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { KAKAO_CHANNEL_URL } from "@/lib/constants";
+import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
 
 // --------------- helpers ---------------
-
-function getKSTToday(): string {
-  return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
-}
 
 function resolveDate(param: string): string {
   return param === "today" ? getKSTToday() : param;
@@ -20,18 +18,6 @@ function shiftDate(dateStr: string, days: number): string {
   const d = new Date(dateStr + "T00:00:00");
   d.setDate(d.getDate() + days);
   return d.toISOString().split("T")[0];
-}
-
-function formatKoreanDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  const days = ["일", "월", "화", "수", "목", "금", "토"];
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
-}
-
-function splitTeams(match: string): [string, string] {
-  const sep = match.includes(" vs ") ? " vs " : "vs";
-  const parts = match.split(sep);
-  return [parts[0]?.trim() ?? match, parts[1]?.trim() ?? ""];
 }
 
 function getBestEnsemble(p: MatchPrediction): { label: string; pct: string } {
@@ -45,25 +31,6 @@ function getBestEnsemble(p: MatchPrediction): { label: string; pct: string } {
   return { label: "무승부", pct: `${p.ensemble.draw}%` };
 }
 
-// --------------- league config ---------------
-
-const LEAGUE_CONFIG: Record<string, { logo: string; color: string }> = {
-  프리미어리그: { logo: "https://media.api-sports.io/football/leagues/39.png", color: "#3D195B" },
-  라리가: { logo: "https://media.api-sports.io/football/leagues/140.png", color: "#FF4B44" },
-  "세리에A": { logo: "https://media.api-sports.io/football/leagues/135.png", color: "#024494" },
-  분데스리가: { logo: "https://media.api-sports.io/football/leagues/78.png", color: "#D20515" },
-  리그1: { logo: "https://media.api-sports.io/football/leagues/61.png", color: "#091C3E" },
-  챔피언스리그: { logo: "https://media.api-sports.io/football/leagues/2.png", color: "#0D1541" },
-  유로파리그: { logo: "https://media.api-sports.io/football/leagues/3.png", color: "#F37B20" },
-  컨퍼런스리그: { logo: "https://media.api-sports.io/football/leagues/848.png", color: "#1DB954" },
-  에레디비시: { logo: "https://media.api-sports.io/football/leagues/88.png", color: "#E4002B" },
-  FA컵: { logo: "https://media.api-sports.io/football/leagues/45.png", color: "#C8102E" },
-  코파이탈리아: { logo: "https://media.api-sports.io/football/leagues/137.png", color: "#024494" },
-  DFB포칼: { logo: "https://media.api-sports.io/football/leagues/81.png", color: "#D20515" },
-  코파델레이: { logo: "https://media.api-sports.io/football/leagues/143.png", color: "#FF4B44" },
-  쿠프드프랑스: { logo: "https://media.api-sports.io/football/leagues/66.png", color: "#091C3E" },
-};
-
 // --------------- confidence sections ---------------
 
 const CONF_SECTIONS: { stars: number; label: string; sub: string }[] = [
@@ -73,75 +40,6 @@ const CONF_SECTIONS: { stars: number; label: string; sub: string }[] = [
   { stars: 2, label: "⭐⭐", sub: "낮음" },
   { stars: 1, label: "⭐", sub: "최저" },
 ];
-
-// --------------- team logo ---------------
-
-function TeamLogo({ teamId, teamName, size = 32 }: { teamId: string; teamName: string; size?: number }) {
-  const [error, setError] = useState(false);
-
-  if (!teamId || error) {
-    return (
-      <div
-        className="flex items-center justify-center rounded-full bg-slate-700 text-xs font-bold text-slate-300 shrink-0"
-        style={{ width: size, height: size }}
-      >
-        {teamName.charAt(0)}
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={`https://media.api-sports.io/football/teams/${teamId}.png`}
-      alt={teamName}
-      width={size}
-      height={size}
-      className="shrink-0 object-contain"
-      onError={() => setError(true)}
-    />
-  );
-}
-
-// --------------- league badge ---------------
-
-function LeagueBadge({ league }: { league: string }) {
-  const config = LEAGUE_CONFIG[league];
-
-  if (!config) {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-600/20 px-2.5 py-0.5 text-xs font-medium text-slate-400">
-        {league || "기타"}
-      </span>
-    );
-  }
-
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium text-white/90"
-      style={{ backgroundColor: config.color + "33" }}
-    >
-      <img
-        src={config.logo}
-        alt={league}
-        width={16}
-        height={16}
-        className="object-contain"
-        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
-      {league}
-    </span>
-  );
-}
-
-// --------------- result badge ---------------
-
-function ResultBadge({ isCorrect }: { isCorrect: string }) {
-  if (isCorrect === "적중")
-    return <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">✅ 적중</span>;
-  if (isCorrect === "미적중")
-    return <span className="inline-flex items-center gap-1 text-xs font-medium text-red-400">❌ 미적중</span>;
-  return null;
-}
 
 // --------------- skeleton ---------------
 
@@ -376,18 +274,15 @@ export default function MatchesDatePage() {
                       return (
                         <a
                           key={m.id}
-                          href="https://pf.kakao.com/_sThZX"
+                          href={KAKAO_CHANNEL_URL}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block"
                         >
                           <div className="relative overflow-hidden rounded-xl border border-[#334155] bg-[#1E293B] p-5">
-                            {/* blurred content */}
                             <div className="pointer-events-none select-none" style={{ filter: "blur(12px)" }}>
                               {cardInner}
                             </div>
-
-                            {/* overlay */}
                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
                               <span className="text-3xl">🔒</span>
                               <p className="mt-2 text-sm font-semibold text-white">Pro 전용 분석</p>

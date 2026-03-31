@@ -1,6 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
 import FadeSection from "@/lib/FadeSection";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, Legend, ReferenceLine, Cell,
+} from "recharts";
+
+interface WeeklyTrend {
+  week_label: string;
+  week_start: string;
+  overall: { hit_rate: number; correct: number; total: number };
+  high_confidence: { hit_rate: number; correct: number; total: number };
+}
 
 interface DashboardData {
   overall: { hitRate: number; correct: number; total: number };
@@ -18,14 +29,26 @@ interface DashboardData {
     isCorrect: boolean | null;
     isProOnly: boolean;
   }>;
+  weekly_trend: WeeklyTrend[];
 }
 
 const BIG5 = ["프리미어리그", "라리가", "세리에A", "분데스리가", "리그1"];
 
-function getBarColor(hitRate: number): string {
-  if (hitRate >= 55) return "bg-emerald-500";
-  if (hitRate >= 45) return "bg-yellow-500";
-  return "bg-red-500";
+const LEAGUE_SHORT: Record<string, string> = {
+  "프리미어리그": "EPL",
+  "라리가": "LaLiga",
+  "세리에A": "Serie A",
+  "분데스리가": "BL",
+  "리그1": "Ligue 1",
+  "챔피언스리그": "UCL",
+  "유로파리그": "UEL",
+  "컨퍼런스리그": "UECL",
+};
+
+function getBarFill(hitRate: number): string {
+  if (hitRate >= 55) return "#10B981";
+  if (hitRate >= 45) return "#FBBF24";
+  return "#EF4444";
 }
 
 function formatDate(dateStr: string): string {
@@ -33,23 +56,38 @@ function formatDate(dateStr: string): string {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-function BarRow({ label, hitRate, correct, total, labelWidth = "w-24" }: {
-  label: string; hitRate: number; correct: number; total: number; labelWidth?: string;
-}) {
-  const isSampleLow = total < 3;
+const TOOLTIP_STYLE = {
+  contentStyle: { backgroundColor: "#1F2937", border: "1px solid #374151", borderRadius: 8 },
+  labelStyle: { color: "#F9FAFB" },
+  itemStyle: { color: "#F9FAFB" },
+};
+
+/* ── Custom Tooltip for bar charts ── */
+function BarTooltip({ active, payload }: any) {
+  if (!active || !payload?.[0]) return null;
+  const d = payload[0].payload;
   return (
-    <div className={`flex items-center gap-3 ${isSampleLow ? "opacity-50" : ""}`}>
-      <div className={`${labelWidth} flex-shrink-0 text-sm text-[#94A3B8] text-right font-body`}>{label}</div>
-      <div className="flex-1 bg-[#334155]/50 rounded-full h-8 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-700 ease-out ${getBarColor(hitRate)}`}
-          style={{ width: `${Math.max(hitRate, 2)}%` }}
-        />
-      </div>
-      <div className="w-36 text-right text-sm text-[#94A3B8] font-body whitespace-nowrap">
-        {hitRate}% ({correct}/{total})
-        {isSampleLow && <span className="text-xs text-[#64748B] ml-1">(표본 부족)</span>}
-      </div>
+    <div className="bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-sm">
+      <p className="text-[#F9FAFB] font-medium">{d.label ?? d.shortName ?? d.league}</p>
+      <p className="text-[#F9FAFB]">
+        {d.hitRate}% ({d.correct}/{d.total})
+        {d.total < 3 && <span className="text-[#9CA3AF] ml-1">(표본 부족)</span>}
+      </p>
+    </div>
+  );
+}
+
+/* ── Custom Tooltip for trend line ── */
+function TrendTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-sm">
+      <p className="text-[#F9FAFB] font-medium mb-1">{label}</p>
+      {payload.map((p: any) => (
+        <p key={p.dataKey} style={{ color: p.color }}>
+          {p.name}: {p.value}%
+        </p>
+      ))}
     </div>
   );
 }
@@ -66,19 +104,14 @@ function Skeleton() {
           </div>
         ))}
       </div>
-      <div className="space-y-3 mt-8 animate-pulse">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="flex items-center gap-3">
-            <div className="h-4 bg-[#334155] rounded w-20" />
-            <div className="flex-1 h-8 bg-[#334155] rounded-full" />
-            <div className="h-4 bg-[#334155] rounded w-24" />
-          </div>
-        ))}
+      <div className="mt-8 animate-pulse">
+        <div className="h-[300px] bg-[#334155]/30 rounded-xl" />
       </div>
-      <div className="space-y-2 mt-8 animate-pulse">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="h-12 bg-[#334155]/50 rounded" />
-        ))}
+      <div className="mt-4 animate-pulse">
+        <div className="h-[300px] bg-[#334155]/30 rounded-xl" />
+      </div>
+      <div className="mt-4 animate-pulse">
+        <div className="h-[300px] bg-[#334155]/30 rounded-xl" />
       </div>
     </>
   );
@@ -104,6 +137,24 @@ export default function DashboardSection() {
 
   const leagues = data?.byLeague.filter(l => BIG5.includes(l.league)) ?? [];
   const cups = data?.byLeague.filter(l => !BIG5.includes(l.league)) ?? [];
+
+  // Prepare chart data
+  const confData = data?.byConfidence.map(c => ({
+    ...c,
+    label: c.label,
+  })) ?? [];
+
+  const leagueData = (arr: typeof leagues) =>
+    arr.sort((a, b) => b.total - a.total).map(l => ({
+      ...l,
+      shortName: LEAGUE_SHORT[l.league] ?? l.league,
+    }));
+
+  const trendData = data?.weekly_trend.map(w => ({
+    week: w.week_label,
+    overall: w.overall.hit_rate,
+    highConf: w.high_confidence.total > 0 ? w.high_confidence.hit_rate : null,
+  })) ?? [];
 
   return (
     <FadeSection id="dashboard">
@@ -144,53 +195,161 @@ export default function DashboardSection() {
             <>
               {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 text-center neon-card card-hover">
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-6 text-center neon-card card-hover">
                   <div className="text-sm text-[#94A3B8] mb-2 font-body">전체 적중률</div>
                   <div className="text-3xl font-bold text-[#F1F5F9] font-display">{data.overall.hitRate}%</div>
                   <div className="text-sm text-[#64748B] mt-1 font-body">{data.overall.correct}/{data.overall.total}</div>
                 </div>
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 text-center neon-card card-hover">
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-6 text-center neon-card card-hover">
                   <div className="text-sm text-[#94A3B8] mb-2 font-body">⭐⭐⭐⭐+ 적중률</div>
                   <div className="text-3xl font-bold font-display gold-shimmer">{data.highConfidence.hitRate}%</div>
                   <div className="text-sm text-[#64748B] mt-1 font-body">{data.highConfidence.correct}/{data.highConfidence.total}</div>
                 </div>
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 text-center neon-card card-hover">
-                  <div className="text-sm text-[#94A3B8] mb-2 font-body">경기 분석</div>
-                  <div className="text-3xl font-bold text-emerald-400 font-display">{data.overall.total}경기</div>
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-6 text-center neon-card card-hover">
+                  <div className="text-sm text-[#94A3B8] mb-2 font-body">누적 분석</div>
+                  <div className="text-3xl font-bold text-emerald-400 font-display">{data.overall.total}<span className="text-lg ml-1">경기</span></div>
                   <div className="text-sm text-[#64748B] mt-1 font-body">판정 완료</div>
                 </div>
               </div>
 
-              {/* Confidence Bar Chart */}
+              {/* 3-1. Confidence Bar Chart */}
               <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 mb-4 neon-card">
                 <div className="font-body font-semibold text-lg mb-4 text-[#F1F5F9]">확신도별 적중률</div>
-                <div className="flex flex-col gap-3">
-                  {data.byConfidence.map(c => (
-                    <BarRow key={c.stars} label={c.label} hitRate={c.hitRate} correct={c.correct} total={c.total} />
-                  ))}
-                </div>
+                <ResponsiveContainer width="100%" height={300} className="md:block hidden">
+                  <BarChart data={confData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                    <XAxis dataKey="label" tick={{ fill: "#9CA3AF", fontSize: 13 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                    <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                    <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                    <Bar dataKey="hitRate" radius={[6, 6, 0, 0]} animationDuration={800}>
+                      {confData.map((entry, idx) => (
+                        <Cell key={idx} fill={getBarFill(entry.hitRate)} fillOpacity={entry.total < 3 ? 0.5 : 1} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <ResponsiveContainer width="100%" height={250} className="md:hidden block">
+                  <BarChart data={confData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                    <XAxis dataKey="label" tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                    <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                    <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                    <Bar dataKey="hitRate" radius={[6, 6, 0, 0]} animationDuration={800}>
+                      {confData.map((entry, idx) => (
+                        <Cell key={idx} fill={getBarFill(entry.hitRate)} fillOpacity={entry.total < 3 ? 0.5 : 1} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
 
-              {/* League Bar Charts */}
+              {/* 3-2. League Bar Charts */}
               <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 mb-4 neon-card">
                 <div className="font-body font-semibold text-lg mb-4 text-[#F1F5F9]">5대 리그</div>
-                <div className="flex flex-col gap-3">
-                  {leagues.sort((a, b) => b.total - a.total).map(l => (
-                    <BarRow key={l.league} label={l.league} hitRate={l.hitRate} correct={l.correct} total={l.total} labelWidth="w-28" />
-                  ))}
-                </div>
+                <ResponsiveContainer width="100%" height={300} className="md:block hidden">
+                  <BarChart data={leagueData(leagues)} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                    <XAxis dataKey="shortName" tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                    <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                    <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                    <Bar dataKey="hitRate" radius={[6, 6, 0, 0]} animationDuration={800}>
+                      {leagueData(leagues).map((entry, idx) => (
+                        <Cell key={idx} fill={getBarFill(entry.hitRate)} fillOpacity={entry.total < 3 ? 0.5 : 1} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <ResponsiveContainer width="100%" height={250} className="md:hidden block">
+                  <BarChart data={leagueData(leagues)} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                    <XAxis dataKey="shortName" tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                    <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                    <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                    <Bar dataKey="hitRate" radius={[6, 6, 0, 0]} animationDuration={800}>
+                      {leagueData(leagues).map((entry, idx) => (
+                        <Cell key={idx} fill={getBarFill(entry.hitRate)} fillOpacity={entry.total < 3 ? 0.5 : 1} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
 
                 {cups.length > 0 && (
                   <>
                     <div className="font-body font-semibold text-lg mb-4 mt-8 text-[#F1F5F9]">컵 &amp; 기타</div>
-                    <div className="flex flex-col gap-3">
-                      {cups.sort((a, b) => b.total - a.total).map(l => (
-                        <BarRow key={l.league} label={l.league} hitRate={l.hitRate} correct={l.correct} total={l.total} labelWidth="w-28" />
-                      ))}
-                    </div>
+                    <ResponsiveContainer width="100%" height={300} className="md:block hidden">
+                      <BarChart data={leagueData(cups)} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                        <XAxis dataKey="shortName" tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                        <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                        <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                        <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                        <Bar dataKey="hitRate" radius={[6, 6, 0, 0]} animationDuration={800}>
+                          {leagueData(cups).map((entry, idx) => (
+                            <Cell key={idx} fill={getBarFill(entry.hitRate)} fillOpacity={entry.total < 3 ? 0.5 : 1} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <ResponsiveContainer width="100%" height={250} className="md:hidden block">
+                      <BarChart data={leagueData(cups)} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                        <XAxis dataKey="shortName" tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                        <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                        <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                        <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                        <Bar dataKey="hitRate" radius={[6, 6, 0, 0]} animationDuration={800}>
+                          {leagueData(cups).map((entry, idx) => (
+                            <Cell key={idx} fill={getBarFill(entry.hitRate)} fillOpacity={entry.total < 3 ? 0.5 : 1} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </>
                 )}
               </div>
+
+              {/* 3-3. Trend Line Chart */}
+              {trendData.length > 0 && (
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 mb-4 neon-card">
+                  <div className="font-body font-semibold text-lg mb-4 text-[#F1F5F9]">주간 적중률 트렌드</div>
+                  <ResponsiveContainer width="100%" height={300} className="md:block hidden">
+                    <LineChart data={trendData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                      <XAxis dataKey="week" tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                      <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 12 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                      <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                      <Tooltip content={<TrendTooltip />} />
+                      <Legend
+                        verticalAlign="bottom"
+                        iconType="circle"
+                        formatter={(value: string) => <span style={{ color: "#9CA3AF", fontSize: 12 }}>{value}</span>}
+                      />
+                      <Line type="monotone" dataKey="overall" name="전체" stroke="#10B981" strokeWidth={2} dot={{ r: 4, fill: "#10B981" }} activeDot={{ r: 6 }} connectNulls />
+                      <Line type="monotone" dataKey="highConf" name="⭐4+" stroke="#FBBF24" strokeWidth={2} dot={{ r: 4, fill: "#FBBF24" }} activeDot={{ r: 6 }} connectNulls />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height={250} className="md:hidden block">
+                    <LineChart data={trendData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" />
+                      <XAxis dataKey="week" tick={{ fill: "#9CA3AF", fontSize: 10 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} />
+                      <YAxis domain={[0, 100]} tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={{ stroke: "#1F2937" }} tickLine={false} tickFormatter={v => `${v}%`} />
+                      <ReferenceLine y={50} stroke="#9CA3AF" strokeDasharray="6 4" strokeOpacity={0.5} />
+                      <Tooltip content={<TrendTooltip />} />
+                      <Legend
+                        verticalAlign="bottom"
+                        iconType="circle"
+                        formatter={(value: string) => <span style={{ color: "#9CA3AF", fontSize: 11 }}>{value}</span>}
+                      />
+                      <Line type="monotone" dataKey="overall" name="전체" stroke="#10B981" strokeWidth={2} dot={{ r: 3, fill: "#10B981" }} activeDot={{ r: 5 }} connectNulls />
+                      <Line type="monotone" dataKey="highConf" name="⭐4+" stroke="#FBBF24" strokeWidth={2} dot={{ r: 3, fill: "#FBBF24" }} activeDot={{ r: 5 }} connectNulls />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
 
               {/* Recent Predictions Table - Desktop */}
               <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-6 neon-card">

@@ -39,12 +39,20 @@ export interface MatchPrediction {
   awayTeamId: string;
 }
 
+export interface WeeklyTrend {
+  week_label: string;
+  week_start: string;
+  overall: { hit_rate: number; correct: number; total: number };
+  high_confidence: { hit_rate: number; correct: number; total: number };
+}
+
 export interface DashboardData {
   overall: { hitRate: number; correct: number; total: number };
   highConfidence: { hitRate: number; correct: number; total: number };
   byLeague: Array<{ league: string; hitRate: number; correct: number; total: number }>;
   byConfidence: Array<{ stars: number; label: string; hitRate: number; correct: number; total: number }>;
   recentPredictions: Prediction[];
+  weekly_trend: WeeklyTrend[];
 }
 
 async function fetchAllPredictions() {
@@ -190,6 +198,70 @@ export async function getPredictionById(pageId: string): Promise<MatchPrediction
   return parseMatchPrediction(page);
 }
 
+function getMonday(d: Date): Date {
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(d);
+  mon.setDate(diff);
+  mon.setHours(0, 0, 0, 0);
+  return mon;
+}
+
+function calcWeeklyTrend(predictions: Prediction[]): WeeklyTrend[] {
+  const now = new Date();
+  const currentMonday = getMonday(now);
+
+  // Build week buckets for last 8 weeks
+  const weeks: { start: Date; end: Date }[] = [];
+  for (let i = 7; i >= 0; i--) {
+    const start = new Date(currentMonday);
+    start.setDate(start.getDate() - i * 7);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    weeks.push({ start, end });
+  }
+
+  const judgedPreds = predictions.filter(p => p.isCorrect !== null && p.date);
+
+  const result: WeeklyTrend[] = [];
+  for (const week of weeks) {
+    const weekStart = week.start.toISOString().split("T")[0];
+    const weekEnd = week.end.toISOString().split("T")[0];
+
+    const weekPreds = judgedPreds.filter(p => p.date >= weekStart && p.date <= weekEnd);
+    if (weekPreds.length === 0) continue;
+
+    const highConfPreds = weekPreds.filter(p => p.confidence >= 4);
+
+    const overallCorrect = weekPreds.filter(p => p.isCorrect === true).length;
+    const highCorrect = highConfPreds.filter(p => p.isCorrect === true).length;
+
+    const sm = week.start.getMonth() + 1;
+    const sd = week.start.getDate();
+    const em = week.end.getMonth() + 1;
+    const ed = week.end.getDate();
+
+    result.push({
+      week_label: `${sm}/${sd}~${em}/${ed}`,
+      week_start: weekStart,
+      overall: {
+        hit_rate: Math.round((overallCorrect / weekPreds.length) * 1000) / 10,
+        correct: overallCorrect,
+        total: weekPreds.length,
+      },
+      high_confidence: {
+        hit_rate: highConfPreds.length > 0
+          ? Math.round((highCorrect / highConfPreds.length) * 1000) / 10
+          : 0,
+        correct: highCorrect,
+        total: highConfPreds.length,
+      },
+    });
+  }
+
+  return result;
+}
+
 export async function getDashboardData(period: string = "all"): Promise<DashboardData> {
   const pages = await fetchAllPredictions();
   let predictions = pages.map(parsePrediction).filter((p): p is Prediction => p !== null);
@@ -234,5 +306,9 @@ export async function getDashboardData(period: string = "all"): Promise<Dashboar
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 20);
 
-  return { overall, highConfidence, byLeague, byConfidence, recentPredictions };
+  // Weekly trend — always last 8 weeks regardless of period filter
+  const allPreds = pages.map(parsePrediction).filter((p): p is Prediction => p !== null);
+  const weekly_trend = calcWeeklyTrend(allPreds);
+
+  return { overall, highConfidence, byLeague, byConfidence, recentPredictions, weekly_trend };
 }

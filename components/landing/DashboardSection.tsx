@@ -112,7 +112,7 @@ function RenderBarChart({ data, xKey }: { data: any[]; xKey: string }) {
     <ResponsiveContainer width="100%" height={300} className="hidden md:block">
       <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
         <CartesianGrid {...GRID} />
-        <XAxis dataKey={xKey} tick={{ ...AXIS_TICK, fontSize: 12 }} axisLine={AXIS_LINE} tickLine={false} />
+        <XAxis dataKey={xKey} interval={0} tick={{ ...AXIS_TICK, fontSize: 12 }} axisLine={AXIS_LINE} tickLine={false} />
         <YAxis domain={[0, 100]} tick={{ ...AXIS_TICK, fontSize: 12 }} axisLine={AXIS_LINE} tickLine={false} tickFormatter={v => `${v}%`} />
         <ReferenceLine y={50} {...REF_LINE} />
         <Tooltip content={<BarTooltip />} cursor={CURSOR_STYLE} />
@@ -129,9 +129,9 @@ function RenderBarChart({ data, xKey }: { data: any[]; xKey: string }) {
 function RenderBarChartMobile({ data, xKey }: { data: any[]; xKey: string }) {
   return (
     <ResponsiveContainer width="100%" height={250} className="block md:hidden">
-      <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
+      <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 30 }}>
         <CartesianGrid {...GRID} />
-        <XAxis dataKey={xKey} tick={{ ...AXIS_TICK, fontSize: 11 }} axisLine={AXIS_LINE} tickLine={false} angle={-30} textAnchor="end" />
+        <XAxis dataKey={xKey} interval={0} tick={{ ...AXIS_TICK, fontSize: 10 }} axisLine={AXIS_LINE} tickLine={false} angle={-45} textAnchor="end" />
         <YAxis domain={[0, 100]} tick={{ ...AXIS_TICK, fontSize: 11 }} axisLine={AXIS_LINE} tickLine={false} tickFormatter={v => `${v}%`} />
         <ReferenceLine y={50} {...REF_LINE} />
         <Tooltip content={<BarTooltip />} cursor={CURSOR_STYLE} />

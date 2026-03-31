@@ -71,3 +71,8 @@
 @keyframes bar-grow { from{width:0%} }
 .bar-animate { animation: bar-grow 1s ease-out forwards; }
 @keyframes subtle-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(3px)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+/* Hide scrollbar for filter pills */
+.scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+.scrollbar-hide::-webkit-scrollbar { display:none; }

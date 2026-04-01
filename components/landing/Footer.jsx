@@ -9,8 +9,14 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="font-display font-bold text-sm tracking-[-1px] text-[#F1F5F9]">MATCHLAB</div>
           <div className="flex gap-5">
-            <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-[13px] text-[#94A3B8] hover:text-[#F1F5F9] transition-colors font-body">블로그</a>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-[13px] text-[#94A3B8] hover:text-[#F1F5F9] transition-colors font-body">인스타그램</a>
+            <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[13px] text-[#94A3B8] hover:text-[#F1F5F9] transition-colors font-body">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 2.5h-4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-4m-7 1 7-7m0 0h-3m3 0v3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/><path d="M4 7.5h4M4 9.5h6M4 11.5h3" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/></svg>
+              블로그
+            </a>
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[13px] text-[#94A3B8] hover:text-[#F1F5F9] transition-colors font-body">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+              인스타그램
+            </a>
           </div>
         </div>
 

@@ -22,6 +22,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [nickname, setNickname] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -42,9 +43,11 @@ export default function Navbar() {
         // profiles 테이블에서 닉네임 조회
         const { data } = await supabase
           .from("profiles")
-          .select("nickname")
+          .select("nickname, role")
           .eq("id", user.id)
           .single();
+
+        if (data?.role === "admin") setIsAdmin(true);
 
         if (data?.nickname) {
           setNickname(data.nickname);
@@ -127,6 +130,15 @@ export default function Navbar() {
                   >
                     마이페이지
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full text-left px-4 py-2.5 text-xs text-[#64748B] hover:bg-bg-700 transition-colors"
+                    >
+                      관리자
+                    </Link>
+                  )}
                   <div className="h-px bg-bg-700" />
                   <button
                     onClick={handleSignOut}

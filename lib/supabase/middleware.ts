@@ -49,7 +49,8 @@ export async function updateSession(request: NextRequest) {
   // 보호 경로: 비로그인 시 /login으로 리다이렉트
   const isProtected =
     pathname.startsWith("/pro") ||
-    pathname.startsWith("/mypage");
+    pathname.startsWith("/mypage") ||
+    pathname.startsWith("/admin");
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     const redirectTo = pathname + request.nextUrl.search;

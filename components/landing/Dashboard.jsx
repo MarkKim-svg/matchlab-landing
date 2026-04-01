@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   return (
     <FadeSection id="dashboard">
-      <div className="neon-line" />
+      <div className="h-px bg-bg-700 w-1/2 mx-auto" />
       <section className="bg-bg-900 py-20 px-6">
         <div className="text-center mb-4">
           <div className="font-mono-data font-medium text-[11px] tracking-[0.25em] uppercase text-emerald-500 mb-2">ACCURACY</div>
@@ -63,18 +63,18 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {STATS.map((s, i) => (
-              <div key={s.label} className="bg-bg-800 border border-bg-700 rounded-2xl p-5 text-center card-hover neon-card" style={{transitionDelay:`${i*150}ms`}}>
-                <div className={`font-display font-bold text-[40px] tracking-[-2px] ${s.shimmer ? "gold-shimmer" : "text-[#F1F5F9]"}`}>{s.value}</div>
+              <div key={s.label} className="bg-bg-800 border border-bg-700 rounded-2xl p-5 text-center card-hover" style={{transitionDelay:`${i*150}ms`}}>
+                <div className={`font-display font-bold text-[40px] tracking-[-2px] ${s.shimmer ? "text-gold-400" : "text-[#F1F5F9]"}`}>{s.value}</div>
                 <div className="text-[13px] text-[#64748B] mt-1 font-body">{s.label}</div>
               </div>
             ))}
           </div>
           <div ref={barRef} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-bg-800 border border-bg-700 rounded-2xl p-7 neon-card">
+            <div className="bg-bg-800 border border-bg-700 rounded-2xl p-7">
               <div className="font-body font-bold text-base mb-5 text-[#F1F5F9]">확신도별 적중률</div>
               <div className="flex flex-col gap-2.5">{CONF_BARS.map((b, i) => <BarRow key={b.label} {...b} delay={i*150} animate={barVis} />)}</div>
             </div>
-            <div className="bg-bg-800 border border-bg-700 rounded-2xl p-7 neon-card">
+            <div className="bg-bg-800 border border-bg-700 rounded-2xl p-7">
               <div className="font-body font-bold text-base mb-5 text-[#F1F5F9]">리그별 적중률</div>
               <div className="flex flex-col gap-2.5">{LEAGUE_BARS.map((b, i) => <BarRow key={b.label} {...b} delay={i*150} animate={barVis} />)}</div>
             </div>

@@ -292,7 +292,7 @@ export default function DashboardSection() {
 
   return (
     <FadeSection id="dashboard">
-      <div className="neon-line" />
+      <div className="h-px bg-bg-700 w-1/2 mx-auto" />
       <section className="bg-[#0F172A] py-12 md:py-20 px-4 md:px-6">
         <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
 
@@ -330,17 +330,17 @@ export default function DashboardSection() {
             <>
               {/* ── Summary Cards ── */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center neon-card card-hover">
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center card-hover">
                   <div className="text-sm text-[#94A3B8] mb-2 font-body">전체 적중률</div>
                   <div className="text-3xl font-bold text-[#F1F5F9] font-display">{data.overall.hitRate}%</div>
                   <div className="text-sm text-[#64748B] mt-1 font-body">{data.overall.correct}/{data.overall.total}</div>
                 </div>
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center neon-card card-hover">
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center card-hover">
                   <div className="text-sm text-[#94A3B8] mb-2 font-body">⭐⭐⭐⭐+ 적중률</div>
-                  <div className="text-3xl font-bold font-display gold-shimmer">{data.highConfidence.hitRate}%</div>
+                  <div className="text-3xl font-bold font-display text-gold-400">{data.highConfidence.hitRate}%</div>
                   <div className="text-sm text-[#64748B] mt-1 font-body">{data.highConfidence.correct}/{data.highConfidence.total}</div>
                 </div>
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center neon-card card-hover">
+                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center card-hover">
                   <div className="text-sm text-[#94A3B8] mb-2 font-body">누적 분석</div>
                   <div className="text-3xl font-bold text-emerald-400 font-display">{data.overall.total}<span className="text-lg ml-1">경기</span></div>
                   <div className="text-sm text-[#64748B] mt-1 font-body">판정 완료</div>
@@ -348,7 +348,7 @@ export default function DashboardSection() {
               </div>
 
               {/* ── Chart Tabs ── */}
-              <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl overflow-hidden neon-card">
+              <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl overflow-hidden">
                 {/* Tab buttons */}
                 <div className="flex border-b border-[#334155]/50">
                   {(["confidence", "league", "trend"] as ChartTab[]).map(tab => (
@@ -424,7 +424,7 @@ export default function DashboardSection() {
               </div>
 
               {/* ── Predictions Section ── */}
-              <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-4 md:p-6 neon-card">
+              <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-4 md:p-6">
                 <div className="font-body font-semibold text-lg mb-4 text-[#F1F5F9]">최근 예측 결과</div>
 
                 {/* Filters */}

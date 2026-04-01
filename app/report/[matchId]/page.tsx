@@ -82,7 +82,7 @@ function ProOverlay() {
         rel="noopener noreferrer"
         className="mt-2 inline-block rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 transition"
       >
-        Pro 시작하기 — 월 9,900원
+        카톡으로 구독 문의
       </a>
     </div>
   );

@@ -1,14 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/landing/Hero";
-import PreviewSection from "@/components/landing/PreviewSection";
-import UserFlow from "@/components/landing/UserFlow";
-import RealResults from "@/components/landing/RealResults";
+import TodayPreview from "@/components/landing/TodayPreview";
 import DashboardSection from "@/components/landing/DashboardSection";
-import AIModel from "@/components/landing/AIModel";
-import HowItWorks from "@/components/landing/HowItWorks";
+import FomoBanner from "@/components/landing/FomoBanner";
 import PlansSection from "@/components/landing/PlansSection";
 import FAQ from "@/components/landing/FAQ";
-import FinalCTA from "@/components/landing/FinalCTA";
 import Footer from "@/components/landing/Footer";
 
 export default function Home() {
@@ -17,15 +13,11 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <PreviewSection />
-        <UserFlow />
-        <RealResults />
+        <TodayPreview />
         <DashboardSection />
-        <AIModel />
-        <HowItWorks />
+        <FomoBanner />
         <PlansSection />
         <FAQ />
-        <FinalCTA />
       </main>
       <Footer />
     </>

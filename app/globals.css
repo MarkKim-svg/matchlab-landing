@@ -39,31 +39,11 @@
 }
 
 .lab-grid { background-image:radial-gradient(circle,#334155 1.5px,transparent 1.5px); background-size:20px 20px; }
-@keyframes float-slow { 0%,100%{transform:translateY(0) translateX(0)} 33%{transform:translateY(-15px) translateX(10px)} 66%{transform:translateY(10px) translateX(-8px)} }
-@keyframes float-medium { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-25px) rotate(5deg)} }
-@keyframes float-fast { 0%,100%{transform:translateY(-10px)} 50%{transform:translateY(10px)} }
-@keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
-@keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
-.bubble { position:absolute; border-radius:50%; pointer-events:none; }
 
-@keyframes gold-shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-.gold-shimmer {
-  background: linear-gradient(90deg, #FBBF24 0%, #FDE68A 30%, #FBBF24 50%, #FDE68A 70%, #FBBF24 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gold-shimmer 4s ease-in-out infinite;
-}
-.emerald-glow { text-shadow: 0 0 20px rgba(52,211,153,0.5), 0 0 40px rgba(52,211,153,0.2); }
-@keyframes star-pulse { 0%,100%{box-shadow:0 0 8px rgba(251,191,36,0.4)} 50%{box-shadow:0 0 20px rgba(251,191,36,0.8),0 0 40px rgba(251,191,36,0.3)} }
-.star-glow { animation: star-pulse 2s ease-in-out infinite; }
 @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
 .pulse-dot { animation: pulse-dot 2s infinite; }
-.neon-card { box-shadow: 0 0 15px rgba(16,185,129,0.15), inset 0 1px 0 rgba(16,185,129,0.1); }
 .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
 .card-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-.neon-line { height:1px; background:linear-gradient(90deg,transparent,#10B981,transparent); width:50%; margin:0 auto; }
-.earlybird-glow { box-shadow: 0 0 12px rgba(251,191,36,0.2); }
 @layer utilities {
   .reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s ease, transform 0.7s ease; }
   .reveal.visible { opacity:1; transform:translateY(0); }

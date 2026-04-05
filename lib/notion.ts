@@ -14,6 +14,8 @@ export interface Prediction {
   result: string;
   isCorrect: boolean | null;
   isProOnly: boolean;
+  homeTeamId: string;
+  awayTeamId: string;
 }
 
 export interface MatchPrediction {
@@ -97,6 +99,9 @@ function parsePrediction(page: any): Prediction | null {
 
   if (!date || !match) return null;
 
+  const homeTeamId = props["홈팀ID"]?.rich_text?.map((t: any) => t.plain_text).join("") ?? "";
+  const awayTeamId = props["원정팀ID"]?.rich_text?.map((t: any) => t.plain_text).join("") ?? "";
+
   return {
     date,
     match,
@@ -107,6 +112,8 @@ function parsePrediction(page: any): Prediction | null {
     result,
     isCorrect,
     isProOnly: confidence >= 4,
+    homeTeamId,
+    awayTeamId,
   };
 }
 

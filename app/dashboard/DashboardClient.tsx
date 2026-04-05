@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Donut from "@/components/ui/Donut";
+import { TeamLogo, splitTeams } from "@/components/match-ui";
 
 type Period = "7d" | "30d" | "all";
 type Tab = "confidence" | "league" | "trend";
@@ -22,6 +23,8 @@ interface RecentPrediction {
   confidenceLabel: string;
   result: string;
   isCorrect: boolean | null;
+  homeTeamId?: string;
+  awayTeamId?: string;
 }
 
 interface DashboardData {
@@ -427,11 +430,21 @@ function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
+            {rows.map((r, i) => {
+              const [home, away] = splitTeams(r.match);
+              return (
               <tr key={`${r.date}-${r.match}-${i}`} style={{ borderTop: "1px solid #262626", color: "#d4d4d4" }}>
                 <td className="px-3 py-2 font-mono-data whitespace-nowrap">{r.date.slice(5)}</td>
                 <td className="px-3 py-2 truncate max-w-[100px]">{r.league}</td>
-                <td className="px-3 py-2 truncate max-w-[160px]">{r.match}</td>
+                <td className="px-3 py-2 max-w-[180px]">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <TeamLogo teamId={r.homeTeamId ?? ""} teamName={home} size={18} />
+                    <span className="truncate">{home}</span>
+                    <span style={{ color: MUTED }}>vs</span>
+                    <TeamLogo teamId={r.awayTeamId ?? ""} teamName={away} size={18} />
+                    <span className="truncate">{away}</span>
+                  </div>
+                </td>
                 <td className="px-3 py-2">{r.prediction}</td>
                 <td className="px-3 py-2 whitespace-nowrap">{"⭐".repeat(r.confidence)}</td>
                 <td className="px-3 py-2 font-mono-data" style={{ color: MUTED }}>{r.result || "—"}</td>
@@ -445,7 +458,8 @@ function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
                   )}
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -455,6 +469,7 @@ function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
         {rows.map((r, i) => {
           const hit = r.isCorrect;
           const color = hit === true ? EMERALD : hit === false ? RED : MUTED;
+          const [home, away] = splitTeams(r.match);
           return (
             <div
               key={`${r.date}-${r.match}-${i}`}
@@ -475,8 +490,12 @@ function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
                   {hit === true ? "적중" : hit === false ? "미적중" : "대기"}
                 </span>
               </div>
-              <div className="text-[13px] font-semibold" style={{ color: "#d4d4d4" }}>
-                {r.match}
+              <div className="flex items-center gap-1 text-[13px] font-semibold min-w-0" style={{ color: "#d4d4d4" }}>
+                <TeamLogo teamId={r.homeTeamId ?? ""} teamName={home} size={18} />
+                <span className="truncate">{home}</span>
+                <span className="text-[11px]" style={{ color: MUTED }}>vs</span>
+                <TeamLogo teamId={r.awayTeamId ?? ""} teamName={away} size={18} />
+                <span className="truncate">{away}</span>
               </div>
               <div className="flex items-center justify-between mt-1 text-[11px]" style={{ color: MUTED }}>
                 <span>

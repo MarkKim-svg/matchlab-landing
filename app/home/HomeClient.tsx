@@ -30,6 +30,8 @@ interface MatchPrediction {
   result: string;
   isCorrect: string;
   fixtureId: string;
+  homeTeamId: string;
+  awayTeamId: string;
 }
 
 interface DashboardData {
@@ -48,6 +50,8 @@ interface DashboardData {
     confidence: number;
     result: string;
     isCorrect: boolean | null;
+    homeTeamId?: string;
+    awayTeamId?: string;
   }>;
 }
 

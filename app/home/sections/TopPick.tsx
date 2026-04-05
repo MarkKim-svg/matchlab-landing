@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TeamLogo, splitTeams } from "@/components/match-ui";
 
 interface MatchPrediction {
   id: string;
@@ -11,6 +12,8 @@ interface MatchPrediction {
   elo: { home: string; away: string };
   xg: { home: string; away: string };
   aiAdjustment: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
 }
 
 interface Props {
@@ -67,9 +70,18 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
         </div>
 
         {/* Team name */}
-        <div className="text-[16px] font-bold mb-1" style={{ color: "#f5f5f5" }}>
-          {topMatch.match}
-        </div>
+        {(() => {
+          const [home, away] = splitTeams(topMatch.match);
+          return (
+            <div className="flex items-center gap-2 mb-1">
+              <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={28} />
+              <span className="text-[16px] font-bold" style={{ color: "#f5f5f5" }}>{home}</span>
+              <span className="text-[13px]" style={{ color: "#737373" }}>vs</span>
+              <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={28} />
+              <span className="text-[16px] font-bold" style={{ color: "#f5f5f5" }}>{away}</span>
+            </div>
+          );
+        })()}
 
         {/* League */}
         <div className="text-[12px] mb-3" style={{ color: "#737373" }}>

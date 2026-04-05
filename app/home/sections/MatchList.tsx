@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { TeamLogo, splitTeams } from "@/components/match-ui";
 
 interface Match {
   id: string;
@@ -12,6 +13,8 @@ interface Match {
   confidence: number;
   confidenceLabel: string;
   isProOnly: boolean;
+  homeTeamId?: string;
+  awayTeamId?: string;
 }
 
 interface Props {
@@ -26,6 +29,7 @@ function stars(n: number) {
 
 function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
   const isHigh = match.confidence >= 4;
+  const [home, away] = splitTeams(match.match);
 
   if (locked) {
     return (
@@ -37,7 +41,13 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
         }}
       >
         <div className="min-w-0 flex-1">
-          <div className="text-[14px] font-semibold" style={{ color: "#737373" }}>{match.match}</div>
+          <div className="flex items-center gap-1.5">
+            <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={20} />
+            <span className="text-[14px] font-semibold" style={{ color: "#737373" }}>{home}</span>
+            <span className="text-[11px]" style={{ color: "#525252" }}>vs</span>
+            <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={20} />
+            <span className="text-[14px] font-semibold" style={{ color: "#737373" }}>{away}</span>
+          </div>
           <div className="text-[11px] mt-0.5" style={{ color: "#737373" }}>{match.league}</div>
         </div>
         <span className="text-[18px] ml-2 shrink-0" style={{ color: "#525252" }}>🔒</span>
@@ -62,7 +72,13 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
         }}
       >
         <div className="min-w-0 flex-1">
-          <div className="text-[14px] font-semibold" style={{ color: "#e5e5e5" }}>{match.match}</div>
+          <div className="flex items-center gap-1.5">
+            <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={20} />
+            <span className="text-[14px] font-semibold" style={{ color: "#e5e5e5" }}>{home}</span>
+            <span className="text-[11px]" style={{ color: "#737373" }}>vs</span>
+            <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={20} />
+            <span className="text-[14px] font-semibold" style={{ color: "#e5e5e5" }}>{away}</span>
+          </div>
           <div className="text-[11px] mt-0.5" style={{ color: "#737373" }}>{match.league}</div>
         </div>
         <div className="text-right ml-2 shrink-0">

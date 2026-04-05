@@ -50,7 +50,8 @@ export async function updateSession(request: NextRequest) {
   const isProtected =
     pathname.startsWith("/pro") ||
     pathname.startsWith("/mypage") ||
-    pathname.startsWith("/admin");
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/dashboard");
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     const redirectTo = pathname + request.nextUrl.search;

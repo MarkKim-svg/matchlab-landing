@@ -2,6 +2,7 @@ import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const DATABASE_ID = process.env.NOTION_PREDICTIONS_DB_ID!;
+const POSTS_DB_ID = process.env.NOTION_POSTS_DB_ID || "ef6bea3fdacc4200a9d1a47ec11abbc8";
 
 export interface Prediction {
   date: string;
@@ -312,3 +313,212 @@ export async function getDashboardData(period: string = "all"): Promise<Dashboar
 
   return { overall, highConfidence, byLeague, byConfidence, recentPredictions, weekly_trend };
 }
+
+/* =============== Match Report (from Posts DB) =============== */
+
+export interface ReportRich {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  code?: boolean;
+  color?: string;
+  href?: string | null;
+}
+
+export type ReportBlockType =
+  | "paragraph"
+  | "bullet"
+  | "number"
+  | "quote"
+  | "callout"
+  | "divider"
+  | "heading";
+
+export interface ReportBlock {
+  type: ReportBlockType;
+  level?: number;
+  icon?: string;
+  rich: ReportRich[];
+}
+
+export interface ReportSection {
+  heading: string; // e.g. "📝 경기 프리뷰"
+  blocks: ReportBlock[];
+}
+
+export interface MatchReport {
+  title: string;
+  postDate: string;
+  leadingBlocks: ReportBlock[];
+  sections: ReportSection[];
+}
+
+function parseRich(items: any[]): ReportRich[] {
+  if (!Array.isArray(items)) return [];
+  return items.map((t: any) => ({
+    text: t.plain_text ?? "",
+    bold: !!t.annotations?.bold,
+    italic: !!t.annotations?.italic,
+    code: !!t.annotations?.code,
+    color: t.annotations?.color,
+    href: t.href ?? null,
+  }));
+}
+
+async function fetchAllBlocks(pageId: string): Promise<any[]> {
+  const out: any[] = [];
+  let cursor: string | undefined = undefined;
+  let hasMore = true;
+  while (hasMore) {
+    const res = await notion.blocks.children.list({
+      block_id: pageId,
+      start_cursor: cursor,
+      page_size: 100,
+    });
+    out.push(...res.results);
+    hasMore = res.has_more;
+    cursor = res.next_cursor ?? undefined;
+  }
+  return out;
+}
+
+function blockToReport(b: any): ReportBlock | null {
+  const t = b.type;
+  switch (t) {
+    case "heading_1":
+      return { type: "heading", level: 1, rich: parseRich(b.heading_1?.rich_text ?? []) };
+    case "heading_2":
+      return { type: "heading", level: 2, rich: parseRich(b.heading_2?.rich_text ?? []) };
+    case "heading_3":
+      return { type: "heading", level: 3, rich: parseRich(b.heading_3?.rich_text ?? []) };
+    case "paragraph":
+      return { type: "paragraph", rich: parseRich(b.paragraph?.rich_text ?? []) };
+    case "bulleted_list_item":
+      return { type: "bullet", rich: parseRich(b.bulleted_list_item?.rich_text ?? []) };
+    case "numbered_list_item":
+      return { type: "number", rich: parseRich(b.numbered_list_item?.rich_text ?? []) };
+    case "quote":
+      return { type: "quote", rich: parseRich(b.quote?.rich_text ?? []) };
+    case "callout":
+      return {
+        type: "callout",
+        icon: b.callout?.icon?.emoji ?? "",
+        rich: parseRich(b.callout?.rich_text ?? []),
+      };
+    case "divider":
+      return { type: "divider", rich: [] };
+    default:
+      return null;
+  }
+}
+
+function richToPlain(r: ReportRich[]): string {
+  return r.map(x => x.text).join("").trim();
+}
+
+function blocksToReport(blocks: any[]): { leadingBlocks: ReportBlock[]; sections: ReportSection[] } {
+  const parsed: ReportBlock[] = blocks
+    .map(blockToReport)
+    .filter((b): b is ReportBlock => b !== null);
+
+  const leadingBlocks: ReportBlock[] = [];
+  const sections: ReportSection[] = [];
+  let current: ReportSection | null = null;
+
+  for (const b of parsed) {
+    if (b.type === "heading") {
+      const h = richToPlain(b.rich);
+      if (!h) continue;
+      current = { heading: h, blocks: [] };
+      sections.push(current);
+    } else if (b.type === "divider") {
+      // skip dividers (visual noise in card layout)
+      continue;
+    } else {
+      if (current) current.blocks.push(b);
+      else leadingBlocks.push(b);
+    }
+  }
+
+  return { leadingBlocks, sections };
+}
+
+async function findPostPage(matchName: string, dateStr: string): Promise<{ id: string; title: string; postDate: string } | null> {
+  // 1차: 경기명 + 날짜 복합 필터
+  try {
+    const res = await notion.databases.query({
+      database_id: POSTS_DB_ID,
+      page_size: 10,
+      filter: {
+        and: [
+          { property: "경기", title: { equals: matchName } },
+          { property: "날짜", date: { equals: dateStr } },
+        ],
+      },
+    });
+    if (res.results.length > 0) {
+      const page: any = res.results[0];
+      return {
+        id: page.id,
+        title: page.properties?.["경기"]?.title?.[0]?.plain_text ?? matchName,
+        postDate: page.properties?.["날짜"]?.date?.start ?? dateStr,
+      };
+    }
+  } catch (e) {
+    // 1차 필터 실패(필드명 다름 등) → 2차로
+    console.error("[findPostPage] primary filter failed:", e);
+  }
+
+  // 2차 폴백: 경기명만으로 검색 → 날짜 가장 가까운 것 선택
+  try {
+    const res = await notion.databases.query({
+      database_id: POSTS_DB_ID,
+      page_size: 20,
+      filter: {
+        property: "경기",
+        title: { equals: matchName },
+      },
+    });
+    if (res.results.length === 0) return null;
+
+    const target = new Date(dateStr).getTime();
+    let best: any = null;
+    let bestDiff = Infinity;
+    for (const page of res.results) {
+      const d = (page as any).properties?.["날짜"]?.date?.start;
+      if (!d) continue;
+      const diff = Math.abs(new Date(d).getTime() - target);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        best = page;
+      }
+    }
+    if (!best) return null;
+    return {
+      id: best.id,
+      title: best.properties?.["경기"]?.title?.[0]?.plain_text ?? matchName,
+      postDate: best.properties?.["날짜"]?.date?.start ?? dateStr,
+    };
+  } catch (e) {
+    console.error("[findPostPage] fallback failed:", e);
+    return null;
+  }
+}
+
+export async function getMatchReport(matchName: string, dateStr: string): Promise<MatchReport | null> {
+  const found = await findPostPage(matchName, dateStr);
+  if (!found) return null;
+
+  const blocks = await fetchAllBlocks(found.id);
+  const { leadingBlocks, sections } = blocksToReport(blocks);
+
+  if (sections.length === 0 && leadingBlocks.length === 0) return null;
+
+  return {
+    title: found.title,
+    postDate: found.postDate,
+    leadingBlocks,
+    sections,
+  };
+}
+

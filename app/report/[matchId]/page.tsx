@@ -6,7 +6,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { KAKAO_CHANNEL_URL } from "@/lib/constants";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
-import type { MatchPrediction } from "@/lib/notion";
+import type { MatchPrediction, MatchReport } from "@/lib/notion";
+import NewsletterReport from "./NewsletterReport";
 
 // --------------- probability bar ---------------
 
@@ -150,6 +151,7 @@ export default function ReportPage() {
   const matchId = params.matchId;
 
   const [match, setMatch] = useState<MatchPrediction | null>(null);
+  const [report, setReport] = useState<MatchReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -181,14 +183,15 @@ export default function ReportPage() {
     setError(null);
     setNotFound(false);
     try {
-      const res = await fetch(`/api/predictions/match/${matchId}`);
+      const res = await fetch(`/api/report/${matchId}`);
       if (res.status === 404) {
         setNotFound(true);
         return;
       }
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      setMatch(json);
+      setMatch(json.match);
+      setReport(json.report ?? null);
     } catch {
       setError("데이터를 불러올 수 없습니다.");
     } finally {
@@ -251,6 +254,11 @@ export default function ReportPage() {
         </div>
       </main>
     );
+  }
+
+  // Newsletter layout when posting DB content is available
+  if (report && report.sections.length > 0) {
+    return <NewsletterReport match={match} report={report} locked={!!locked} />;
   }
 
   const [home, away] = splitTeams(match.match);

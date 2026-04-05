@@ -7,14 +7,14 @@ const KakaoIcon = () => (
 export default function KakaoMockup() {
   return (
     <div className="w-[300px] md:w-[340px]">
-      <div className="bg-white rounded-[36px] border-[8px] border-[#1f1f1f] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.3)]">
+      <div className="bg-white rounded-[36px] border-[8px] border-[#1f1f1f] overflow-hidden">
         <div className="h-6 bg-[#1f1f1f] rounded-b-[14px] mx-auto w-[110px]" />
         <div className="bg-kakao px-4 py-2.5 flex items-center gap-2 text-sm font-bold text-[#0F172A]">
           <KakaoIcon />MATCHLAB
         </div>
         <div className="bg-[#b2c7d9] px-3.5 py-3.5 min-h-[380px] flex flex-col gap-1.5">
           <div className="text-[10px] text-black/35 mb-0.5">오전 10:00 <span className="text-emerald-500 font-semibold">· 오늘</span></div>
-          <div className="bg-white rounded-xl px-4 py-3.5 text-[13px] leading-[1.65] text-[#0F172A] max-w-[260px] shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
+          <div className="bg-white rounded-xl px-4 py-3.5 text-[13px] leading-[1.65] text-[#0F172A] max-w-[260px]">
             <div className="font-bold text-[13px] mb-2.5 pb-2 border-b border-[#E2E8F0]">MATCHLAB AI 분석 · 3월 28일</div>
             <div className="text-[11px] text-[#64748B] mb-1.5">오늘의 무료 프리뷰 (2경기)</div>
             <div className="py-1.5 border-b border-[#F1F5F9]">

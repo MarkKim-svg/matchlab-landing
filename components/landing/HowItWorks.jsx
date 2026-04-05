@@ -22,20 +22,20 @@ export default function HowItWorks() {
       <section className="bg-bg-900 py-20 px-6">
         <div className="text-center mb-12">
           <div className="font-mono-data font-medium text-[11px] tracking-[0.25em] uppercase text-emerald-500 mb-2">HOW IT WORKS</div>
-          <h2 className="font-body font-bold text-[32px] md:text-[40px] tracking-[-0.5px] text-[#F1F5F9]">이렇게 작동합니다</h2>
+          <h2 className="font-body font-bold text-[32px] md:text-[40px] tracking-[-0.5px] text-[#E1E7EF]">이렇게 작동합니다</h2>
         </div>
         <div ref={ref} className="max-w-[900px] mx-auto flex flex-col md:flex-row gap-4 items-stretch">
           {STEPS.map((s, i) => (
             <div key={s.title} className="contents">
               <div
-                className={`flex-1 bg-bg-800 border border-bg-700 rounded-2xl p-8 text-center flex flex-col card-hover transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+                className={`flex-1 bg-bg-800 border border-bg-700 rounded-[14px] p-8 text-center flex flex-col card-hover transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
                 <div className="w-10 h-10 bg-emerald-500 text-white rounded-full inline-flex items-center justify-center font-bold text-base mb-4 mx-auto">{s.num}</div>
-                <h3 className="font-body font-bold text-lg text-[#F1F5F9] mb-2">{s.title}</h3>
-                <p className="text-sm text-[#94A3B8] leading-relaxed break-keep mb-3">{s.desc}</p>
+                <h3 className="font-body font-bold text-lg text-[#E1E7EF] mb-2">{s.title}</h3>
+                <p className="text-sm text-[#8494A7] leading-relaxed break-keep mb-3">{s.desc}</p>
                 <div className="mt-auto pt-3 border-t border-dashed border-bg-700">
-                  <p className="text-xs text-[#64748B] font-mono-data">{s.detail}</p>
+                  <p className="text-xs text-[#566378] font-mono-data">{s.detail}</p>
                 </div>
               </div>
               {i < STEPS.length - 1 && (

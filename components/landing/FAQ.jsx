@@ -11,12 +11,12 @@ const ITEMS = [
 function Item({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="bg-bg-800 border border-bg-700 rounded-xl mb-2 overflow-hidden card-hover">
-      <button onClick={() => setOpen(!open)} className="w-full px-5 py-[18px] text-[15px] font-semibold cursor-pointer flex justify-between items-center text-left bg-transparent border-none text-[#F1F5F9]">
+    <div className="bg-[#111827] border border-[#152035] rounded-[14px] mb-2 overflow-hidden hover:border-[#1E2D47] transition-colors">
+      <button onClick={() => setOpen(!open)} className="w-full px-5 py-[18px] text-[15px] font-semibold cursor-pointer flex justify-between items-center text-left bg-transparent border-none text-[#E1E7EF]">
         {q}
         <span className="text-emerald-500 text-xl font-normal ml-4 shrink-0">{open ? "−" : "+"}</span>
       </button>
-      {open && <div className="px-5 pb-4 text-sm text-[#94A3B8] leading-relaxed">{a}</div>}
+      {open && <div className="px-5 pb-4 text-sm text-[#8494A7] leading-relaxed">{a}</div>}
     </div>
   );
 }
@@ -24,11 +24,12 @@ function Item({ q, a }) {
 export default function FAQ() {
   return (
     <FadeSection>
+      <div className="border-t border-[#152035]" />
       <section className="bg-bg-900 py-20 px-6">
         <div className="max-w-[700px] mx-auto">
           <div className="text-center mb-12">
-            <div className="font-mono-data font-medium text-[11px] tracking-[0.25em] uppercase text-emerald-500 mb-2">FAQ</div>
-            <h2 className="font-body font-bold text-[28px] md:text-[36px] tracking-[-0.5px] text-[#F1F5F9]">자주 묻는 질문</h2>
+            <span className="section-label mb-3">FAQ</span>
+            <h2 className="font-body font-bold text-[28px] md:text-[36px] tracking-[-0.5px] text-[#E1E7EF]">자주 묻는 질문</h2>
           </div>
           {ITEMS.map((item) => <Item key={item.q} {...item} />)}
         </div>

@@ -71,10 +71,10 @@ function formatDate(dateStr: string): string {
 }
 
 /* ── Chart shared props ── */
-const GRID = { strokeDasharray: "3 3", stroke: "#1F2937" } as const;
-const AXIS_TICK = { fill: "#9CA3AF" } as const;
-const AXIS_LINE = { stroke: "#1F2937" } as const;
-const REF_LINE = { stroke: "#9CA3AF", strokeDasharray: "6 4", strokeOpacity: 0.5 } as const;
+const GRID = { strokeDasharray: "3 3", stroke: "#111827" } as const;
+const AXIS_TICK = { fill: "#8494A7" } as const;
+const AXIS_LINE = { stroke: "#111827" } as const;
+const REF_LINE = { stroke: "#8494A7", strokeDasharray: "6 4", strokeOpacity: 0.5 } as const;
 const CURSOR_STYLE = { fill: "rgba(255,255,255,0.03)" };
 
 /* ── Tooltips ── */
@@ -82,11 +82,11 @@ function BarTooltip({ active, payload }: any) {
   if (!active || !payload?.[0]) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-sm">
-      <p className="text-[#F9FAFB] font-medium">{d.label ?? d.shortName ?? d.league}</p>
-      <p className="text-[#F9FAFB]">
+    <div className="bg-[#111827] border border-[#1E2D47] rounded-lg px-3 py-2 text-sm">
+      <p className="text-[#E1E7EF] font-medium">{d.label ?? d.shortName ?? d.league}</p>
+      <p className="text-[#E1E7EF]">
         {d.hitRate}% ({d.correct}/{d.total})
-        {d.total < 3 && <span className="text-[#9CA3AF] ml-1">(표본 부족)</span>}
+        {d.total < 3 && <span className="text-[#8494A7] ml-1">(표본 부족)</span>}
       </p>
     </div>
   );
@@ -95,8 +95,8 @@ function BarTooltip({ active, payload }: any) {
 function TrendTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-2 text-sm">
-      <p className="text-[#F9FAFB] font-medium mb-1">{label}</p>
+    <div className="bg-[#111827] border border-[#1E2D47] rounded-lg px-3 py-2 text-sm">
+      <p className="text-[#E1E7EF] font-medium mb-1">{label}</p>
       {payload.map((p: any) => (
         <p key={p.dataKey} style={{ color: p.color }}>
           {p.name}: {p.value}%
@@ -152,32 +152,32 @@ function Skeleton() {
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1, 2, 3].map(i => (
-          <div key={i} className="bg-[#1E293B]/50 rounded-xl p-6 animate-pulse">
-            <div className="h-4 bg-[#334155] rounded w-20 mb-3 mx-auto" />
-            <div className="h-8 bg-[#334155] rounded w-24 mb-2 mx-auto" />
-            <div className="h-3 bg-[#334155] rounded w-16 mx-auto" />
+          <div key={i} className="bg-[#111827]/50 rounded-[14px] p-6 animate-pulse">
+            <div className="h-4 bg-[#1E2D47] rounded w-20 mb-3 mx-auto" />
+            <div className="h-8 bg-[#1E2D47] rounded w-24 mb-2 mx-auto" />
+            <div className="h-3 bg-[#1E2D47] rounded w-16 mx-auto" />
           </div>
         ))}
       </div>
       {/* Tab skeleton */}
-      <div className="bg-[#1E293B]/50 rounded-xl p-4 md:p-6 animate-pulse">
+      <div className="bg-[#111827]/50 rounded-[14px] p-4 md:p-6 animate-pulse">
         <div className="flex gap-0 mb-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex-1 h-11 bg-[#334155]/50 rounded-t" />
+            <div key={i} className="flex-1 h-11 bg-[#1E2D47]/50 rounded-t" />
           ))}
         </div>
-        <div className="h-[250px] md:h-[300px] bg-[#334155]/30 rounded-xl" />
+        <div className="h-[250px] md:h-[300px] bg-[#1E2D47]/30 rounded-[14px]" />
       </div>
       {/* Filter pills skeleton */}
-      <div className="bg-[#1E293B]/50 rounded-xl p-4 md:p-6 animate-pulse">
+      <div className="bg-[#111827]/50 rounded-[14px] p-4 md:p-6 animate-pulse">
         <div className="flex gap-2 mb-4">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="h-8 bg-[#334155] rounded-full w-16" />
+            <div key={i} className="h-8 bg-[#1E2D47] rounded-full w-16" />
           ))}
         </div>
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="h-[72px] bg-[#334155]/30 rounded-lg" />
+            <div key={i} className="h-[72px] bg-[#1E2D47]/30 rounded-lg" />
           ))}
         </div>
       </div>
@@ -193,7 +193,7 @@ function Pill({ active, onClick, children }: { active: boolean; onClick: () => v
       className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition min-h-[34px] cursor-pointer border ${
         active
           ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
-          : "bg-[#1E293B] text-[#9CA3AF] border-[#334155] hover:text-[#E2E8F0]"
+          : "bg-[#111827] text-[#8494A7] border-[#1E2D47] hover:text-[#E1E7EF]"
       }`}
     >
       {children}
@@ -292,21 +292,21 @@ export default function DashboardSection() {
 
   return (
     <FadeSection id="dashboard">
-      <div className="h-px bg-bg-700 w-1/2 mx-auto" />
-      <section className="bg-[#0F172A] py-12 md:py-20 px-4 md:px-6">
+      <div className="border-t border-[#152035]" />
+      <section className="bg-[#060B14] py-12 md:py-20 px-4 md:px-6">
         <div className="max-w-[900px] mx-auto space-y-6 md:space-y-8">
 
           {/* ── Header ── */}
           <div className="text-center">
-            <div className="font-mono-data font-medium text-[11px] tracking-[0.25em] uppercase text-emerald-500 mb-2">ACCURACY</div>
+            <span className="section-label mb-3">ACCURACY</span>
             <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1 mb-4">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-500 text-xs font-mono-data">LIVE DATA</span>
+              <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot" />
+              <span className="section-label" style={{border:'none',padding:0}}>LIVE DATA</span>
             </div>
-            <h2 className="font-body font-bold text-[28px] md:text-[36px] tracking-[-0.5px] leading-[1.2] text-[#F1F5F9]">
+            <h2 className="font-body font-bold text-[28px] md:text-[36px] tracking-[-0.5px] leading-[1.2] text-[#E1E7EF]">
               AI 적중률 라이브 트래커
             </h2>
-            <p className="text-[#94A3B8] mt-2 text-sm font-body">모든 예측은 Notion DB에 자동 기록됩니다</p>
+            <p className="text-[#8494A7] mt-2 text-sm font-body">모든 예측은 Notion DB에 자동 기록됩니다</p>
           </div>
 
           {/* ── Period Filter ── */}
@@ -318,7 +318,7 @@ export default function DashboardSection() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition font-body cursor-pointer min-h-[44px] ${
                   period === p
                     ? "bg-emerald-500 text-white"
-                    : "bg-[#1E293B] text-[#94A3B8] hover:bg-[#334155]"
+                    : "bg-[#111827] text-[#8494A7] hover:bg-[#1E2D47]"
                 }`}
               >
                 {p === "7d" ? "7일" : p === "30d" ? "30일" : "전체"}
@@ -330,27 +330,27 @@ export default function DashboardSection() {
             <>
               {/* ── Summary Cards ── */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center card-hover">
-                  <div className="text-sm text-[#94A3B8] mb-2 font-body">전체 적중률</div>
-                  <div className="text-3xl font-bold text-[#F1F5F9] font-display">{data.overall.hitRate}%</div>
-                  <div className="text-sm text-[#64748B] mt-1 font-body">{data.overall.correct}/{data.overall.total}</div>
+                <div className="bg-[#111827] border border-[#152035] rounded-[14px] p-5 md:p-6 text-center hover:border-[#1E2D47] transition-colors">
+                  <div className="text-sm text-[#8494A7] mb-2 font-body">전체 적중률</div>
+                  <div className="text-3xl font-bold text-[#E1E7EF] font-display">{data.overall.hitRate}%</div>
+                  <div className="text-sm text-[#566378] mt-1 font-body">{data.overall.correct}/{data.overall.total}</div>
                 </div>
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center card-hover">
-                  <div className="text-sm text-[#94A3B8] mb-2 font-body">⭐⭐⭐⭐+ 적중률</div>
+                <div className="bg-[#111827] border border-[#152035] rounded-[14px] p-5 md:p-6 text-center hover:border-[#1E2D47] transition-colors">
+                  <div className="text-sm text-[#8494A7] mb-2 font-body">⭐⭐⭐⭐+ 적중률</div>
                   <div className="text-3xl font-bold font-display text-gold-400">{data.highConfidence.hitRate}%</div>
-                  <div className="text-sm text-[#64748B] mt-1 font-body">{data.highConfidence.correct}/{data.highConfidence.total}</div>
+                  <div className="text-sm text-[#566378] mt-1 font-body">{data.highConfidence.correct}/{data.highConfidence.total}</div>
                 </div>
-                <div className="bg-[#1E293B]/50 backdrop-blur border border-emerald-500/20 rounded-xl p-5 md:p-6 text-center card-hover">
-                  <div className="text-sm text-[#94A3B8] mb-2 font-body">누적 분석</div>
+                <div className="bg-[#111827] border border-[#152035] rounded-[14px] p-5 md:p-6 text-center hover:border-[#1E2D47] transition-colors">
+                  <div className="text-sm text-[#8494A7] mb-2 font-body">누적 분석</div>
                   <div className="text-3xl font-bold text-emerald-400 font-display">{data.overall.total}<span className="text-lg ml-1">경기</span></div>
-                  <div className="text-sm text-[#64748B] mt-1 font-body">판정 완료</div>
+                  <div className="text-sm text-[#566378] mt-1 font-body">판정 완료</div>
                 </div>
               </div>
 
               {/* ── Chart Tabs ── */}
-              <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl overflow-hidden">
+              <div className="bg-[#111827] border border-[#152035] rounded-[14px] overflow-hidden hover:border-[#1E2D47] transition-colors">
                 {/* Tab buttons */}
-                <div className="flex border-b border-[#334155]/50">
+                <div className="flex border-b border-[#152035]">
                   {(["confidence", "league", "trend"] as ChartTab[]).map(tab => (
                     <button
                       key={tab}
@@ -358,7 +358,7 @@ export default function DashboardSection() {
                       className={`flex-1 min-h-[44px] text-sm font-medium font-body transition cursor-pointer ${
                         chartTab === tab
                           ? "text-emerald-400 border-b-2 border-emerald-500 bg-emerald-500/5"
-                          : "text-[#64748B] hover:text-[#D1D5DB]"
+                          : "text-[#566378] hover:text-[#E1E7EF]"
                       }`}
                     >
                       {TAB_LABELS[tab]}
@@ -393,7 +393,7 @@ export default function DashboardSection() {
                             <YAxis domain={[0, 100]} tick={{ ...AXIS_TICK, fontSize: 12 }} axisLine={AXIS_LINE} tickLine={false} tickFormatter={v => `${v}%`} />
                             <ReferenceLine y={50} {...REF_LINE} />
                             <Tooltip content={<TrendTooltip />} />
-                            <Legend verticalAlign="bottom" iconType="circle" formatter={(v: string) => <span style={{ color: "#9CA3AF", fontSize: 12 }}>{v}</span>} />
+                            <Legend verticalAlign="bottom" iconType="circle" formatter={(v: string) => <span style={{ color: "#8494A7", fontSize: 12 }}>{v}</span>} />
                             <Line type="monotone" dataKey="overall" name="전체" stroke="#10B981" strokeWidth={2} dot={{ r: 4, fill: "#10B981" }} activeDot={{ r: 6 }} connectNulls />
                             <Line type="monotone" dataKey="highConf" name="⭐4+" stroke="#FBBF24" strokeWidth={2} dot={{ r: 4, fill: "#FBBF24" }} activeDot={{ r: 6 }} connectNulls />
                           </LineChart>
@@ -406,7 +406,7 @@ export default function DashboardSection() {
                             <YAxis domain={[0, 100]} tick={{ ...AXIS_TICK, fontSize: 11 }} axisLine={AXIS_LINE} tickLine={false} tickFormatter={v => `${v}%`} />
                             <ReferenceLine y={50} {...REF_LINE} />
                             <Tooltip content={<TrendTooltip />} />
-                            <Legend verticalAlign="bottom" iconType="circle" formatter={(v: string) => <span style={{ color: "#9CA3AF", fontSize: 11 }}>{v}</span>} />
+                            <Legend verticalAlign="bottom" iconType="circle" formatter={(v: string) => <span style={{ color: "#8494A7", fontSize: 11 }}>{v}</span>} />
                             <Line type="monotone" dataKey="overall" name="전체" stroke="#10B981" strokeWidth={2} dot={{ r: 3, fill: "#10B981" }} activeDot={{ r: 5 }} connectNulls />
                             <Line type="monotone" dataKey="highConf" name="⭐4+" stroke="#FBBF24" strokeWidth={2} dot={{ r: 3, fill: "#FBBF24" }} activeDot={{ r: 5 }} connectNulls />
                           </LineChart>
@@ -415,7 +415,7 @@ export default function DashboardSection() {
                     )}
 
                     {chartTab === "trend" && trendData.length === 0 && (
-                      <div className="h-[250px] flex items-center justify-center text-[#64748B] text-sm">
+                      <div className="h-[250px] flex items-center justify-center text-[#566378] text-sm">
                         트렌드 데이터가 아직 없습니다
                       </div>
                     )}
@@ -424,8 +424,8 @@ export default function DashboardSection() {
               </div>
 
               {/* ── Predictions Section ── */}
-              <div className="bg-[#1E293B]/50 backdrop-blur border border-[#334155]/50 rounded-xl p-4 md:p-6">
-                <div className="font-body font-semibold text-lg mb-4 text-[#F1F5F9]">최근 예측 결과</div>
+              <div className="bg-[#111827] border border-[#152035] rounded-[14px] p-4 md:p-6 hover:border-[#1E2D47] transition-colors">
+                <div className="font-body font-semibold text-lg mb-4 text-[#E1E7EF]">최근 예측 결과</div>
 
                 {/* Filters */}
                 <div className="space-y-3 mb-4">
@@ -460,7 +460,7 @@ export default function DashboardSection() {
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-sm font-body">
                     <thead>
-                      <tr className="border-b border-[#334155] text-[#94A3B8] text-left">
+                      <tr className="border-b border-[#1E2D47] text-[#8494A7] text-left">
                         <th className="py-2 pr-3">날짜</th>
                         <th className="py-2 pr-3">경기</th>
                         <th className="py-2 pr-3">리그</th>
@@ -472,66 +472,66 @@ export default function DashboardSection() {
                     </thead>
                     <tbody>
                       {filteredPredictions.slice(0, showCount).map((pred, i) => (
-                        <tr key={i} className="border-b border-[#1E293B] hover:bg-[#1E293B]/50 text-[#E2E8F0]">
-                          <td className="py-2.5 pr-3 text-[#94A3B8]">{formatDate(pred.date)}</td>
+                        <tr key={i} className="border-b border-[#152035] hover:bg-[#111827]/50 text-[#E1E7EF]">
+                          <td className="py-2.5 pr-3 text-[#8494A7]">{formatDate(pred.date)}</td>
                           <td className="py-2.5 pr-3">
                             {pred.match}
                             {pred.isProOnly && (
                               <span className="ml-1 px-1.5 py-0.5 text-xs rounded bg-[#D4A853]/20 text-[#D4A853]">PRO</span>
                             )}
                           </td>
-                          <td className="py-2.5 pr-3 text-[#94A3B8]">{pred.league}</td>
+                          <td className="py-2.5 pr-3 text-[#8494A7]">{pred.league}</td>
                           <td className="py-2.5 pr-3">{pred.prediction}</td>
                           <td className="py-2.5 pr-3">{pred.confidenceLabel}</td>
-                          <td className="py-2.5 pr-3 text-[#94A3B8]">{pred.result || "-"}</td>
+                          <td className="py-2.5 pr-3 text-[#8494A7]">{pred.result || "-"}</td>
                           <td className="py-2.5">
                             {pred.isCorrect === true && <span className="text-emerald-400">✅</span>}
                             {pred.isCorrect === false && <span className="text-red-400">❌</span>}
-                            {pred.isCorrect === null && <span className="text-[#64748B]">⏳</span>}
+                            {pred.isCorrect === null && <span className="text-[#566378]">⏳</span>}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {filteredPredictions.length === 0 && (
-                    <div className="text-center py-8 text-[#64748B] text-sm">필터 조건에 맞는 결과가 없습니다</div>
+                    <div className="text-center py-8 text-[#566378] text-sm">필터 조건에 맞는 결과가 없습니다</div>
                   )}
                 </div>
 
                 {/* Mobile Cards (< md) */}
                 <div className="md:hidden space-y-3">
                   {filteredPredictions.slice(0, showCount).map((pred, i) => (
-                    <div key={i} className="bg-[#0F172A]/50 rounded-lg p-4 border border-[#334155]/50">
+                    <div key={i} className="bg-[#060B14]/50 rounded-lg p-4 border border-[#152035]">
                       {/* Row 1: date, league, confidence */}
-                      <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-2">
+                      <div className="flex items-center gap-2 text-xs text-[#8494A7] mb-2">
                         <span>{formatDate(pred.date)}</span>
-                        <span className="text-[#334155]">|</span>
+                        <span className="text-[#1E2D47]">|</span>
                         <span>{LEAGUE_SHORT[pred.league] ?? pred.league}</span>
-                        <span className="text-[#334155]">|</span>
+                        <span className="text-[#1E2D47]">|</span>
                         <span>{pred.confidenceLabel}</span>
                         {pred.isProOnly && (
                           <span className="ml-auto px-1.5 py-0.5 text-[10px] rounded bg-[#D4A853]/20 text-[#D4A853] font-medium">PRO</span>
                         )}
                       </div>
                       {/* Row 2: match name */}
-                      <div className="text-[#F1F5F9] font-medium text-sm mb-1.5">{pred.match}</div>
+                      <div className="text-[#E1E7EF] font-medium text-sm mb-1.5">{pred.match}</div>
                       {/* Row 3: prediction */}
-                      <div className="text-xs text-[#94A3B8] mb-1">예측: {pred.prediction}</div>
+                      <div className="text-xs text-[#8494A7] mb-1">예측: {pred.prediction}</div>
                       {/* Row 4: result + icon */}
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-[#64748B]">
+                        <span className="text-xs text-[#566378]">
                           {pred.result ? `결과: ${pred.result}` : "결과 대기 중"}
                         </span>
                         <span className="text-base">
                           {pred.isCorrect === true && <span className="text-emerald-400">✅</span>}
                           {pred.isCorrect === false && <span className="text-red-400">❌</span>}
-                          {pred.isCorrect === null && <span className="text-[#64748B]">⏳</span>}
+                          {pred.isCorrect === null && <span className="text-[#566378]">⏳</span>}
                         </span>
                       </div>
                     </div>
                   ))}
                   {filteredPredictions.length === 0 && (
-                    <div className="text-center py-8 text-[#64748B] text-sm">필터 조건에 맞는 결과가 없습니다</div>
+                    <div className="text-center py-8 text-[#566378] text-sm">필터 조건에 맞는 결과가 없습니다</div>
                   )}
                 </div>
 
@@ -539,7 +539,7 @@ export default function DashboardSection() {
                 {showCount < filteredPredictions.length && (
                   <button
                     onClick={() => setShowCount(prev => prev + 10)}
-                    className="w-full mt-4 py-3 text-sm text-[#94A3B8] bg-[#1E293B]/50 hover:bg-[#334155]/50 rounded-lg border border-[#334155]/50 transition cursor-pointer font-body min-h-[44px]"
+                    className="w-full mt-4 py-3 text-sm text-[#8494A7] bg-[#111827]/50 hover:bg-[#1E2D47]/50 rounded-lg border border-[#152035] transition cursor-pointer font-body min-h-[44px]"
                   >
                     더보기 ({filteredPredictions.length - showCount}건 남음)
                   </button>

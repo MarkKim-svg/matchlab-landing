@@ -93,16 +93,16 @@ export default function Navbar() {
   }
 
   return (
-    <nav className={`sticky top-0 z-50 px-6 transition-all duration-300 ${scrolled ? "bg-[#0F172A]/95 backdrop-blur-lg border-b border-[#334155]" : "bg-transparent border-b border-transparent"}`}>
+    <nav className={`sticky top-0 z-50 px-6 transition-all duration-300 ${scrolled ? "bg-[#060B14]/95 backdrop-blur-lg border-b border-[#1E2D47]" : "bg-transparent border-b border-transparent"}`}>
       <div className="max-w-[1120px] mx-auto flex justify-between items-center h-14">
         <Link href="/" className="flex items-center gap-2">
           <BeakerIcon />
-          <span className="font-display font-bold text-xl tracking-[-1.5px] text-[#F1F5F9]">MATCHLAB</span>
+          <span className="font-display font-bold text-xl tracking-[-1.5px] text-[#E1E7EF]">MATCHLAB</span>
         </Link>
 
         <div className="flex items-center gap-4">
-          <a href="#dashboard" className="text-[14px] font-medium text-[#94A3B8] hover:text-emerald-400 transition-colors font-body hidden md:block">적중률</a>
-          <Link href="/matches/today" className="text-[14px] font-medium text-[#94A3B8] hover:text-emerald-400 transition-colors font-body hidden md:block">오늘의 분석</Link>
+          <a href="#dashboard" className="text-[14px] font-medium text-[#8494A7] hover:text-emerald-400 transition-colors font-body hidden md:block">적중률</a>
+          <Link href="/matches/today" className="text-[14px] font-medium text-[#8494A7] hover:text-emerald-400 transition-colors font-body hidden md:block">오늘의 분석</Link>
 
           {user ? (
             /* ── 로그인 상태 ── */
@@ -122,7 +122,7 @@ export default function Navbar() {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-xl shadow-lg overflow-hidden">
+                <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-[14px] overflow-hidden">
                   <Link
                     href="/mypage"
                     onClick={() => setMenuOpen(false)}
@@ -134,7 +134,7 @@ export default function Navbar() {
                     <Link
                       href="/admin"
                       onClick={() => setMenuOpen(false)}
-                      className="block w-full text-left px-4 py-2.5 text-xs text-[#64748B] hover:bg-bg-700 transition-colors"
+                      className="block w-full text-left px-4 py-2.5 text-xs text-[#566378] hover:bg-bg-700 transition-colors"
                     >
                       관리자
                     </Link>

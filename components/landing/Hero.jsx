@@ -29,25 +29,25 @@ export default function Hero() {
     <section className="bg-bg-900 lab-grid px-6 py-24 md:py-32 relative overflow-hidden">
       <div className="max-w-[900px] mx-auto text-center relative z-10">
         <div className="flex flex-wrap gap-2 justify-center mb-8">
-          {LEAGUES.map((l) => <span key={l} className="border border-bg-700 text-[#94A3B8] text-[11px] font-semibold px-3 py-1 rounded-full">{l}</span>)}
+          {LEAGUES.map((l) => <span key={l} className="border border-[#152035] text-[#8494A7] text-[11px] font-semibold px-3 py-1 rounded-full">{l}</span>)}
         </div>
 
-        <h1 className="font-body font-bold text-[24px] md:text-[40px] leading-[1.3] md:leading-[1.15] tracking-[-0.5px] text-[#F1F5F9] mb-6">
+        <h1 className="font-body font-bold text-[24px] md:text-[40px] leading-[1.3] md:leading-[1.15] tracking-[-0.5px] text-[#E1E7EF] mb-6">
           매일 아침, AI가 고른 승부 예측
         </h1>
 
-        <p className="font-body font-normal text-[14px] md:text-[16px] text-[#94A3B8] max-w-[560px] mx-auto mb-10 break-keep leading-[1.7]">
+        <p className="font-body font-normal text-[14px] md:text-[16px] text-[#8494A7] max-w-[560px] mx-auto mb-10 break-keep leading-[1.7]">
           지난 4주 고확신 경기 적중률 {display} · 누적 500경기+ 분석
         </p>
 
         <div className="flex items-baseline gap-3 justify-center mb-10">
           <span className="font-display font-bold text-[72px] md:text-[96px] leading-[0.9] tracking-[-4px] text-gold-400">{display}</span>
-          <span className="font-body font-normal text-sm text-[#64748B] tracking-[0.5px]">고확신 경기 평균 적중률</span>
+          <span className="font-body font-normal text-sm text-[#566378] tracking-[0.5px]">고확신 경기 평균 적중률</span>
         </div>
 
         <div className="flex flex-col items-center gap-3 mb-6">
           <a href="/login"
-            className="bg-emerald-500 hover:bg-emerald-700 text-white text-[15px] font-bold px-8 py-4 rounded-xl transition-all font-body">
+            className="bg-emerald-500 hover:bg-emerald-700 text-white text-[15px] font-bold px-8 py-4 rounded-[14px] transition-all font-body">
             무료로 시작하기
           </a>
           <a href="/matches/today"

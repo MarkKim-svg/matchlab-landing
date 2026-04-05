@@ -40,6 +40,15 @@ interface DashboardData {
     overall: { hit_rate: number; correct: number; total: number };
     high_confidence: { hit_rate: number; correct: number; total: number };
   }>;
+  recentPredictions?: Array<{
+    date: string;
+    match: string;
+    league: string;
+    prediction: string;
+    confidence: number;
+    result: string;
+    isCorrect: boolean | null;
+  }>;
 }
 
 interface PredictionsResponse {

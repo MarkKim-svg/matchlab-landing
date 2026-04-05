@@ -257,7 +257,7 @@ export default function ReportPage() {
   }
 
   // Newsletter layout when posting DB content is available
-  if (report && report.sections.length > 0) {
+  if (report && (report.sections.length > 0 || report.leadingBlocks.length > 0)) {
     return <NewsletterReport match={match} report={report} locked={!!locked} />;
   }
 

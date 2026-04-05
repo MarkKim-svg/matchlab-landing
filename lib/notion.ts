@@ -416,28 +416,43 @@ function richToPlain(r: ReportRich[]): string {
   return r.map(x => x.text).join("").trim();
 }
 
+const SECTION_EMOJI_RE = /^(📝|⚽|📊|📈|🔍|⚡|🎯|⚠️)\s/;
+
 function blocksToReport(blocks: any[]): { leadingBlocks: ReportBlock[]; sections: ReportSection[] } {
   const parsed: ReportBlock[] = blocks
     .map(blockToReport)
     .filter((b): b is ReportBlock => b !== null);
 
+  // Promote emoji-prefixed paragraphs to virtual headings
+  const promoted: ReportBlock[] = parsed.map(b => {
+    if (b.type === "paragraph") {
+      const plain = richToPlain(b.rich);
+      if (SECTION_EMOJI_RE.test(plain)) {
+        return { ...b, type: "heading" as ReportBlockType, level: 2 };
+      }
+    }
+    return b;
+  });
+
   const leadingBlocks: ReportBlock[] = [];
   const sections: ReportSection[] = [];
   let current: ReportSection | null = null;
 
-  for (const b of parsed) {
+  for (const b of promoted) {
     if (b.type === "heading") {
       const h = richToPlain(b.rich);
       if (!h) continue;
       current = { heading: h, blocks: [] };
       sections.push(current);
-    } else if (b.type === "divider") {
-      // skip dividers (visual noise in card layout)
       continue;
-    } else {
-      if (current) current.blocks.push(b);
-      else leadingBlocks.push(b);
     }
+    if (b.type === "divider") continue;
+
+    // Skip empty paragraphs (visual noise in card layout)
+    if (b.type === "paragraph" && richToPlain(b.rich) === "") continue;
+
+    if (current) current.blocks.push(b);
+    else leadingBlocks.push(b);
   }
 
   return { leadingBlocks, sections };
@@ -464,9 +479,9 @@ async function findPostPage(matchName: string, dateStr: string): Promise<{ id: s
         postDate: page.properties?.["날짜"]?.date?.start ?? dateStr,
       };
     }
-  } catch (e) {
+  } catch (e: any) {
     // 1차 필터 실패(필드명 다름 등) → 2차로
-    console.error("[findPostPage] primary filter failed:", e);
+    console.error("[findPostPage] primary filter failed:", e?.message || e);
   }
 
   // 2차 폴백: 경기명만으로 검색 → 날짜 가장 가까운 것 선택
@@ -499,8 +514,8 @@ async function findPostPage(matchName: string, dateStr: string): Promise<{ id: s
       title: best.properties?.["경기"]?.title?.[0]?.plain_text ?? matchName,
       postDate: best.properties?.["날짜"]?.date?.start ?? dateStr,
     };
-  } catch (e) {
-    console.error("[findPostPage] fallback failed:", e);
+  } catch (e: any) {
+    console.error("[findPostPage] fallback failed:", e?.message || e);
     return null;
   }
 }

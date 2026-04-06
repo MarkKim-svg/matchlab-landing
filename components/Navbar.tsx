@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -17,7 +17,9 @@ const BeakerIcon = () => (
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
+  const isLanding = pathname === "/";
 
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -107,6 +109,15 @@ export default function Navbar() {
 
           {user ? (
             /* ── 로그인 상태 ── */
+            <>
+            {isLanding && (
+              <Link
+                href="/home"
+                className="text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-colors font-body"
+              >
+                홈으로 돌아가기 →
+              </Link>
+            )}
             <div ref={menuRef} className="relative">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
@@ -156,6 +167,7 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+            </>
           ) : (
             /* ── 비로그인 상태 ── */
             <Link

@@ -342,6 +342,7 @@ function MatchPreviewCard({ match, variant }) {
         <div className="absolute inset-0 bg-bg-card/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 rounded-xl">
           <span className="text-2xl">🔒</span>
           <span className="text-emerald-500 font-bold text-sm font-body">Pro 전용 · 고확신 경기</span>
+          <span className="text-gold-400 text-xs font-bold mt-1">어제 Pro 경기: 3전 2승</span>
           <span className="text-text-muted text-xs font-body">가입 후 확인하세요</span>
         </div>
       </div>
@@ -564,6 +565,18 @@ export default function Home() {
                 {proPick && <MatchPreviewCard match={proPick} variant="pro" />}
               </div>
             )}
+
+            {/* Preview CTA */}
+            <div className="text-center mt-6">
+              <p className="text-sm text-text-secondary mb-4">오늘의 고확신 경기, 지금 확인하세요</p>
+              <a
+                href="/login"
+                className="inline-block bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-[14px] text-sm transition-all font-body"
+              >
+                전체 분석 보기 →
+              </a>
+              <p className="text-xs text-text-muted mt-2">무료 가입으로 매일 2경기 열람</p>
+            </div>
           </SectionWrap>
         </FadeSection>
 
@@ -599,13 +612,18 @@ export default function Home() {
               <StatCard label="최근 적중 연속" value={recentStreak > 0 ? `${recentStreak}연속` : "—"} />
             </div>
 
-            <div className="text-center mt-6">
+            <div className="text-center mt-6 space-y-3">
               <a
                 href="/dashboard"
                 className="text-sm text-emerald-400 underline hover:text-emerald-300 transition-colors font-body"
               >
                 전체 대시보드 보기 →
               </a>
+              <div className="flex justify-center">
+                <span className="inline-flex items-center gap-1.5 border border-bg-border-subtle rounded-full px-4 py-1.5 text-xs text-text-muted">
+                  모든 예측은 경기 시작 전 기록 · 사후 수정 불가
+                </span>
+              </div>
             </div>
           </SectionWrap>
         </FadeSection>
@@ -665,6 +683,7 @@ export default function Home() {
                   얼리버드
                 </div>
                 <div className="font-body font-bold text-xl mb-1 text-gold-400">Pro</div>
+                <p className="text-[11px] text-gold-400/70 mt-1 font-body">얼리버드 가격은 곧 종료됩니다</p>
                 <div className="text-[14px] text-text-muted line-through font-body">정가 ₩14,900</div>
                 <div className="font-display font-bold text-[28px] tracking-[-1px] text-gold-400 mb-1">월 ₩9,900</div>
                 <p className="text-emerald-400 text-xs mb-4 font-body">
@@ -714,6 +733,23 @@ export default function Home() {
             </div>
           </SectionWrap>
         </FadeSection>
+
+        {/* ═══ Final CTA ═══ */}
+        <section className="py-20 px-5">
+          <div className="max-w-[960px] mx-auto text-center">
+            <h2 className="font-body font-bold text-[24px] md:text-[32px] text-text-primary">
+              아직 감으로 베팅하시나요?
+            </h2>
+            <p className="text-text-secondary text-sm mt-3">AI가 매일 골라주는 경기, 무료로 시작하세요.</p>
+            <a
+              href="/login"
+              className="inline-block bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-[14px] text-[15px] transition-all font-body mt-6"
+            >
+              무료로 시작하기
+            </a>
+            <p className="text-xs text-text-muted mt-3">30초 가입 · 카드 불필요</p>
+          </div>
+        </section>
       </main>
 
       {/* ═══ 8. Footer ═══ */}

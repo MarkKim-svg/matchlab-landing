@@ -9,6 +9,7 @@ import WeeklyAccuracy from "./sections/WeeklyAccuracy";
 import MatchList from "./sections/MatchList";
 import ProUpgradeBanner from "./sections/ProUpgradeBanner";
 import RecentResults from "./sections/RecentResults";
+import MiniStandings from "./sections/MiniStandings";
 import KakaoBanner from "./sections/KakaoBanner";
 
 interface MatchPrediction {
@@ -146,7 +147,12 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
         <RecentResults />
       </FadeInCard>
 
-      {/* Pro배너/CTA + 카카오 (풀와이드) */}
+      {/* 미니 순위표 (좌) */}
+      <FadeInCard delay={100}>
+        <MiniStandings />
+      </FadeInCard>
+
+      {/* Pro배너/CTA + 카카오 (우 또는 풀와이드) */}
       <FadeInCard className="md:col-span-2 flex flex-col gap-4">
         {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
         <KakaoBanner />

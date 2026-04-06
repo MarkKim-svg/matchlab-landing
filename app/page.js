@@ -738,7 +738,7 @@ export default function Home() {
         <section className="py-20 px-5">
           <div className="max-w-[960px] mx-auto text-center">
             <h2 className="font-body font-bold text-[24px] md:text-[32px] text-text-primary">
-              아직 감으로 베팅하시나요?
+              매일 경기 분석, 아직 직접 하세요?
             </h2>
             <p className="text-text-secondary text-sm mt-3">AI가 매일 골라주는 경기, 무료로 시작하세요.</p>
             <a

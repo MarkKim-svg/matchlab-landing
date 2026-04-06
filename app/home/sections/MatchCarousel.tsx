@@ -107,22 +107,22 @@ export default function MatchCarousel({ predictions, loading }: Props) {
             <Link
               key={m.id}
               href={`/report/${m.id}`}
-              className="snap-start shrink-0 w-[260px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200"
+              className="snap-start shrink-0 w-[260px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200 flex flex-col items-center gap-2"
             >
-              {/* Row 1: League + Stars */}
-              <div className="flex items-center justify-between mb-2">
-                <LeagueBadge league={m.league} />
-                <GoldStars count={m.confidence} />
-              </div>
+              {/* League badge */}
+              <LeagueBadge league={m.league} />
 
-              {/* Row 2: Teams */}
-              <div className="flex items-center gap-1.5">
+              {/* Teams */}
+              <div className="flex items-center justify-center gap-1.5">
                 <TeamLogo teamId={m.homeTeamId ?? ""} teamName={home} size={22} />
                 <span className="text-[13px] font-bold text-bg-100 truncate">{home}</span>
                 <span className="text-[11px] text-text-muted font-bold px-0.5">vs</span>
                 <TeamLogo teamId={m.awayTeamId ?? ""} teamName={away} size={22} />
                 <span className="text-[13px] font-bold text-bg-100 truncate">{away}</span>
               </div>
+
+              {/* Stars */}
+              <GoldStars count={m.confidence} />
             </Link>
           );
         })}

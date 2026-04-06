@@ -27,6 +27,8 @@ const DUMMY_MATCHES = [
     probability: 72,
     reason: "홈 최근 8경기 6승, 상대 전적 우위",
     isProOnly: false,
+    homeTeamId: "42",
+    awayTeamId: "49",
   },
   {
     id: "d2",
@@ -39,6 +41,8 @@ const DUMMY_MATCHES = [
     probability: 65,
     reason: "양팀 최근 5경기 평균 3.2골",
     isProOnly: false,
+    homeTeamId: "529",
+    awayTeamId: "536",
   },
   {
     id: "d3",
@@ -51,6 +55,8 @@ const DUMMY_MATCHES = [
     probability: 78,
     reason: "리그 1위 홈 무패 행진 중",
     isProOnly: true,
+    homeTeamId: "505",
+    awayTeamId: "496",
   },
 ];
 
@@ -75,33 +81,15 @@ const FAQS = [
   },
 ];
 
-const TRUST_POINTS = [
-  {
-    icon: "🧠",
-    title: "4중 앙상블 AI",
-    desc: "ELO, 폼 분석, 포아송, 오즈 역산 — 4개 모델이 교차 검증해 편향을 줄입니다.",
-  },
-  {
-    icon: "📋",
-    title: "투명한 기록",
-    desc: "검증 가능한 기록이 자동 공개됩니다. 사후 수정 불가능한 시스템입니다.",
-  },
-  {
-    icon: "🎯",
-    title: "확신도 큐레이션",
-    desc: "모든 경기를 다 보여주지 않습니다. 확신도가 높은 경기만 엄선해 제공합니다.",
-  },
-  {
-    icon: "💬",
-    title: "매일 카톡 배송",
-    desc: "Pro 회원은 매일 아침 카카오톡으로 고확신 예측을 받아볼 수 있습니다.",
-  },
-];
 
 /* ────────────────────────────────────────────
    PhoneMockup
    ────────────────────────────────────────────── */
-function PhoneMockup() {
+function ReportPreview() {
+  const homeProb = 72;
+  const drawProb = 18;
+  const awayProb = 10;
+
   return (
     <div className="relative w-[280px] max-sm:w-[260px] mx-auto shrink-0">
       <div className="relative bg-bg-card border border-bg-border rounded-[2rem] overflow-hidden shadow-2xl shadow-black/40">
@@ -110,16 +98,89 @@ function PhoneMockup() {
           <div className="w-24 h-5 bg-bg-deep rounded-full" />
         </div>
 
-        {/* Logo overlay */}
-        <div className="absolute left-0 right-0 z-10 bg-bg-deep px-4 py-2 border-b border-bg-border-subtle" style={{ top: "28px" }}>
-          <img src="/assets/logo/matchlab-logo-dark.svg" alt="MATCHLAB" className="h-5" />
-        </div>
+        {/* Inner content — static report preview */}
+        <div className="px-4 pb-5 space-y-3">
+          {/* Logo */}
+          <div className="flex items-center gap-2 border-b border-bg-border-subtle pb-2">
+            <img src="/assets/logo/matchlab-logo-dark.svg" alt="MATCHLAB" className="h-4" />
+          </div>
 
-        <iframe
-          src="/home"
-          className="w-full border-0"
-          style={{ height: "480px", pointerEvents: "none" }}
-        />
+          {/* League + confidence */}
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium text-white/90" style={{ backgroundColor: "#3D195B55" }}>
+              <img src="https://media.api-sports.io/football/leagues/39.png" alt="EPL" width={12} height={12} className="rounded-full bg-white p-0.5 object-contain" />
+              프리미어리그
+            </span>
+            <span className="inline-flex gap-0.5">
+              {[1,2,3,4,5].map(i => (
+                <svg key={i} width="10" height="10" viewBox="0 0 20 20" fill={i <= 4 ? "#FBBF24" : "#334155"}>
+                  <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
+                </svg>
+              ))}
+            </span>
+          </div>
+
+          {/* Teams VS */}
+          <div className="flex items-center justify-center gap-3 py-2">
+            <div className="flex flex-col items-center gap-1">
+              <img src="https://media.api-sports.io/football/teams/42.png" alt="Arsenal" width={32} height={32} className="object-contain" />
+              <span className="text-[13px] font-extrabold text-bg-50 leading-tight">아스널</span>
+            </div>
+            <span className="text-[12px] font-bold text-text-muted px-1">VS</span>
+            <div className="flex flex-col items-center gap-1">
+              <img src="https://media.api-sports.io/football/teams/49.png" alt="Chelsea" width={32} height={32} className="object-contain" />
+              <span className="text-[13px] font-extrabold text-bg-50 leading-tight">첼시</span>
+            </div>
+          </div>
+
+          {/* AI prediction pill */}
+          <div className="flex justify-center">
+            <span className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-white" style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>
+              AI 예측: 아스널 승
+            </span>
+          </div>
+
+          {/* Ensemble probability bars */}
+          <div className="rounded-lg p-2.5 space-y-1.5" style={{ background: "#0F172A", border: "1px solid #1E2D47" }}>
+            <div className="text-[9px] font-semibold text-text-secondary mb-1">4-모델 앙상블 확률</div>
+            {[
+              { label: "홈승", val: homeProb, highlight: true },
+              { label: "무승부", val: drawProb, highlight: false },
+              { label: "원정승", val: awayProb, highlight: false },
+            ].map(b => (
+              <div key={b.label} className="flex items-center gap-2">
+                <span className="w-10 text-right text-[9px] text-text-muted shrink-0">{b.label}</span>
+                <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "#1A2332" }}>
+                  <div className="h-full rounded-full" style={{ width: `${b.val}%`, background: b.highlight ? "#10B981" : "#475569" }} />
+                </div>
+                <span className={`w-8 text-[9px] font-mono-data font-medium shrink-0 ${b.highlight ? "text-emerald-400" : "text-text-muted"}`}>{b.val}%</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Model data sub-card */}
+          <div className="rounded-lg p-2.5 space-y-1" style={{ background: "#0F172A", border: "1px solid #1E2D47" }}>
+            <div className="text-[9px] font-semibold text-text-secondary mb-1">모델별 분석</div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {[
+                { label: "푸아송", home: "68%", away: "12%" },
+                { label: "ELO", home: "71%", away: "11%" },
+                { label: "xG 기반", home: "74%", away: "9%" },
+                { label: "배당 역산", home: "70%", away: "13%" },
+              ].map(m => (
+                <div key={m.label} className="rounded py-1 px-1.5 text-center" style={{ background: "#1A2332" }}>
+                  <div className="text-[8px] text-text-muted">{m.label}</div>
+                  <div className="font-mono-data text-[9px] text-bg-200">{m.home} : {m.away}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Key reason */}
+          <div className="text-[10px] text-text-secondary leading-relaxed font-body border-t border-bg-border-subtle pt-2">
+            홈 최근 8경기 6승, 상대 전적 우위. 4개 모델 모두 홈승 예측 일치.
+          </div>
+        </div>
       </div>
 
       <p className="text-center text-[11px] text-text-muted mt-3 font-body">가입하면 매일 이렇게 보입니다</p>
@@ -188,6 +249,23 @@ function AccordionItem({ q, a }) {
 }
 
 /* ────────────────────────────────────────────
+   TeamLogoImg — lightweight img with fallback
+   ──────────────────────────────────────────── */
+function TeamLogoImg({ teamId, name, size = 28 }) {
+  if (!teamId) return null;
+  return (
+    <img
+      src={`https://media.api-sports.io/football/teams/${teamId}.png`}
+      alt={name}
+      width={size}
+      height={size}
+      className="shrink-0 object-contain"
+      onError={(e) => { e.target.style.display = "none"; }}
+    />
+  );
+}
+
+/* ────────────────────────────────────────────
    GoldStars
    ──────────────────────────────────────────── */
 function GoldStars({ count }) {
@@ -248,9 +326,15 @@ function MatchPreviewCard({ match, variant }) {
             <GoldStars count={match.confidence} />
           </div>
           <div className="flex items-center justify-center gap-3 mb-3">
-            <span className="text-[16px] font-bold text-bg-50">{home}</span>
+            <div className="flex flex-col items-center gap-1">
+              <TeamLogoImg teamId={match.homeTeamId} name={home} />
+              <span className="text-[14px] font-bold text-bg-50">{home}</span>
+            </div>
             <span className="text-[13px] font-bold text-text-muted">VS</span>
-            <span className="text-[16px] font-bold text-bg-50">{away}</span>
+            <div className="flex flex-col items-center gap-1">
+              <TeamLogoImg teamId={match.awayTeamId} name={away} />
+              <span className="text-[14px] font-bold text-bg-50">{away}</span>
+            </div>
           </div>
           <div className="text-sm text-text-primary">{match.prediction}</div>
         </div>
@@ -291,9 +375,15 @@ function MatchPreviewCard({ match, variant }) {
 
         {/* VS layout */}
         <div className="flex items-center justify-center gap-4 mb-4">
-          <span className="text-[18px] font-extrabold text-bg-50 text-center leading-tight">{home}</span>
+          <div className="flex flex-col items-center gap-1.5 flex-1">
+            <TeamLogoImg teamId={match.homeTeamId} name={home} size={36} />
+            <span className="text-[16px] font-extrabold text-bg-50 text-center leading-tight">{home}</span>
+          </div>
           <span className="text-[14px] font-bold text-text-muted px-1">VS</span>
-          <span className="text-[18px] font-extrabold text-bg-50 text-center leading-tight">{away}</span>
+          <div className="flex flex-col items-center gap-1.5 flex-1">
+            <TeamLogoImg teamId={match.awayTeamId} name={away} size={36} />
+            <span className="text-[16px] font-extrabold text-bg-50 text-center leading-tight">{away}</span>
+          </div>
         </div>
 
         {/* Prediction + progress bar */}
@@ -438,8 +528,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right — Phone Mockup */}
-            <PhoneMockup />
+            {/* Right — Report Preview */}
+            <ReportPreview />
           </div>
         </section>
 
@@ -519,28 +609,6 @@ export default function Home() {
               >
                 전체 대시보드 보기 →
               </a>
-            </div>
-          </SectionWrap>
-        </FadeSection>
-
-        {/* ═══ 5. WHY MATCHLAB ═══ */}
-        <FadeSection>
-          <SectionWrap>
-            <div className="text-center mb-10">
-              <span className="section-label mb-3">WHY MATCHLAB</span>
-              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
-                왜 MATCHLAB인가요?
-              </h2>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              {TRUST_POINTS.map((item) => (
-                <div key={item.title} className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-6 hover:border-bg-border transition-colors">
-                  <span className="text-2xl mb-3 block">{item.icon}</span>
-                  <h3 className="text-text-primary font-bold text-base mb-2 font-body">{item.title}</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed font-body">{item.desc}</p>
-                </div>
-              ))}
             </div>
           </SectionWrap>
         </FadeSection>

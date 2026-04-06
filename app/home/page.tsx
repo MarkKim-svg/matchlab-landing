@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
+import AuthTabBar from "@/components/AuthTabBar";
 import HomeClient from "./HomeClient";
 
 export default async function HomePage() {
@@ -29,7 +30,8 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen" style={{ background: "#0F172A" }}>
       <Navbar />
-      <main className="max-w-2xl mx-auto">
+      <AuthTabBar />
+      <main className="max-w-5xl mx-auto pb-20 md:pb-0">
         <HomeClient userName={userName} plan={plan} />
       </main>
       <Footer />

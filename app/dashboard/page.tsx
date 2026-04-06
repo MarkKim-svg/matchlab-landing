@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
+import AuthTabBar from "@/components/AuthTabBar";
 import DashboardClient from "./DashboardClient";
 
 export const metadata = {
@@ -16,7 +17,8 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen" style={{ background: "#0F172A" }}>
       <Navbar />
-      <main className="max-w-3xl mx-auto">
+      <AuthTabBar />
+      <main className="max-w-3xl mx-auto pb-20 md:pb-0">
         <DashboardClient />
       </main>
       <Footer />

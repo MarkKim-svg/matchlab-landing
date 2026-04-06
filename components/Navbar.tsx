@@ -128,6 +128,13 @@ export default function Navbar() {
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-[14px] overflow-hidden">
                   <Link
+                    href="/"
+                    onClick={() => setMenuOpen(false)}
+                    className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors"
+                  >
+                    🏠 홈페이지 소개
+                  </Link>
+                  <Link
                     href="/mypage"
                     onClick={() => setMenuOpen(false)}
                     className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors"

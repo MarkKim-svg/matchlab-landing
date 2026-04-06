@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { KAKAO_CHANNEL_URL, LEAGUE_CONFIG } from "@/lib/constants";
+import AuthTabBar from "@/components/AuthTabBar";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
 
@@ -149,7 +150,8 @@ export default function MatchesDatePage() {
 
   return (
     <main className="min-h-screen bg-[#0F172A] text-white">
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      <AuthTabBar />
+      <div className="mx-auto max-w-3xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
         {/* ---- home link ---- */}
         <Link href="/" className="mb-4 inline-block text-sm text-slate-400 hover:text-emerald-400 transition">
           ← MATCHLAB 홈

@@ -83,15 +83,38 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
   const isPro = plan === "pro";
 
   return (
-    <>
-      <GreetingSection userName={userName} plan={plan} />
-      <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
-      <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
-      <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
-      <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
-      {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
-      <RecentResults />
-      <KakaoBanner />
-    </>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-6">
+      {/* 인사 + 오늘 요약 (풀와이드) */}
+      <div className="md:col-span-2 bg-bg-card rounded-[14px] border border-bg-border p-5">
+        <GreetingSection userName={userName} plan={plan} />
+        <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
+      </div>
+
+      {/* TopPick (좌) */}
+      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+        <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
+      </div>
+
+      {/* 적중률 요약 (우) */}
+      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+        <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
+      </div>
+
+      {/* 전체경기 리스트 (풀와이드) */}
+      <div className="md:col-span-2 bg-bg-card rounded-[14px] border border-bg-border p-5">
+        <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
+      </div>
+
+      {/* 최근결과 (좌) */}
+      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+        <RecentResults />
+      </div>
+
+      {/* Pro배너/CTA + 카카오 (우) */}
+      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5 flex flex-col gap-4">
+        {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
+        <KakaoBanner />
+      </div>
+    </div>
   );
 }

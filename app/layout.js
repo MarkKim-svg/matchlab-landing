@@ -29,6 +29,10 @@ export const metadata = {
       "AI가 매일 경기를 분석하고, 적중 확률 높은 경기를 알려드립니다.",
     // TODO: og:image 추가
   },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {

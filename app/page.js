@@ -315,6 +315,7 @@ function LeaguePill({ league }) {
    ──────────────────────────────────────────── */
 function MatchPreviewCard({ match, variant }) {
   const [home, away] = splitTeams(match.match);
+  // API has no probability field — use dummy probability if present, otherwise show confidenceLabel
   const prob = match.probability ?? 0;
 
   if (variant === "pro") {
@@ -386,23 +387,29 @@ function MatchPreviewCard({ match, variant }) {
           </div>
         </div>
 
-        {/* Prediction + progress bar */}
+        {/* Prediction + confidence bar */}
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[13px] font-semibold text-text-primary font-body">{match.prediction}</span>
-            <span className="text-[13px] font-bold text-emerald-400 font-display">{prob}%</span>
+            {prob > 0 ? (
+              <span className="text-[13px] font-bold text-emerald-400 font-display">{prob}%</span>
+            ) : (
+              <span className="text-[12px] text-text-muted">확신도 {match.confidenceLabel || `⭐×${match.confidence}`}</span>
+            )}
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#0F172A" }}>
-            <div
-              className="h-full rounded-full transition-all duration-700"
-              style={{
-                width: `${prob}%`,
-                background: isTop
-                  ? "linear-gradient(90deg, #FBBF24, #10B981)"
-                  : "#10B981",
-              }}
-            />
-          </div>
+          {prob > 0 && (
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#0F172A" }}>
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${prob}%`,
+                  background: isTop
+                    ? "linear-gradient(90deg, #FBBF24, #10B981)"
+                    : "#10B981",
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Reason */}
@@ -486,24 +493,27 @@ export default function Home() {
                 ))}
               </div>
 
-              <h1 className="font-body font-bold text-[24px] sm:text-[32px] md:text-[40px] leading-[1.2] tracking-[-0.5px] text-text-primary mb-4">
+              <h1 className="font-body font-bold text-[24px] sm:text-[32px] md:text-[40px] leading-[1.2] tracking-[-0.5px] text-text-primary mb-2">
                 매일 아침, AI가 고른
                 <br />
                 <span className="text-emerald-400">승부 예측</span>
               </h1>
+              <p className="text-emerald-400 text-lg font-display font-bold mb-4">
+                {highConfRate > 0 ? `고확신 경기 적중률 ${highConfRate}%` : "적중률 데이터 수집중"}
+              </p>
               <p className="text-text-secondary text-[14px] md:text-[16px] mb-8 max-w-md leading-relaxed font-body break-keep">
-                4종 앙상블 AI가 매일 가장 유리한 경기를 선별합니다.
+                가입하면 매일 카카오톡으로 AI 분석 리포트를 받습니다.
                 <br className="hidden sm:block" />
-                확신도가 높은 경기만, 근거와 함께.
+                고확신 경기는 Pro에서.
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap gap-3 mb-8">
+              <div className="flex flex-wrap gap-3 mb-2">
                 <a
                   href="/login"
                   className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-7 py-3.5 rounded-[14px] text-[15px] transition-all font-body"
                 >
-                  무료로 시작하기
+                  무료 가입 — 매일 2경기 분석 받기
                 </a>
                 <a
                   href="#accuracy"
@@ -512,6 +522,7 @@ export default function Home() {
                   분석 데이터 보기
                 </a>
               </div>
+              <p className="text-xs text-text-muted font-body mb-8">가입 30초 · 카드 없이 시작</p>
 
               {/* Stats */}
               <div className="flex gap-8 text-sm">

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import KakaoInAppBanner from "@/components/KakaoInAppBanner";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={spaceGrotesk.variable}>
       <body className="font-body bg-bg-900 text-[#F1F5F9]">
+        <KakaoInAppBanner />
         {children}
         <Analytics />
       </body>

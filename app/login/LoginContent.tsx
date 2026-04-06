@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -15,8 +15,15 @@ export default function LoginContent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
+  const [isKakaoInApp, setIsKakaoInApp] = useState(false);
 
   const supabase = createClient();
+
+  useEffect(() => {
+    if (/KAKAOTALK/i.test(navigator.userAgent)) {
+      setIsKakaoInApp(true);
+    }
+  }, []);
 
   function getCallbackUrl() {
     return `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
@@ -97,6 +104,29 @@ export default function LoginContent() {
             </div>
           ) : (
             <>
+              {/* 카카오톡 인앱 브라우저 안내 */}
+              {isKakaoInApp && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm mb-4">
+                  <p className="text-amber-400 font-medium mb-2">
+                    카카오톡 앱에서는 구글 로그인이 지원되지 않습니다.
+                  </p>
+                  <button
+                    onClick={() => {
+                      window.location.href =
+                        "kakaotalk://web/openExternal?url=" +
+                        encodeURIComponent(window.location.href);
+                    }}
+                    className="w-full h-10 rounded-lg bg-amber-500 text-white font-medium text-sm
+                               hover:bg-amber-400 transition-all cursor-pointer mb-2"
+                  >
+                    외부 브라우저에서 열기
+                  </button>
+                  <p className="text-bg-200 text-xs">
+                    또는 아래 카카오/이메일 로그인을 이용하세요
+                  </p>
+                </div>
+              )}
+
               {/* 소셜 로그인 */}
               <button
                 onClick={() => handleOAuth("kakao")}
@@ -108,15 +138,17 @@ export default function LoginContent() {
                 카카오로 시작하기
               </button>
 
-              <button
-                onClick={() => handleOAuth("google")}
-                className="w-full flex items-center justify-center gap-2 h-12 rounded-xl mt-3
-                           bg-white text-[#191919] font-medium text-[15px]
-                           hover:brightness-95 transition-all cursor-pointer"
-              >
-                <GoogleIcon />
-                Google로 시작하기
-              </button>
+              {!isKakaoInApp && (
+                <button
+                  onClick={() => handleOAuth("google")}
+                  className="w-full flex items-center justify-center gap-2 h-12 rounded-xl mt-3
+                             bg-white text-[#191919] font-medium text-[15px]
+                             hover:brightness-95 transition-all cursor-pointer"
+                >
+                  <GoogleIcon />
+                  Google로 시작하기
+                </button>
+              )}
 
               {/* 구분선 */}
               <div className="flex items-center gap-3 my-6">

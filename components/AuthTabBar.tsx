@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BarChart3, TrendingUp, User } from "lucide-react";
+import { Home, BarChart3, TrendingUp } from "lucide-react";
 
 const tabs = [
   { label: "홈", href: "/home", icon: Home },
@@ -13,7 +13,6 @@ const tabs = [
     icon: TrendingUp,
   },
   { label: "대시보드", href: "/dashboard", icon: BarChart3 },
-  { label: "마이페이지", href: "/mypage", icon: User },
 ];
 
 export default function AuthTabBar() {

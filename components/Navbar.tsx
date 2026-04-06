@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
 const BeakerIcon = () => (
-  <svg viewBox="4 2 66 76" className="w-6 h-7" fill="none">
+  <svg viewBox="4 2 66 76" className="w-8 h-9" fill="none">
     <path d="M10,10 L10,66 Q10,74 18,74 L54,74 Q62,74 62,66 L62,10" stroke="#10B981" strokeWidth="2.2" strokeLinejoin="round"/>
     <line x1="8" y1="10" x2="64" y2="10" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round"/>
     <path d="M62,10 L66,6" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round"/>
@@ -99,7 +99,7 @@ export default function Navbar() {
       <div className="max-w-[1120px] mx-auto flex justify-between items-center h-14">
         <Link href="/" className="group flex items-center gap-2 transition-all duration-200" style={{ filter: "drop-shadow(0 0 0px transparent)" }} onMouseEnter={e => e.currentTarget.style.filter = "drop-shadow(0 0 6px rgba(16,185,129,0.4))"} onMouseLeave={e => e.currentTarget.style.filter = "drop-shadow(0 0 0px transparent)"}>
           <BeakerIcon />
-          <span className="font-display font-bold text-xl tracking-[-1.5px] text-[#E1E7EF]">MATCHLAB</span>
+          <span className="font-display font-bold text-[22px] tracking-[-1.5px] text-[#E1E7EF]">MATCHLAB</span>
         </Link>
 
         <div className="flex items-center gap-4">

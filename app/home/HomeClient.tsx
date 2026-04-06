@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, type ReactNode } from "react";
 import GreetingSection from "./sections/GreetingSection";
 import TodaySummary from "./sections/TodaySummary";
+import MatchCarousel from "./sections/MatchCarousel";
 import TopPick from "./sections/TopPick";
 import WeeklyAccuracy from "./sections/WeeklyAccuracy";
 import MatchList from "./sections/MatchList";
@@ -118,6 +119,11 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
       <FadeInCard className="md:col-span-2">
         <GreetingSection userName={userName} plan={plan} />
         <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
+      </FadeInCard>
+
+      {/* 경기 캐러셀 (풀와이드) */}
+      <FadeInCard className="md:col-span-2" delay={50}>
+        <MatchCarousel predictions={predictions} loading={predLoading} />
       </FadeInCard>
 
       {/* TopPick (좌) */}

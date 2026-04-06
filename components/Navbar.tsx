@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { Home, BarChart3, TrendingUp } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const BeakerIcon = () => (
@@ -15,11 +16,23 @@ const BeakerIcon = () => (
   </svg>
 );
 
+const NAV_TABS = [
+  { label: "홈", href: "/home", icon: Home },
+  {
+    label: "오늘의 분석",
+    href: `/matches/${new Date().toISOString().split("T")[0]}`,
+    match: "/matches/",
+    icon: TrendingUp,
+  },
+  { label: "대시보드", href: "/dashboard", icon: BarChart3 },
+];
+
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
   const isLanding = pathname === "/";
+  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage"].some(p => pathname.startsWith(p));
 
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -28,33 +41,26 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // 스크롤 감지
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", h);
     return () => window.removeEventListener("scroll", h);
   }, []);
 
-  // 유저 정보 로드
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-
       if (user) {
-        // profiles 테이블에서 닉네임 조회
         const { data } = await supabase
           .from("profiles")
           .select("nickname, role")
           .eq("id", user.id)
           .single();
-
         if (data?.role === "admin") setIsAdmin(true);
-
         if (data?.nickname) {
           setNickname(data.nickname);
         } else {
-          // fallback: 이메일 앞부분 또는 provider 이름
           setNickname(
             user.user_metadata?.full_name ||
             user.user_metadata?.name ||
@@ -65,18 +71,13 @@ export default function Navbar() {
       }
     }
     load();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (!session?.user) {
-        setNickname("");
-      }
+      if (!session?.user) setNickname("");
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
-  // 바깥 클릭 시 드롭다운 닫기
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -94,82 +95,127 @@ export default function Navbar() {
     router.refresh();
   }
 
+  function isTabActive(tab: (typeof NAV_TABS)[number]) {
+    if (tab.match) return pathname.startsWith(tab.match);
+    return pathname === tab.href;
+  }
+
+  const showTabs = user && isAuthPage;
+
   return (
-    <nav className={`sticky top-0 z-50 px-6 transition-all duration-300 ${scrolled ? "bg-[#060B14]/95 backdrop-blur-lg" : "bg-[#060B14]"}`}>
-      <div className="max-w-[1120px] mx-auto flex justify-between items-center h-14">
-        <Link href="/" className="group flex items-center gap-2 transition-all duration-200" style={{ filter: "drop-shadow(0 0 0px transparent)" }} onMouseEnter={e => e.currentTarget.style.filter = "drop-shadow(0 0 6px rgba(16,185,129,0.4))"} onMouseLeave={e => e.currentTarget.style.filter = "drop-shadow(0 0 0px transparent)"}>
+    <nav
+      className={`sticky top-0 z-50 transition-all duration-300 border-b ${
+        scrolled
+          ? "bg-[#0A1121]/95 backdrop-blur-lg border-bg-border"
+          : "bg-[#0A1121] border-bg-border/50"
+      }`}
+    >
+      <div className="max-w-[1120px] mx-auto flex items-center justify-between h-16 px-4 sm:px-6">
+        {/* ── Logo ── */}
+        <Link
+          href={user ? "/home" : "/"}
+          className="flex items-center gap-2.5 shrink-0 transition-all duration-200"
+          style={{ filter: "drop-shadow(0 0 0px transparent)" }}
+          onMouseEnter={e => e.currentTarget.style.filter = "drop-shadow(0 0 6px rgba(16,185,129,0.4))"}
+          onMouseLeave={e => e.currentTarget.style.filter = "drop-shadow(0 0 0px transparent)"}
+        >
           <BeakerIcon />
-          <span className="font-display font-bold text-[22px] tracking-[-1.5px] text-[#E1E7EF]">MATCHLAB</span>
+          <span className="font-display font-bold text-lg tracking-[-1.2px] text-[#E1E7EF]">MATCHLAB</span>
         </Link>
 
-        <div className="flex items-center gap-4">
-          {!user && (
-            <a href="#dashboard" className="text-[14px] font-medium text-[#8494A7] hover:text-emerald-400 transition-colors font-body hidden md:block">적중률</a>
+        {/* ── Desktop Tabs (중앙) ── */}
+        {showTabs && (
+          <div className="hidden md:flex items-center gap-2">
+            {NAV_TABS.map((tab) => {
+              const active = isTabActive(tab);
+              const Icon = tab.icon;
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className={`flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-xl text-[11px] font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-emerald-500/15 border border-emerald-500/40 text-emerald-400"
+                      : "bg-bg-800/60 border border-transparent text-text-secondary hover:bg-bg-700 hover:text-text-primary"
+                  }`}
+                >
+                  <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
+                  <span>{tab.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── Right side ── */}
+        <div className="flex items-center gap-3">
+          {!user && !isLanding && (
+            <a href="#dashboard" className="text-[14px] font-medium text-[#8494A7] hover:text-emerald-400 transition-colors font-body hidden md:block">
+              적중률
+            </a>
           )}
 
           {user ? (
-            /* ── 로그인 상태 ── */
             <>
-            {isLanding && (
-              <Link
-                href="/home"
-                className="text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-colors font-body"
-              >
-                홈으로 돌아가기 →
-              </Link>
-            )}
-            <div ref={menuRef} className="relative">
-              <button
-                onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-500/40
-                           hover:bg-emerald-500/10 transition-colors cursor-pointer"
-              >
-                <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold shrink-0">
-                  {nickname.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-sm font-medium text-bg-100 max-w-[100px] truncate hidden sm:block">
-                  {nickname}
-                </span>
-                <ChevronDown />
-              </button>
-
-              {menuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-[14px] overflow-hidden">
-                  <button
-                    onClick={() => { setMenuOpen(false); window.location.href = "/?landing=true"; }}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors cursor-pointer"
-                  >
-                    🏠 홈페이지 소개
-                  </button>
-                  <Link
-                    href="/mypage"
-                    onClick={() => setMenuOpen(false)}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors"
-                  >
-                    마이페이지
-                  </Link>
-                  {isAdmin && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setMenuOpen(false)}
-                      className="block w-full text-left px-4 py-2.5 text-xs text-[#566378] hover:bg-bg-700 transition-colors"
-                    >
-                      관리자
-                    </Link>
-                  )}
-                  <div className="h-px bg-bg-700" />
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full text-left px-4 py-2.5 text-sm text-error hover:bg-bg-700 transition-colors cursor-pointer"
-                  >
-                    로그아웃
-                  </button>
-                </div>
+              {isLanding && (
+                <Link
+                  href="/home"
+                  className="text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-emerald-500 text-white hover:bg-emerald-400 transition-colors font-body"
+                >
+                  홈으로 돌아가기 →
+                </Link>
               )}
-            </div>
+              <div ref={menuRef} className="relative">
+                <button
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-bg-border
+                             hover:bg-bg-700 transition-all duration-200 cursor-pointer"
+                >
+                  <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold shrink-0">
+                    {nickname.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-bg-100 max-w-[80px] truncate hidden sm:block">
+                    {nickname}
+                  </span>
+                  <ChevronDown />
+                </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-44 bg-[#0F1729] border border-bg-border rounded-xl overflow-hidden shadow-lg shadow-black/30">
+                    <button
+                      onClick={() => { setMenuOpen(false); window.location.href = "/?landing=true"; }}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors cursor-pointer"
+                    >
+                      🏠 홈페이지 소개
+                    </button>
+                    <Link
+                      href="/mypage"
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors"
+                    >
+                      마이페이지
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setMenuOpen(false)}
+                        className="block w-full text-left px-4 py-2.5 text-xs text-text-muted hover:bg-bg-700 transition-colors"
+                      >
+                        관리자
+                      </Link>
+                    )}
+                    <div className="h-px bg-bg-border mx-2" />
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full text-left px-4 py-2.5 text-sm text-error hover:bg-bg-700 transition-colors cursor-pointer"
+                    >
+                      로그아웃
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
-            /* ── 비로그인 상태 ── */
             <Link
               href="/login"
               className="text-[14px] font-medium px-4 py-1.5 rounded-lg border border-emerald-500 text-emerald-400

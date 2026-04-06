@@ -27,67 +27,29 @@ export default function AuthTabBar() {
     return pathname === tab.href;
   }
 
+  // 모바일 하단 탭바만 렌더 (데스크톱 탭은 Navbar에 통합됨)
   return (
-    <>
-      {/* 데스크톱: Navbar와 시각적 통합 (간격 없음, 배경 통일) */}
-      <div className="hidden md:block sticky top-14 z-40 bg-[#060B14]">
-        <div className="max-w-5xl mx-auto flex justify-center gap-1">
-          {tabs.map((tab) => {
-            const active = isActive(tab);
-            const Icon = tab.icon;
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`relative flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-t-lg transition-all duration-200 ${
-                  active
-                    ? "text-emerald-400 bg-emerald-500/5"
-                    : "text-text-secondary hover:text-text-primary hover:bg-white/[0.03]"
-                }`}
-              >
-                <Icon size={18} />
-                <span>{tab.label}</span>
-                {/* Animated underline */}
-                <span
-                  className={`absolute bottom-0 left-2 right-2 h-[2px] rounded-full transition-all duration-300 ${
-                    active
-                      ? "bg-emerald-400 opacity-100 scale-x-100"
-                      : "bg-emerald-400 opacity-0 scale-x-0"
-                  }`}
-                />
-              </Link>
-            );
-          })}
-        </div>
-        <div className="h-px bg-bg-border" />
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-bg-border bg-[#0A1121]/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
+      <div className="flex justify-around">
+        {tabs.map((tab) => {
+          const active = isActive(tab);
+          const Icon = tab.icon;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={`flex flex-col items-center gap-0.5 py-2 px-4 rounded-xl mx-1 my-1.5 text-[11px] font-medium transition-all duration-200 ${
+                active
+                  ? "bg-emerald-500/15 text-emerald-400"
+                  : "text-text-secondary"
+              }`}
+            >
+              <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+              <span>{tab.label}</span>
+            </Link>
+          );
+        })}
       </div>
-
-      {/* 모바일: 하단 고정 */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-bg-border bg-[#060B14]/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
-        <div className="flex justify-around">
-          {tabs.map((tab) => {
-            const active = isActive(tab);
-            const Icon = tab.icon;
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`flex flex-col items-center gap-1 py-2.5 px-3 text-[11px] font-medium transition-all duration-200 relative ${
-                  active
-                    ? "text-emerald-400"
-                    : "text-text-secondary"
-                }`}
-              >
-                {active && (
-                  <span className="absolute top-0 left-3 right-3 h-[2px] bg-emerald-400 rounded-full" />
-                )}
-                <Icon size={20} />
-                <span>{tab.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-    </>
+    </div>
   );
 }

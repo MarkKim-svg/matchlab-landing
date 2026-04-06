@@ -110,6 +110,11 @@ function PhoneMockup() {
           <div className="w-24 h-5 bg-bg-deep rounded-full" />
         </div>
 
+        {/* Logo overlay */}
+        <div className="absolute left-0 right-0 z-10 bg-bg-deep px-4 py-2 border-b border-bg-border-subtle" style={{ top: "28px" }}>
+          <img src="/assets/logo/matchlab-logo-dark.svg" alt="MATCHLAB" className="h-5" />
+        </div>
+
         <iframe
           src="/home"
           className="w-full border-0"

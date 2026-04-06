@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
-import { KAKAO_CHANNEL_URL } from "@/lib/constants";
 import type { MatchPrediction } from "@/lib/notion";
 import type { MatchReport, ReportBlock, ReportRich, ReportSection } from "@/lib/notion";
 
@@ -189,12 +188,10 @@ function ProOverlay() {
       <span className="text-3xl">🔒</span>
       <p className="mt-2 text-sm font-semibold text-white">Pro 전용 분석</p>
       <a
-        href={KAKAO_CHANNEL_URL}
-        target="_blank"
-        rel="noopener noreferrer"
+        href="/#pricing"
         className="mt-2 inline-block rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 transition"
       >
-        카톡으로 구독 문의
+        Pro 시작하기
       </a>
     </div>
   );

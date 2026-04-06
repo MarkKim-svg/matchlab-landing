@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { KAKAO_CHANNEL_URL, LEAGUE_CONFIG } from "@/lib/constants";
+import { LEAGUE_CONFIG } from "@/lib/constants";
+import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
@@ -150,13 +151,9 @@ export default function MatchesDatePage() {
 
   return (
     <main className="min-h-screen bg-[#0F172A] text-white">
+      <Navbar />
       <AuthTabBar />
-      <div className="mx-auto max-w-3xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
-        {/* ---- home link ---- */}
-        <Link href="/" className="mb-4 inline-block text-sm text-slate-400 hover:text-emerald-400 transition">
-          ← MATCHLAB 홈
-        </Link>
-
+      <div className="mx-auto max-w-3xl px-4 py-6 pb-24 md:pb-8 sm:px-6">
         {/* ---- header ---- */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
@@ -369,9 +366,7 @@ export default function MatchesDatePage() {
                       return (
                         <a
                           key={m.id}
-                          href={KAKAO_CHANNEL_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href="/#pricing"
                           className="block"
                         >
                           <div

@@ -7,6 +7,7 @@ const ALLOWED_LEAGUES = new Set(["39", "140", "135", "78", "61"]);
 export async function GET(request: NextRequest) {
   try {
     const league = request.nextUrl.searchParams.get("league") || "39";
+    const season = request.nextUrl.searchParams.get("season") || "2025";
 
     if (!ALLOWED_LEAGUES.has(league)) {
       return NextResponse.json({ error: "Invalid league" }, { status: 400 });
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     }
 
     const res = await fetch(
-      `https://v3.football.api-sports.io/standings?league=${league}&season=2025`,
+      `https://v3.football.api-sports.io/standings?league=${league}&season=${season}`,
       {
         headers: { "x-apisports-key": apiKey },
         next: { revalidate: 3600 },

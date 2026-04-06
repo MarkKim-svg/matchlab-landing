@@ -51,8 +51,17 @@ function getZoneColor(desc: string | null, rank: number, total: number): string 
   return null;
 }
 
+const SEASONS = [
+  { value: "2025", label: "2025-26" },
+  { value: "2024", label: "2024-25" },
+  { value: "2023", label: "2023-24" },
+  { value: "2022", label: "2022-23" },
+  { value: "2021", label: "2021-22" },
+];
+
 export default function StandingsPage() {
   const [leagueId, setLeagueId] = useState("39");
+  const [season, setSeason] = useState("2025");
 
   const [standings, setStandings] = useState<Standing[]>([]);
   const [scorers, setScorers] = useState<Scorer[]>([]);
@@ -65,23 +74,23 @@ export default function StandingsPage() {
   // Fetch standings
   useEffect(() => {
     setStandingsLoading(true);
-    fetch(`/api/standings?league=${leagueId}`)
+    fetch(`/api/standings?league=${leagueId}&season=${season}`)
       .then((r) => r.json())
       .then((d) => setStandings(d.standings ?? []))
       .catch(() => setStandings([]))
       .finally(() => setStandingsLoading(false));
-  }, [leagueId]);
+  }, [leagueId, season]);
 
   // Fetch scorers
   useEffect(() => {
     setScorersLoading(true);
     setShowAll(false);
-    fetch(`/api/top-scorers?league=${leagueId}`)
+    fetch(`/api/top-scorers?league=${leagueId}&season=${season}`)
       .then((r) => r.json())
       .then((d) => setScorers(d.scorers ?? []))
       .catch(() => setScorers([]))
       .finally(() => setScorersLoading(false));
-  }, [leagueId]);
+  }, [leagueId, season]);
 
   // Sort scorers by selected tab
   const sortedScorers = useMemo(() => {
@@ -100,30 +109,42 @@ export default function StandingsPage() {
       <Navbar />
       <AuthTabBar />
       <main className="max-w-4xl mx-auto px-4 py-6 pb-24 md:pb-8">
-        {/* ── League selector ── */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 mb-6">
-          {LEAGUES.map((league) => {
-            const active = league.id === leagueId;
-            return (
-              <button
-                key={league.id}
-                onClick={() => setLeagueId(league.id)}
-                className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer ${
-                  active
-                    ? "bg-emerald-500/15 border border-emerald-500/40 text-emerald-400"
-                    : "bg-bg-card border border-bg-border text-text-secondary hover:bg-bg-700 hover:text-text-primary"
-                }`}
-              >
-                <img
-                  src={league.logo}
-                  alt={league.name}
-                  className="w-5 h-5 rounded-full bg-white p-0.5 object-contain"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
-                <span>{league.name}</span>
-              </button>
-            );
-          })}
+        {/* ── League selector + Season dropdown ── */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 flex-1">
+            {LEAGUES.map((league) => {
+              const active = league.id === leagueId;
+              return (
+                <button
+                  key={league.id}
+                  onClick={() => setLeagueId(league.id)}
+                  className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 cursor-pointer ${
+                    active
+                      ? "bg-emerald-500/15 border border-emerald-500/40 text-emerald-400"
+                      : "bg-bg-card border border-bg-border text-text-secondary hover:bg-bg-700 hover:text-text-primary"
+                  }`}
+                >
+                  <img
+                    src={league.logo}
+                    alt={league.name}
+                    className="w-5 h-5 rounded-full bg-white p-0.5 object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  <span>{league.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <select
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+            className="shrink-0 bg-bg-card border border-bg-border rounded-lg px-3 py-1.5 text-sm text-bg-100 font-medium cursor-pointer focus:outline-none focus:border-emerald-500/40"
+          >
+            {SEASONS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
         </div>
 
         {/* ── Section 1: Team Standings ── */}

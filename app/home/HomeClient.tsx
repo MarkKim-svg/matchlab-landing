@@ -8,7 +8,6 @@ import TopPick from "./sections/TopPick";
 import WeeklyAccuracy from "./sections/WeeklyAccuracy";
 import MatchList from "./sections/MatchList";
 import ProUpgradeBanner from "./sections/ProUpgradeBanner";
-import RecentResults from "./sections/RecentResults";
 import MiniStandings from "./sections/MiniStandings";
 import KakaoBanner from "./sections/KakaoBanner";
 
@@ -122,35 +121,30 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
         <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
       </FadeInCard>
 
+      {/* 캐러셀 (풀와이드) */}
+      <FadeInCard className="md:col-span-2" delay={50}>
+        <MatchCarousel predictions={predictions} loading={predLoading} />
+      </FadeInCard>
+
       {/* TopPick (좌) */}
       <FadeInCard delay={100}>
         <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
       </FadeInCard>
 
-      {/* 적중률 요약 (우) */}
+      {/* 적중률 + 최근결과 통합 (우) */}
       <FadeInCard delay={200}>
         <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
       </FadeInCard>
 
-      {/* 경기 캐러셀 (풀와이드) */}
-      <FadeInCard className="md:col-span-2" delay={50}>
-        <MatchCarousel predictions={predictions} loading={predLoading} />
-      </FadeInCard>
-
-      {/* 전체경기 (풀와이드) */}
-      <FadeInCard className="md:col-span-2" delay={100}>
-        <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
-      </FadeInCard>
-
-      {/* 최근결과 3건 (좌) */}
-      <FadeInCard delay={100}>
-        <RecentResults maxItems={3} />
-      </FadeInCard>
-
-      {/* 미니 순위표 (우) */}
-      <FadeInCard delay={200}>
-        <MiniStandings />
-      </FadeInCard>
+      {/* 전체경기 + 미니순위표 (풀와이드, 내부 3:2 비율) */}
+      <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4">
+        <FadeInCard className="md:col-span-3" delay={100}>
+          <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
+        </FadeInCard>
+        <FadeInCard className="md:col-span-2" delay={200}>
+          <MiniStandings />
+        </FadeInCard>
+      </div>
 
       {/* Pro배너/CTA + 카카오 (풀와이드) */}
       <FadeInCard className="md:col-span-2 flex flex-col gap-4">

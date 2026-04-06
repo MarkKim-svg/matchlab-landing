@@ -42,7 +42,7 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
   if (locked) {
     return (
       <div
-        className="rounded-xl p-3 mb-2"
+        className="rounded-xl p-3 mb-3"
         style={{ background: "#1A2332", border: "1px solid #263344" }}
       >
         {/* Row 1: League + Lock */}
@@ -68,7 +68,7 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
   return (
     <Link href={`/report/${match.id}`}>
       <div
-        className="rounded-xl p-3 mb-2 transition-colors hover:border-emerald-500/30"
+        className="rounded-xl p-3 mb-3 transition-colors hover:border-emerald-500/30"
         style={{
           background: "#1A2332",
           border: isHigh ? "1px solid #F59E0B44" : "1px solid #263344",

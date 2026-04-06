@@ -16,6 +16,10 @@ interface Standing {
   teamName: string;
   teamLogo: string;
   points: number;
+  played: number;
+  win: number;
+  draw: number;
+  lose: number;
 }
 
 export default function MiniStandings() {
@@ -73,37 +77,52 @@ export default function MiniStandings() {
       ) : standings.length === 0 ? (
         <div className="text-center py-4 text-[12px] text-text-muted">시즌 준비 중</div>
       ) : (
-        <div className="space-y-0.5">
-          {standings.map((t) => (
-            <div
-              key={t.rank}
-              className="flex items-center gap-2 py-1.5 px-1 rounded-md hover:bg-white/[0.02] transition-colors"
-            >
-              {/* Zone bar + rank */}
-              <div className="flex items-center w-7 shrink-0">
-                <span
-                  className="w-[2px] h-4 rounded-full mr-1.5"
-                  style={{ background: t.rank <= 4 ? "#10B981" : "transparent" }}
-                />
-                <span className="text-[11px] text-text-muted font-mono-data">{t.rank}</span>
-              </div>
-
-              {/* Team */}
-              <img
-                src={t.teamLogo}
-                alt=""
-                className="w-4 h-4 object-contain shrink-0"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-              />
-              <span className="text-[12px] text-bg-100 truncate flex-1">{t.teamName}</span>
-
-              {/* Points */}
-              <span className="text-[12px] font-bold text-emerald-400 font-mono-data shrink-0 w-7 text-right">
-                {t.points}
-              </span>
-            </div>
-          ))}
-        </div>
+        <table className="w-full text-[11px]">
+          <thead>
+            <tr className="text-text-muted text-[10px] uppercase tracking-wider">
+              <th className="text-left pl-1 pr-1 py-1 w-7">#</th>
+              <th className="text-left py-1">팀</th>
+              <th className="text-center py-1 w-7 hidden sm:table-cell">경기</th>
+              <th className="text-center py-1 w-6 hidden sm:table-cell">승</th>
+              <th className="text-center py-1 w-6 hidden sm:table-cell">무</th>
+              <th className="text-center py-1 w-6 hidden sm:table-cell">패</th>
+              <th className="text-center py-1 pr-1 w-8">승점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {standings.map((t) => (
+              <tr key={t.rank} className="hover:bg-white/[0.02] transition-colors">
+                <td className="py-1.5 pl-1 pr-1">
+                  <div className="flex items-center">
+                    <span
+                      className="w-[2px] h-4 rounded-full mr-1 shrink-0"
+                      style={{ background: t.rank <= 4 ? "#10B981" : "transparent" }}
+                    />
+                    <span className="text-text-muted font-mono-data">{t.rank}</span>
+                  </div>
+                </td>
+                <td className="py-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <img
+                      src={t.teamLogo}
+                      alt=""
+                      className="w-4 h-4 object-contain shrink-0"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                    <span className="text-bg-100 font-bold truncate">{t.teamName}</span>
+                  </div>
+                </td>
+                <td className="text-center text-text-muted hidden sm:table-cell">{t.played}</td>
+                <td className="text-center text-text-muted hidden sm:table-cell">{t.win}</td>
+                <td className="text-center text-text-muted hidden sm:table-cell">{t.draw}</td>
+                <td className="text-center text-text-muted hidden sm:table-cell">{t.lose}</td>
+                <td className="text-center pr-1">
+                  <span className="font-bold text-emerald-400 font-mono-data">{t.points}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </section>
   );

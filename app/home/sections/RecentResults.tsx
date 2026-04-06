@@ -21,7 +21,7 @@ function getDateStr(daysAgo: number): string {
   return d.toISOString().split("T")[0];
 }
 
-export default function RecentResults() {
+export default function RecentResults({ maxItems = 6 }: { maxItems?: number }) {
   const [results, setResults] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const yesterday = getDateStr(1);
@@ -35,7 +35,7 @@ export default function RecentResults() {
         ]);
         const all = [...(res1.matches ?? []), ...(res2.matches ?? [])];
         const judged = all.filter((m: Match) => m.isCorrect === "적중" || m.isCorrect === "미적중");
-        setResults(judged.slice(0, 6));
+        setResults(judged.slice(0, maxItems));
       } catch {
         // ignore
       } finally {
@@ -85,8 +85,8 @@ export default function RecentResults() {
           <span className="text-[16px]">📋</span>
           <span className="text-[14px] font-bold text-bg-100">최근 예측 결과</span>
         </div>
-        <Link href={`/matches/${yesterday}`} className="text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
-          더 보기 →
+        <Link href="/dashboard" className="text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
+          전체 결과 보기 →
         </Link>
       </div>
 

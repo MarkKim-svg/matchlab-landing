@@ -122,11 +122,6 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
         <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
       </FadeInCard>
 
-      {/* 경기 캐러셀 (풀와이드) */}
-      <FadeInCard className="md:col-span-2" delay={50}>
-        <MatchCarousel predictions={predictions} loading={predLoading} />
-      </FadeInCard>
-
       {/* TopPick (좌) */}
       <FadeInCard delay={100}>
         <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
@@ -137,22 +132,27 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
         <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
       </FadeInCard>
 
-      {/* 전체경기 (좌) */}
-      <FadeInCard delay={100}>
+      {/* 경기 캐러셀 (풀와이드) */}
+      <FadeInCard className="md:col-span-2" delay={50}>
+        <MatchCarousel predictions={predictions} loading={predLoading} />
+      </FadeInCard>
+
+      {/* 전체경기 (풀와이드) */}
+      <FadeInCard className="md:col-span-2" delay={100}>
         <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
       </FadeInCard>
 
-      {/* 최근결과 (우) */}
-      <FadeInCard delay={200}>
-        <RecentResults />
+      {/* 최근결과 3건 (좌) */}
+      <FadeInCard delay={100}>
+        <RecentResults maxItems={3} />
       </FadeInCard>
 
-      {/* 미니 순위표 (좌) */}
-      <FadeInCard delay={100}>
+      {/* 미니 순위표 (우) */}
+      <FadeInCard delay={200}>
         <MiniStandings />
       </FadeInCard>
 
-      {/* Pro배너/CTA + 카카오 (우 또는 풀와이드) */}
+      {/* Pro배너/CTA + 카카오 (풀와이드) */}
       <FadeInCard className="md:col-span-2 flex flex-col gap-4">
         {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
         <KakaoBanner />

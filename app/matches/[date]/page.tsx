@@ -168,22 +168,23 @@ export default function MatchesDatePage() {
             </button>
 
             <div className="text-center">
-              <h1
-                className="text-lg font-bold sm:text-xl cursor-pointer inline-flex items-center gap-1.5"
-                onClick={() => dateInputRef.current?.showPicker()}
-              >
-                {formatKoreanDate(dateStr)}
-                <span className="text-base">📅</span>
+              <h1 className="text-lg font-bold sm:text-xl inline-flex items-center gap-1.5 relative">
+                <span
+                  className="cursor-pointer hover:text-emerald-400 transition-colors"
+                  onClick={() => dateInputRef.current?.showPicker()}
+                >
+                  {formatKoreanDate(dateStr)}
+                </span>
+                <input
+                  ref={dateInputRef}
+                  type="date"
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  value={dateStr}
+                  onChange={(e) => {
+                    if (e.target.value) goDate(e.target.value);
+                  }}
+                />
               </h1>
-              <input
-                ref={dateInputRef}
-                type="date"
-                className="sr-only"
-                value={dateStr}
-                onChange={(e) => {
-                  if (e.target.value) goDate(e.target.value);
-                }}
-              />
               {!isToday && (
                 <button
                   onClick={() => goDate(getKSTToday())}

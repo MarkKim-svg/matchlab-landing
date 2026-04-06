@@ -100,18 +100,18 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
         <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
       </div>
 
-      {/* 전체경기 리스트 (풀와이드) */}
-      <div className="md:col-span-2 bg-bg-card rounded-[14px] border border-bg-border p-5">
+      {/* 전체경기 (좌) */}
+      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
         <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
       </div>
 
-      {/* 최근결과 (좌) */}
+      {/* 최근결과 (우) */}
       <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
         <RecentResults />
       </div>
 
-      {/* Pro배너/CTA + 카카오 (우) */}
-      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5 flex flex-col gap-4">
+      {/* Pro배너/CTA + 카카오 (풀와이드) */}
+      <div className="md:col-span-2 bg-bg-card rounded-[14px] border border-bg-border p-5 flex flex-col gap-4">
         {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
         <KakaoBanner />
       </div>

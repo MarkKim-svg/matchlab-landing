@@ -41,34 +41,36 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
 
   if (locked) {
     return (
-      <div
-        className="rounded-xl p-3 mb-3"
-        style={{ background: "#1A2332", border: "1px solid #263344" }}
-      >
-        {/* Row 1: League + Lock */}
-        <div className="flex items-center justify-between mb-2">
-          <LeagueBadge league={match.league} />
-          <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
-            style={{ background: "#7C3AED22", color: "#A78BFA", border: "1px solid #7C3AED44" }}>
-            🔒 Pro
-          </span>
+      <Link href="/#pricing">
+        <div
+          className="rounded-xl p-4 mb-4"
+          style={{ background: "#1A2332", border: "1px solid #F59E0B44" }}
+        >
+          {/* Row 1: League + Pro badge */}
+          <div className="flex items-center justify-between mb-3">
+            <LeagueBadge league={match.league} />
+            <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
+              style={{ background: "#FBBF2420", color: "#FBBF24", border: "1px solid #FBBF2444" }}>
+              🔒 Pro
+            </span>
+          </div>
+          {/* Row 2: Teams centered (clear, no blur) */}
+          <div className="flex items-center justify-center gap-3">
+            <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={28} />
+            <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
+            <span className="text-[12px] font-bold" style={{ color: "#8494A7" }}>vs</span>
+            <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={28} />
+            <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
+          </div>
         </div>
-        {/* Row 2: Teams centered */}
-        <div className="flex items-center justify-center gap-2">
-          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={24} />
-          <span className="text-[13px] font-semibold" style={{ color: "#737373" }}>{home}</span>
-          <span className="text-[11px]" style={{ color: "#525252" }}>vs</span>
-          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={24} />
-          <span className="text-[13px] font-semibold" style={{ color: "#737373" }}>{away}</span>
-        </div>
-      </div>
+      </Link>
     );
   }
 
   return (
     <Link href={`/report/${match.id}`}>
       <div
-        className="rounded-xl p-3 mb-3 transition-colors hover:border-emerald-500/30"
+        className="rounded-xl p-4 mb-4 transition-colors hover:border-emerald-500/30"
         style={{
           background: "#1A2332",
           border: isHigh ? "1px solid #F59E0B44" : "1px solid #263344",
@@ -76,17 +78,17 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
         }}
       >
         {/* Row 1: League + Stars */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <LeagueBadge league={match.league} />
           <GoldStars count={match.confidence} />
         </div>
         {/* Row 2: Teams centered */}
-        <div className="flex items-center justify-center gap-2">
-          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={24} />
-          <span className="text-[13px] font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
-          <span className="text-[11px]" style={{ color: "#8494A7" }}>vs</span>
-          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={24} />
-          <span className="text-[13px] font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
+        <div className="flex items-center justify-center gap-3">
+          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={28} />
+          <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
+          <span className="text-[12px] font-bold" style={{ color: "#8494A7" }}>vs</span>
+          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={28} />
+          <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
         </div>
       </div>
     </Link>

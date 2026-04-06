@@ -123,10 +123,10 @@ export default function MatchCarousel({ predictions, loading }: Props) {
               {/* Teams */}
               <div className="flex items-center justify-center gap-1.5">
                 <TeamLogo teamId={m.homeTeamId ?? ""} teamName={home} size={22} />
-                <span className="text-[13px] font-bold text-bg-100 truncate">{home}</span>
+                <span className="text-[14px] font-bold text-bg-100 truncate">{home}</span>
                 <span className="text-[11px] text-text-muted font-bold px-0.5">vs</span>
                 <TeamLogo teamId={m.awayTeamId ?? ""} teamName={away} size={22} />
-                <span className="text-[13px] font-bold text-bg-100 truncate">{away}</span>
+                <span className="text-[14px] font-bold text-bg-100 truncate">{away}</span>
               </div>
 
               {/* Stars */}

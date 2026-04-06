@@ -192,10 +192,10 @@ export default function WeeklyAccuracy({ dashboard, loading }: Props) {
                     {isHit ? "✓" : "✗"}
                   </span>
                   <TeamLogo teamId={r.homeTeamId ?? ""} teamName={home} size={16} />
-                  <span className="text-[11px] font-bold text-bg-100 truncate">{home}</span>
+                  <span className="text-[14px] font-bold text-bg-100 truncate">{home}</span>
                   <span className="text-[9px] text-text-muted">vs</span>
                   <TeamLogo teamId={r.awayTeamId ?? ""} teamName={away} size={16} />
-                  <span className="text-[11px] font-bold text-bg-100 truncate">{away}</span>
+                  <span className="text-[14px] font-bold text-bg-100 truncate">{away}</span>
                   {r.result && (
                     <span className="ml-auto shrink-0 font-mono-data text-[12px] font-bold text-bg-50">
                       {r.result}

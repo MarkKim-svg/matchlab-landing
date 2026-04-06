@@ -498,13 +498,13 @@ export default function Home() {
                 <br />
                 <span className="text-emerald-400">승부 예측</span>
               </h1>
-              <p className="text-emerald-400 text-lg font-display font-bold mb-4">
-                {highConfRate > 0 ? `고확신 경기 적중률 ${highConfRate}%` : "적중률 데이터 수집중"}
-              </p>
+              {highConfRate > 0 && (
+                <p className="text-emerald-400 text-lg font-display font-bold mb-4">
+                  ⭐4+ 적중률 {highConfRate}% · {totalGames}경기 검증
+                </p>
+              )}
               <p className="text-text-secondary text-[14px] md:text-[16px] mb-8 max-w-md leading-relaxed font-body break-keep">
-                가입하면 매일 카카오톡으로 AI 분석 리포트를 받습니다.
-                <br className="hidden sm:block" />
-                고확신 경기는 Pro에서.
+                푸아송 · ELO · xG · 배당 앙상블이 매일 수십 경기를 분석하고, 가장 유리한 경기만 골라드립니다.
               </p>
 
               {/* CTAs */}
@@ -513,7 +513,7 @@ export default function Home() {
                   href="/login"
                   className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-7 py-3.5 rounded-[14px] text-[15px] transition-all font-body"
                 >
-                  무료 가입 — 매일 2경기 분석 받기
+                  무료로 시작하기
                 </a>
                 <a
                   href="#accuracy"
@@ -522,21 +522,7 @@ export default function Home() {
                   분석 데이터 보기
                 </a>
               </div>
-              <p className="text-xs text-text-muted font-body mb-8">가입 30초 · 카드 없이 시작</p>
-
-              {/* Stats */}
-              <div className="flex gap-8 text-sm">
-                <div>
-                  <span className="text-text-primary font-bold text-lg font-display">
-                    {highConfRate > 0 ? `${highConfRate}%` : "—%"}
-                  </span>
-                  <p className="text-text-muted text-xs font-body">고확신 적중률</p>
-                </div>
-                <div>
-                  <span className="text-text-primary font-bold text-lg font-display">{totalGames}+</span>
-                  <p className="text-text-muted text-xs font-body">누적 분석</p>
-                </div>
-              </div>
+              <p className="text-xs text-text-muted font-body mb-8">30초 가입 · 카드 불필요</p>
             </div>
 
             {/* Right — Report Preview */}

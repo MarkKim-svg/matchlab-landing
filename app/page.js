@@ -4,6 +4,13 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 import FadeSection from "@/lib/FadeSection";
+import { LEAGUE_CONFIG } from "@/lib/constants";
+
+function splitTeams(match) {
+  const sep = match.includes(" vs ") ? " vs " : "vs";
+  const parts = match.split(sep);
+  return [parts[0]?.trim() ?? match, parts[1]?.trim() ?? ""];
+}
 
 /* ────────────────────────────────────────────
    Dummy fallback data
@@ -103,57 +110,11 @@ function PhoneMockup() {
           <div className="w-24 h-5 bg-bg-deep rounded-full" />
         </div>
 
-        <div className="px-4 pb-6 space-y-3">
-          {/* Logo */}
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-5 h-5 rounded bg-emerald-500 flex items-center justify-center">
-              <span className="text-[8px] font-bold text-white">M</span>
-            </div>
-            <span className="text-[11px] font-bold text-text-primary font-display tracking-[-0.5px]">MATCHLAB</span>
-          </div>
-
-          {/* Summary bar */}
-          <div className="bg-bg-raised rounded-lg px-3 py-2 flex items-center justify-between text-[10px]">
-            <span className="text-text-secondary">오늘의 분석 <strong className="text-text-primary">8경기</strong></span>
-            <span className="text-emerald-400">고확신 3</span>
-            <span className="text-gold-400">적중 68%</span>
-          </div>
-
-          {/* Match cards */}
-          {[
-            { home: "아스널", away: "첼시", pred: "홈 승", prob: "72%", league: "EPL" },
-            { home: "바르셀로나", away: "세비야", pred: "오버 2.5", prob: "65%", league: "La Liga" },
-          ].map((m, i) => (
-            <div key={i} className="bg-bg-raised border border-bg-border rounded-xl px-3 py-2.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] text-text-muted">{m.league}</span>
-                <span className="text-[9px] text-emerald-400 font-semibold">{m.prob}</span>
-              </div>
-              <div className="text-[11px] text-text-primary font-medium">{m.home} vs {m.away}</div>
-              <div className="text-[10px] text-text-secondary mt-0.5">{m.pred}</div>
-            </div>
-          ))}
-
-          {/* Blurred PRO card */}
-          <div className="relative">
-            <div className="bg-bg-raised border border-bg-border rounded-xl px-3 py-2.5 blur-[3px]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] text-text-muted">Serie A</span>
-                <span className="text-[9px] text-emerald-400 font-semibold">78%</span>
-              </div>
-              <div className="text-[11px] text-text-primary font-medium">인테르 vs 유벤투스</div>
-              <div className="text-[10px] text-text-secondary mt-0.5">인테르 승</div>
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="bg-emerald-500/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">PRO</span>
-            </div>
-          </div>
-
-          {/* Bottom gradient */}
-          <div className="relative -mx-4 -mb-6 pt-8 pb-4 px-4 bg-gradient-to-t from-bg-card via-bg-card/80 to-transparent text-center">
-            <span className="text-[11px] text-emerald-400 font-medium">🔒 고확신 경기 3건 더 보기</span>
-          </div>
-        </div>
+        <iframe
+          src="/home"
+          className="w-full border-0"
+          style={{ height: "480px", pointerEvents: "none" }}
+        />
       </div>
 
       <p className="text-center text-[11px] text-text-muted mt-3 font-body">가입하면 매일 이렇게 보입니다</p>
@@ -217,6 +178,145 @@ function AccordionItem({ q, a }) {
         <span className="text-emerald-500 text-xl font-normal ml-4 shrink-0">{open ? "−" : "+"}</span>
       </button>
       {open && <div className="px-5 pb-4 text-sm text-text-secondary leading-relaxed font-body">{a}</div>}
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────
+   GoldStars
+   ──────────────────────────────────────────── */
+function GoldStars({ count }) {
+  return (
+    <span className="inline-flex gap-0.5">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg key={i} width="14" height="14" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
+          <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+/* ────────────────────────────────────────────
+   LeaguePill (inline version of LeagueBadge)
+   ──────────────────────────────────────────── */
+function LeaguePill({ league }) {
+  const config = LEAGUE_CONFIG[league];
+  if (!config) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-600/20 px-2.5 py-0.5 text-[11px] font-medium text-slate-400">
+        {league || "기타"}
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium text-white/90"
+      style={{ backgroundColor: config.color + "55" }}
+    >
+      <img
+        src={config.logo}
+        alt={league}
+        width={14}
+        height={14}
+        className="rounded-full bg-white p-0.5 object-contain"
+        onError={(e) => { e.target.style.display = "none"; }}
+      />
+      {league}
+    </span>
+  );
+}
+
+/* ────────────────────────────────────────────
+   MatchPreviewCard — /home TopPick 스타일
+   ──────────────────────────────────────────── */
+function MatchPreviewCard({ match, variant }) {
+  const [home, away] = splitTeams(match.match);
+  const prob = match.probability ?? 0;
+
+  if (variant === "pro") {
+    return (
+      <div className="relative rounded-xl overflow-hidden" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #152035" }}>
+        <div className="blur-[6px] pointer-events-none select-none p-5">
+          <div className="flex items-center justify-between mb-3">
+            <LeaguePill league={match.league} />
+            <GoldStars count={match.confidence} />
+          </div>
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <span className="text-[16px] font-bold text-bg-50">{home}</span>
+            <span className="text-[13px] font-bold text-text-muted">VS</span>
+            <span className="text-[16px] font-bold text-bg-50">{away}</span>
+          </div>
+          <div className="text-sm text-text-primary">{match.prediction}</div>
+        </div>
+        <div className="absolute inset-0 bg-bg-card/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 rounded-xl">
+          <span className="text-2xl">🔒</span>
+          <span className="text-emerald-500 font-bold text-sm font-body">Pro 전용 · 고확신 경기</span>
+          <span className="text-text-muted text-xs font-body">가입 후 확인하세요</span>
+        </div>
+      </div>
+    );
+  }
+
+  const isTop = variant === "top";
+  const borderStyle = isTop
+    ? { background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #d97706" }
+    : { background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #152035" };
+
+  return (
+    <div className="rounded-xl overflow-hidden relative" style={borderStyle}>
+      {/* Gold bar for TOP PICK */}
+      {isTop && (
+        <div className="h-[3px]" style={{ background: "linear-gradient(90deg, #FBBF24, #F59E0B, #FBBF24)" }} />
+      )}
+
+      <div className="p-5">
+        {/* League + badge + stars */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <LeaguePill league={match.league} />
+            {isTop && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gold-500/15 text-gold-400 border border-gold-500/30 font-mono-data uppercase tracking-wider">
+                TOP PICK
+              </span>
+            )}
+          </div>
+          <GoldStars count={match.confidence} />
+        </div>
+
+        {/* VS layout */}
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <span className="text-[18px] font-extrabold text-bg-50 text-center leading-tight">{home}</span>
+          <span className="text-[14px] font-bold text-text-muted px-1">VS</span>
+          <span className="text-[18px] font-extrabold text-bg-50 text-center leading-tight">{away}</span>
+        </div>
+
+        {/* Prediction + progress bar */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[13px] font-semibold text-text-primary font-body">{match.prediction}</span>
+            <span className="text-[13px] font-bold text-emerald-400 font-display">{prob}%</span>
+          </div>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#0F172A" }}>
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${prob}%`,
+                background: isTop
+                  ? "linear-gradient(90deg, #FBBF24, #10B981)"
+                  : "#10B981",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Reason */}
+        {match.reason && (
+          <p className="text-[11px] text-text-secondary border-t border-bg-border-subtle pt-2.5 font-body leading-relaxed">
+            {match.reason}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -363,66 +463,13 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* TOP PICK */}
-                {topPick && (
-                  <div className="bg-bg-card border-2 border-emerald-500 rounded-[14px] p-5 relative">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 font-mono-data uppercase tracking-wider">
-                        TOP PICK
-                      </span>
-                      <span className="text-gold-400 text-xs">{"⭐".repeat(Math.min(topPick.confidence, 4))}</span>
-                    </div>
-                    <p className="text-[11px] text-text-muted mb-1 font-body">{topPick.league}</p>
-                    <p className="text-text-primary font-semibold mb-1 font-body">{topPick.match}</p>
-                    <p className="text-sm text-text-primary mb-2 font-body">
-                      {topPick.prediction}{" "}
-                      <span className="text-emerald-400 font-bold font-display">
-                        {topPick.probability ?? ""}%
-                      </span>
-                    </p>
-                    {topPick.reason && (
-                      <p className="text-[11px] text-text-secondary border-t border-bg-border-subtle pt-2 font-body">
-                        {topPick.reason}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {topPick && <MatchPreviewCard match={topPick} variant="top" />}
 
                 {/* Normal */}
-                {normalPick && (
-                  <div className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-5 hover:border-bg-border transition-colors">
-                    <p className="text-[11px] text-text-muted mb-1 font-body">{normalPick.league}</p>
-                    <p className="text-text-primary font-semibold mb-1 font-body">{normalPick.match}</p>
-                    <p className="text-sm text-text-primary mb-2 font-body">
-                      {normalPick.prediction}{" "}
-                      <span className="text-emerald-400 font-bold font-display">
-                        {normalPick.probability ?? ""}%
-                      </span>
-                    </p>
-                    {normalPick.reason && (
-                      <p className="text-[11px] text-text-secondary border-t border-bg-border-subtle pt-2 font-body">
-                        {normalPick.reason}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {normalPick && <MatchPreviewCard match={normalPick} variant="normal" />}
 
                 {/* Pro locked */}
-                {proPick && (
-                  <div className="relative bg-bg-card border border-bg-border-subtle rounded-[14px] p-5 overflow-hidden">
-                    <div className="blur-[6px] pointer-events-none select-none">
-                      <p className="text-[11px] text-text-muted mb-1">{proPick.league}</p>
-                      <p className="text-text-primary font-semibold mb-1">{proPick.match}</p>
-                      <p className="text-sm text-text-primary mb-2">
-                        {proPick.prediction} <span className="text-emerald-400 font-bold">{proPick.probability}%</span>
-                      </p>
-                    </div>
-                    <div className="absolute inset-0 bg-bg-card/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 rounded-[14px]">
-                      <span className="text-2xl">🔒</span>
-                      <span className="text-emerald-500 font-bold text-sm font-body">Pro 전용 · 고확신 경기</span>
-                      <span className="text-text-muted text-xs font-body">가입 후 확인하세요</span>
-                    </div>
-                  </div>
-                )}
+                {proPick && <MatchPreviewCard match={proPick} variant="pro" />}
               </div>
             )}
           </SectionWrap>
@@ -443,12 +490,18 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Donut — row-span-2 */}
+              {/* Donut — row-span-2, 고확신 적중률 */}
               <div className="bg-bg-card border border-bg-border rounded-[14px] p-6 flex items-center justify-center row-span-2">
-                <DonutChart rate={overallRate} label={`/ ${totalGames}경기`} />
+                {highConfRate > 0 ? (
+                  <DonutChart rate={highConfRate} label="고확신 ⭐4+" />
+                ) : (
+                  <div className="text-center">
+                    <div className="text-text-muted text-sm font-body">데이터 수집중</div>
+                  </div>
+                )}
               </div>
 
-              <StatCard label="고확신 적중률" value={highConfRate > 0 ? `${highConfRate}%` : "—%"} />
+              <StatCard label="전체 적중률" value={overallRate > 0 ? `${overallRate}%` : "—%"} />
               <StatCard label="이번 주" value={weeklyRate > 0 ? `${weeklyRate}%` : "—%"} />
               <StatCard label="누적 분석 경기" value={`${totalGames}+`} />
               <StatCard label="최근 적중 연속" value={recentStreak > 0 ? `${recentStreak}연속` : "—"} />

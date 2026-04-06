@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Home, BarChart3, TrendingUp } from "lucide-react";
+import { Home, BarChart3, TrendingUp, Trophy } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const BeakerIcon = () => (
-  <svg viewBox="4 2 66 76" className="w-8 h-9" fill="none">
+  <svg viewBox="4 2 66 76" className="w-9 h-10" fill="none">
     <path d="M10,10 L10,66 Q10,74 18,74 L54,74 Q62,74 62,66 L62,10" stroke="#10B981" strokeWidth="2.2" strokeLinejoin="round"/>
     <line x1="8" y1="10" x2="64" y2="10" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round"/>
     <path d="M62,10 L66,6" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round"/>
@@ -24,6 +24,7 @@ const NAV_TABS = [
     match: "/matches/",
     icon: TrendingUp,
   },
+  { label: "순위", href: "/standings", icon: Trophy },
   { label: "대시보드", href: "/dashboard", icon: BarChart3 },
 ];
 
@@ -32,7 +33,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const supabase = createClient();
   const isLanding = pathname === "/";
-  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage"].some(p => pathname.startsWith(p));
+  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage", "/standings"].some(p => pathname.startsWith(p));
 
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -110,7 +111,7 @@ export default function Navbar() {
           : "bg-[#0A1121] border-bg-border/50"
       }`}
     >
-      <div className="max-w-[1120px] mx-auto flex items-center justify-between h-16 px-4 sm:px-6">
+      <div className="max-w-[1120px] mx-auto flex items-center justify-between h-[68px] px-4 sm:px-6">
         {/* ── Logo ── */}
         <Link
           href={user ? "/home" : "/"}
@@ -120,7 +121,7 @@ export default function Navbar() {
           onMouseLeave={e => e.currentTarget.style.filter = "drop-shadow(0 0 0px transparent)"}
         >
           <BeakerIcon />
-          <span className="font-display font-bold text-lg tracking-[-1.2px] text-[#E1E7EF]">MATCHLAB</span>
+          <span className="font-display font-bold text-xl tracking-[-1.2px] text-[#E1E7EF]">MATCHLAB</span>
         </Link>
 
         {/* ── Desktop Tabs (중앙) ── */}
@@ -133,7 +134,7 @@ export default function Navbar() {
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-xl text-[11px] font-medium transition-all duration-200 ${
+                  className={`flex flex-col items-center gap-0.5 px-5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200 ${
                     active
                       ? "bg-emerald-500/15 border border-emerald-500/40 text-emerald-400"
                       : "bg-bg-800/60 border border-transparent text-text-secondary hover:bg-bg-700 hover:text-text-primary"

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BarChart3, TrendingUp } from "lucide-react";
+import { Home, BarChart3, TrendingUp, Trophy } from "lucide-react";
 
 const tabs = [
   { label: "홈", href: "/home", icon: Home },
@@ -12,13 +12,14 @@ const tabs = [
     match: "/matches/",
     icon: TrendingUp,
   },
+  { label: "순위", href: "/standings", icon: Trophy },
   { label: "대시보드", href: "/dashboard", icon: BarChart3 },
 ];
 
 export default function AuthTabBar() {
   const pathname = usePathname();
 
-  const showPaths = ["/home", "/matches/", "/dashboard", "/mypage"];
+  const showPaths = ["/home", "/matches/", "/dashboard", "/mypage", "/standings"];
   const shouldShow = showPaths.some((p) => pathname.startsWith(p));
   if (!shouldShow) return null;
 

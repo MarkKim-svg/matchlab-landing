@@ -72,7 +72,7 @@ export default function MatchCarousel({ predictions, loading }: Props) {
       <section>
         <div className="flex items-center gap-1.5 mb-3">
           <span className="text-[16px]">🎯</span>
-          <span className="text-[14px] font-bold text-bg-100">오늘의 경기</span>
+          <span className="text-[14px] font-bold" style={{ color: "#E1E7EF" }}>오늘의 경기</span>
         </div>
         <div className="flex gap-3">
           {[1, 2, 3].map(i => (
@@ -85,12 +85,20 @@ export default function MatchCarousel({ predictions, loading }: Props) {
 
   if (matches.length === 0) return null;
 
+  const highConfCount = matches.filter(m => m.confidence >= 4).length;
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <section>
       <div className="flex items-center gap-1.5 mb-3">
         <span className="text-[16px]">🎯</span>
-        <span className="text-[14px] font-bold text-bg-100">오늘의 경기</span>
-        <span className="text-[12px] text-text-muted ml-1">{matches.length}경기</span>
+        <span className="text-[14px] font-bold" style={{ color: "#E1E7EF" }}>오늘의 경기</span>
+        <span className="text-[12px]" style={{ color: "#8494A7" }}>{matches.length}건</span>
+        <span style={{ color: "#8494A7" }}>·</span>
+        <span className="text-[12px] font-semibold" style={{ color: "#FBBF24" }}>고확신 ⭐4+ {highConfCount}건</span>
+        <Link href={`/matches/${today}`} className="text-[12px] font-semibold ml-auto" style={{ color: "#10B981" }}>
+          →
+        </Link>
       </div>
 
       <div

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import GreetingSection from "./sections/GreetingSection";
-import TodaySummary from "./sections/TodaySummary";
 import MatchCarousel from "./sections/MatchCarousel";
 import TopPick from "./sections/TopPick";
 import WeeklyAccuracy from "./sections/WeeklyAccuracy";
@@ -102,12 +100,6 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
 
   return (
     <div className="home-grid">
-      {/* 인사 + 오늘 요약 */}
-      <Card className="home-full">
-        <GreetingSection userName={userName} plan={plan} />
-        <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
-      </Card>
-
       {/* 캐러셀 */}
       <Card className="home-full">
         <MatchCarousel predictions={predictions} loading={predLoading} />

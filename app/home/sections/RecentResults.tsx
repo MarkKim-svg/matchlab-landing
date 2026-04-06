@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { TeamLogo, splitTeams } from "@/components/match-ui";
 
 interface Match {
   id: string;
@@ -10,6 +11,8 @@ interface Match {
   prediction: string;
   result: string;
   isCorrect: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
 }
 
 function getDateStr(daysAgo: number): string {
@@ -44,19 +47,16 @@ export default function RecentResults() {
 
   if (loading) {
     return (
-      <section className="px-4 py-4" style={{ borderBottom: "1px solid #1a1a1a" }}>
-        <div className="flex items-center gap-1.5 mb-3">
+      <section>
+        <div className="flex items-center gap-1.5 mb-4">
           <span className="text-[16px]">📋</span>
-          <span className="text-[14px] font-bold" style={{ color: "#d4d4d4" }}>최근 예측 결과</span>
+          <span className="text-[14px] font-bold text-bg-100">최근 예측 결과</span>
         </div>
-        <div className="space-y-3 animate-pulse">
+        <div className="space-y-2 animate-pulse">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full" style={{ background: "#262626" }} />
-              <div className="flex-1">
-                <div className="h-4 rounded w-40 mb-1" style={{ background: "#262626" }} />
-                <div className="h-3 rounded w-28" style={{ background: "#262626" }} />
-              </div>
+            <div key={i} className="rounded-xl p-3" style={{ background: "#1A2332" }}>
+              <div className="h-4 rounded w-40 mb-1" style={{ background: "#263344" }} />
+              <div className="h-3 rounded w-28" style={{ background: "#263344" }} />
             </div>
           ))}
         </div>
@@ -66,12 +66,12 @@ export default function RecentResults() {
 
   if (results.length === 0) {
     return (
-      <section className="px-4 py-4" style={{ borderBottom: "1px solid #1a1a1a" }}>
-        <div className="flex items-center gap-1.5 mb-3">
+      <section>
+        <div className="flex items-center gap-1.5 mb-4">
           <span className="text-[16px]">📋</span>
-          <span className="text-[14px] font-bold" style={{ color: "#d4d4d4" }}>최근 예측 결과</span>
+          <span className="text-[14px] font-bold text-bg-100">최근 예측 결과</span>
         </div>
-        <div className="text-center py-6 text-[14px]" style={{ color: "#64748B" }}>
+        <div className="text-center py-6 text-[14px] text-text-muted">
           아직 결과가 나오지 않았습니다
         </div>
       </section>
@@ -79,50 +79,66 @@ export default function RecentResults() {
   }
 
   return (
-    <section className="px-4 py-4" style={{ borderBottom: "1px solid #1a1a1a" }}>
-      <div className="flex items-center justify-between mb-3">
+    <section>
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-1.5">
           <span className="text-[16px]">📋</span>
-          <span className="text-[14px] font-bold" style={{ color: "#d4d4d4" }}>최근 예측 결과</span>
+          <span className="text-[14px] font-bold text-bg-100">최근 예측 결과</span>
         </div>
-        <Link href={`/matches/${yesterday}`} className="text-[12px] font-semibold" style={{ color: "#10B981" }}>
+        <Link href={`/matches/${yesterday}`} className="text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
           더 보기 →
         </Link>
       </div>
 
-      <div>
-        {results.map((r, i) => {
+      <div className="space-y-2">
+        {results.map((r) => {
           const isHit = r.isCorrect === "적중";
-          const isLast = i === results.length - 1;
+          const [home, away] = splitTeams(r.match);
 
           return (
             <div
               key={r.id}
-              className="flex items-center gap-2.5 py-2.5"
-              style={{ borderBottom: isLast ? "none" : "1px solid #1a1a1a" }}
+              className="rounded-xl p-3 flex items-center gap-3"
+              style={{ background: "#1A2332", border: "1px solid #263344" }}
             >
-              {/* Icon */}
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0"
+              {/* Result badge */}
+              <span
+                className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full text-[13px] font-bold"
                 style={{
-                  background: isHit ? "#052e16" : "#2c0b0b",
-                  color: isHit ? "#10B981" : "#EF4444",
+                  background: isHit ? "#05966920" : "#EF444420",
+                  color: isHit ? "#34D399" : "#F87171",
+                  border: isHit ? "1px solid #05966944" : "1px solid #EF444444",
                 }}
               >
                 {isHit ? "✓" : "✗"}
-              </div>
+              </span>
 
-              {/* Info */}
+              {/* Teams + info */}
               <div className="min-w-0 flex-1">
-                <div className="text-[13px] font-semibold" style={{ color: "#d4d4d4" }}>{r.match}</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "#737373" }}>
-                  예측: {r.prediction} → {isHit ? "적중" : "미적중"}
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <TeamLogo teamId={r.homeTeamId ?? ""} teamName={home} size={18} />
+                  <span className="text-[13px] font-semibold text-bg-100 truncate">{home}</span>
+                  <span className="text-[10px] text-text-muted">vs</span>
+                  <TeamLogo teamId={r.awayTeamId ?? ""} teamName={away} size={18} />
+                  <span className="text-[13px] font-semibold text-bg-100 truncate">{away}</span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="text-text-muted">예측: {r.prediction}</span>
+                  <span
+                    className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold"
+                    style={{
+                      background: isHit ? "#05966920" : "#EF444420",
+                      color: isHit ? "#34D399" : "#F87171",
+                    }}
+                  >
+                    {isHit ? "적중" : "미적중"}
+                  </span>
                 </div>
               </div>
 
               {/* Score */}
               {r.result && (
-                <span className="font-mono-data text-[13px] ml-auto shrink-0" style={{ color: "#a3a3a3" }}>
+                <span className="shrink-0 font-mono-data text-[16px] font-bold text-bg-50">
                   {r.result}
                 </span>
               )}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TeamLogo, splitTeams } from "@/components/match-ui";
+import { TeamLogo, LeagueBadge, splitTeams } from "@/components/match-ui";
 
 interface MatchPrediction {
   id: string;
@@ -22,25 +22,33 @@ interface Props {
   isPro: boolean;
 }
 
-function stars(n: number) {
-  return "⭐".repeat(n);
+function GoldStars({ count }: { count: number }) {
+  return (
+    <span className="inline-flex gap-0.5">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg key={i} width="16" height="16" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
+          <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
+        </svg>
+      ))}
+    </span>
+  );
 }
 
 export default function TopPick({ predictions, loading, isPro }: Props) {
-  const topMatch = predictions?.matches?.[0]; // sorted by confidence desc from API
+  const topMatch = predictions?.matches?.[0];
 
   if (loading) {
     return (
-      <section className="px-4 py-4" style={{ borderBottom: "1px solid #1a1a1a" }}>
-        <div className="flex items-center gap-1.5 mb-3">
+      <section>
+        <div className="flex items-center gap-1.5 mb-4">
           <span className="text-[16px]">🏆</span>
-          <span className="text-[14px] font-bold" style={{ color: "#d4d4d4" }}>오늘의 Top Pick</span>
+          <span className="text-[14px] font-bold text-bg-100">오늘의 Top Pick</span>
         </div>
-        <div className="rounded-xl p-4 animate-pulse" style={{ background: "#1a1a1a", border: "1px solid #262626" }}>
-          <div className="h-4 rounded w-16 mb-3" style={{ background: "#262626" }} />
-          <div className="h-5 rounded w-48 mb-2" style={{ background: "#262626" }} />
-          <div className="h-4 rounded w-32 mb-3" style={{ background: "#262626" }} />
-          <div className="h-4 rounded w-40" style={{ background: "#262626" }} />
+        <div className="rounded-xl p-5 animate-pulse" style={{ background: "#1A2332" }}>
+          <div className="h-4 rounded w-16 mb-3" style={{ background: "#263344" }} />
+          <div className="h-5 rounded w-48 mb-2" style={{ background: "#263344" }} />
+          <div className="h-4 rounded w-32 mb-3" style={{ background: "#263344" }} />
+          <div className="h-4 rounded w-40" style={{ background: "#263344" }} />
         </div>
       </section>
     );
@@ -48,76 +56,89 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
 
   if (!topMatch) return null;
 
+  const [home, away] = splitTeams(topMatch.match);
+
   return (
-    <section className="px-4 py-4" style={{ borderBottom: "1px solid #1a1a1a" }}>
-      <div className="flex items-center gap-1.5 mb-3">
+    <section>
+      <div className="flex items-center gap-1.5 mb-4">
         <span className="text-[16px]">🏆</span>
-        <span className="text-[14px] font-bold" style={{ color: "#d4d4d4" }}>오늘의 Top Pick</span>
+        <span className="text-[14px] font-bold text-bg-100">오늘의 Top Pick</span>
       </div>
 
-      <div className="rounded-xl p-4 relative overflow-hidden" style={{
-        background: "linear-gradient(135deg, #1a1a1a, #1f1f1f)",
+      <div className="rounded-xl overflow-hidden relative" style={{
+        background: "linear-gradient(145deg, #1A2332, #1E293B)",
         border: "1px solid #d97706",
       }}>
         {/* Top gold bar */}
-        <div className="absolute top-0 left-0 right-0 h-[3px]" style={{
+        <div className="h-[3px]" style={{
           background: "linear-gradient(90deg, #FBBF24, #F59E0B, #FBBF24)",
         }} />
 
-        {/* Confidence */}
-        <div className="font-mono-data text-[14px] font-bold mb-2" style={{ color: "#FBBF24" }}>
-          {stars(topMatch.confidence)}
-        </div>
+        <div className="p-5">
+          {/* League + Confidence */}
+          <div className="flex items-center justify-between mb-4">
+            <LeagueBadge league={topMatch.league} />
+            <GoldStars count={topMatch.confidence} />
+          </div>
 
-        {/* Team name */}
-        {(() => {
-          const [home, away] = splitTeams(topMatch.match);
-          return (
-            <div className="flex items-center gap-2 mb-1">
-              <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={28} />
-              <span className="text-[16px] font-bold" style={{ color: "#f5f5f5" }}>{home}</span>
-              <span className="text-[13px]" style={{ color: "#737373" }}>vs</span>
-              <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={28} />
-              <span className="text-[16px] font-bold" style={{ color: "#f5f5f5" }}>{away}</span>
+          {/* VS Layout */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="flex flex-col items-center gap-1.5 flex-1">
+              <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={40} />
+              <span className="text-[14px] font-bold text-bg-50 text-center leading-tight">{home}</span>
             </div>
-          );
-        })()}
-
-        {/* League */}
-        <div className="text-[12px] mb-3" style={{ color: "#737373" }}>
-          {topMatch.league}
-        </div>
-
-        {isPro ? (
-          <>
-            {/* AI prediction */}
-            <div className="font-mono-data text-[14px] font-bold mb-2" style={{ color: "#10B981" }}>
-              AI: {topMatch.prediction}
+            <span className="text-[18px] font-bold text-text-muted px-2">VS</span>
+            <div className="flex flex-col items-center gap-1.5 flex-1">
+              <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={40} />
+              <span className="text-[14px] font-bold text-bg-50 text-center leading-tight">{away}</span>
             </div>
+          </div>
 
-            {/* Model basis */}
-            <div className="mt-3 pt-3" style={{ borderTop: "1px solid #333" }}>
-              <div className="text-[11px] space-y-1" style={{ color: "#737373" }}>
-                <div>푸아송 {topMatch.poisson.home} vs {topMatch.poisson.away} · ELO {topMatch.elo.home} vs {topMatch.elo.away} · xG {topMatch.xg.home} vs {topMatch.xg.away}</div>
+          {isPro ? (
+            <>
+              {/* AI Prediction pill */}
+              <div className="flex justify-center mb-4">
+                <span className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-bold text-white"
+                  style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>
+                  AI 예측: {topMatch.prediction}
+                </span>
+              </div>
+
+              {/* Model data sub-card */}
+              <div className="rounded-lg p-3 space-y-1.5" style={{ background: "#0F172A" }}>
+                <div className="text-[11px] font-semibold text-text-secondary mb-1.5">모델 분석 수치</div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  {[
+                    { label: "푸아송", home: topMatch.poisson.home, away: topMatch.poisson.away },
+                    { label: "ELO", home: topMatch.elo.home, away: topMatch.elo.away },
+                    { label: "xG", home: topMatch.xg.home, away: topMatch.xg.away },
+                  ].map(m => (
+                    <div key={m.label} className="rounded-md py-1.5 px-1" style={{ background: "#1A2332" }}>
+                      <div className="text-[10px] text-text-muted mb-0.5">{m.label}</div>
+                      <div className="font-mono-data text-[12px] text-bg-200">{m.home} : {m.away}</div>
+                    </div>
+                  ))}
+                </div>
                 {topMatch.aiAdjustment && topMatch.aiAdjustment !== "-" && (
-                  <div>Claude 조정: {topMatch.aiAdjustment}</div>
+                  <div className="text-[11px] text-text-muted pt-1">Claude 조정: {topMatch.aiAdjustment}</div>
                 )}
               </div>
-              <Link href={`/report/${topMatch.id}`} className="inline-block mt-2 text-[12px] font-semibold" style={{ color: "#10B981" }}>
+
+              <Link href={`/report/${topMatch.id}`} className="inline-block mt-3 text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
                 상세 리포트 →
               </Link>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Blurred prediction for free users */}
+            </>
+          ) : (
             <div className="relative">
               <div className="select-none" style={{ filter: "blur(6px)" }}>
-                <div className="font-mono-data text-[14px] font-bold mb-2" style={{ color: "#10B981" }}>
-                  AI: {topMatch.prediction}
+                <div className="flex justify-center mb-4">
+                  <span className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-bold text-white"
+                    style={{ background: "#059669" }}>
+                    AI 예측: {topMatch.prediction}
+                  </span>
                 </div>
-                <div className="mt-3 pt-3" style={{ borderTop: "1px solid #333" }}>
-                  <div className="text-[11px]" style={{ color: "#737373" }}>
+                <div className="rounded-lg p-3" style={{ background: "#0F172A" }}>
+                  <div className="text-[11px] text-text-muted">
                     푸아송 {topMatch.poisson.home} vs {topMatch.poisson.away} · ELO {topMatch.elo.home} vs {topMatch.elo.away}
                   </div>
                 </div>
@@ -135,8 +156,8 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
                 </Link>
               </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </section>
   );

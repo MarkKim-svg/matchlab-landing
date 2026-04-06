@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import GreetingSection from "./sections/GreetingSection";
 import TodaySummary from "./sections/TodaySummary";
 import MatchCarousel from "./sections/MatchCarousel";
@@ -62,29 +62,16 @@ interface PredictionsResponse {
   proCount: number;
 }
 
-function FadeInCard({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
+function Card({ children, className, style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
   return (
     <div
-      ref={ref}
-      className={`bg-bg-card rounded-[14px] border border-bg-border p-5 transition-all duration-200 hover:border-emerald-500/30 ${className ?? ""}`}
+      className={className}
       style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms, border-color 0.2s`,
+        background: "#111827",
+        border: "1px solid #1E2D47",
+        borderRadius: "14px",
+        padding: "20px",
+        ...style,
       }}
     >
       {children}
@@ -114,43 +101,43 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
   const isPro = plan === "pro";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-6">
-      {/* 인사 + 오늘 요약 (풀와이드) */}
-      <FadeInCard className="md:col-span-2">
+    <div className="home-grid">
+      {/* 인사 + 오늘 요약 */}
+      <Card className="home-full">
         <GreetingSection userName={userName} plan={plan} />
         <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
-      </FadeInCard>
+      </Card>
 
-      {/* 캐러셀 (풀와이드) */}
-      <FadeInCard className="md:col-span-2" delay={50}>
+      {/* 캐러셀 */}
+      <Card className="home-full">
         <MatchCarousel predictions={predictions} loading={predLoading} />
-      </FadeInCard>
+      </Card>
 
-      {/* TopPick (좌) */}
-      <FadeInCard delay={100}>
-        <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
-      </FadeInCard>
-
-      {/* 적중률 + 최근결과 통합 (우) */}
-      <FadeInCard delay={200}>
-        <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
-      </FadeInCard>
-
-      {/* 전체경기 + 미니순위표 (풀와이드, 내부 3:2 비율) */}
-      <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4">
-        <FadeInCard className="md:col-span-3" delay={100}>
-          <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
-        </FadeInCard>
-        <FadeInCard className="md:col-span-2" delay={200}>
-          <MiniStandings />
-        </FadeInCard>
+      {/* TopPick + 적중률 (2열) */}
+      <div className="home-2col">
+        <Card>
+          <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
+        </Card>
+        <Card>
+          <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
+        </Card>
       </div>
 
-      {/* Pro배너/CTA + 카카오 (풀와이드) */}
-      <FadeInCard className="md:col-span-2 flex flex-col gap-4">
+      {/* 전체경기 + 미니순위표 (3:2 비율) */}
+      <div className="home-matchrow">
+        <Card className="home-match-main">
+          <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
+        </Card>
+        <Card className="home-match-side">
+          <MiniStandings />
+        </Card>
+      </div>
+
+      {/* Pro배너/CTA + 카카오 */}
+      <Card className="home-full" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
         <KakaoBanner />
-      </FadeInCard>
+      </Card>
     </div>
   );
 }

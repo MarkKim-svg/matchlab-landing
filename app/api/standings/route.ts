@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     const res = await fetch(
-      `https://v3.football.api-sports.io/standings?league=${league}&season=2024`,
+      `https://v3.football.api-sports.io/standings?league=${league}&season=2025`,
       {
         headers: { "x-apisports-key": apiKey },
         next: { revalidate: 3600 },
@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
       draw: t.all.draw,
       lose: t.all.lose,
       goalsDiff: t.goalsDiff,
+      description: t.description ?? null,
     }));
 
     return NextResponse.json({

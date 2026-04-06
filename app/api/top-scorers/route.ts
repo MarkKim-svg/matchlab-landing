@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     const res = await fetch(
-      `https://v3.football.api-sports.io/players/topscorers?league=${league}&season=2024`,
+      `https://v3.football.api-sports.io/players/topscorers?league=${league}&season=2025`,
       {
         headers: { "x-apisports-key": apiKey },
         next: { revalidate: 3600 },
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ scorers: [] });
     }
 
-    const parsed = players.slice(0, 10).map((p: any, i: number) => ({
+    const parsed = players.slice(0, 20).map((p: any, i: number) => ({
       rank: i + 1,
       playerName: p.player.name,
       playerPhoto: p.player.photo,

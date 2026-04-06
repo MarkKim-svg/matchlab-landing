@@ -31,7 +31,7 @@ export default function MiniStandings() {
     setLoading(true);
     fetch(`/api/standings?league=${leagueId}`)
       .then((r) => r.json())
-      .then((d) => setStandings((d.standings ?? []).slice(0, 6)))
+      .then((d) => setStandings((d.standings ?? []).slice(0, 10)))
       .catch(() => setStandings([]))
       .finally(() => setLoading(false));
   }, [leagueId]);

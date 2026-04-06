@@ -85,12 +85,12 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="flex flex-col items-center gap-1.5 flex-1">
               <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={40} />
-              <span className="text-[18px] font-extrabold text-bg-50 text-center leading-tight">{home}</span>
+              <span className="text-[20px] font-extrabold text-bg-50 text-center leading-tight">{home}</span>
             </div>
             <span className="text-[18px] font-bold text-text-muted px-2">VS</span>
             <div className="flex flex-col items-center gap-1.5 flex-1">
               <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={40} />
-              <span className="text-[18px] font-extrabold text-bg-50 text-center leading-tight">{away}</span>
+              <span className="text-[20px] font-extrabold text-bg-50 text-center leading-tight">{away}</span>
             </div>
           </div>
 
@@ -144,16 +144,16 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
                 </div>
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <Link
-                  href="/#pricing"
-                  className="inline-flex items-center gap-1.5 text-white font-bold rounded-lg px-4 py-2 text-sm"
+                <button
+                  onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+                  className="inline-flex items-center gap-1.5 text-white font-bold rounded-lg px-4 py-2 text-sm cursor-pointer"
                   style={{
                     background: "linear-gradient(135deg, #d97706, #b45309)",
                     boxShadow: "0 4px 12px rgba(217,119,6,0.3)",
                   }}
                 >
                   🔒 Pro에서 보기
-                </Link>
+                </button>
               </div>
             </div>
           )}

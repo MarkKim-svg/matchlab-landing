@@ -35,60 +35,64 @@ function GoldStars({ count }: { count: number }) {
   );
 }
 
+function handleProClick() {
+  alert("결제 기능 준비 중입니다. 곧 오픈 예정!");
+}
+
 function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
   const isHigh = match.confidence >= 4;
   const [home, away] = splitTeams(match.match);
 
   if (locked) {
     return (
-      <Link href="/#pricing">
-        <div
-          className="rounded-xl p-4 mb-4"
-          style={{ background: "#1A2332", border: "1px solid #F59E0B44" }}
-        >
-          {/* Row 1: League + Pro badge */}
-          <div className="flex items-center justify-between mb-3">
-            <LeagueBadge league={match.league} />
-            <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
-              style={{ background: "#FBBF2420", color: "#FBBF24", border: "1px solid #FBBF2444" }}>
-              🔒 Pro
-            </span>
-          </div>
-          {/* Row 2: Teams centered (clear, no blur) */}
-          <div className="flex items-center justify-center gap-3">
-            <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={28} />
-            <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
-            <span className="text-[12px] font-bold" style={{ color: "#8494A7" }}>vs</span>
-            <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={28} />
-            <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
-          </div>
+      <div
+        onClick={handleProClick}
+        className="rounded-xl cursor-pointer"
+        style={{ background: "#1A2332", border: "1px solid #F59E0B55", padding: "16px", marginBottom: "16px" }}
+      >
+        {/* Row 1: League + Pro badge */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+          <LeagueBadge league={match.league} />
+          <span style={{ background: "#FBBF2425", color: "#FBBF24", border: "1px solid #FBBF2450", borderRadius: "9999px", padding: "3px 10px", fontSize: "11px", fontWeight: 700 }}>
+            🔒 Pro
+          </span>
         </div>
-      </Link>
+        {/* Row 2: Teams centered, fully visible */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={32} />
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
+          <span style={{ fontSize: "13px", color: "#8494A7" }}>vs</span>
+          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={32} />
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+        </div>
+      </div>
     );
   }
 
   return (
     <Link href={`/report/${match.id}`}>
       <div
-        className="rounded-xl p-4 mb-4 transition-colors hover:border-emerald-500/30"
+        className="rounded-xl transition-colors hover:border-emerald-500/30"
         style={{
           background: "#1A2332",
           border: isHigh ? "1px solid #F59E0B44" : "1px solid #263344",
           borderLeft: isHigh ? "3px solid #FBBF24" : "1px solid #263344",
+          padding: "16px",
+          marginBottom: "16px",
         }}
       >
         {/* Row 1: League + Stars */}
-        <div className="flex items-center justify-between mb-3">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
           <LeagueBadge league={match.league} />
           <GoldStars count={match.confidence} />
         </div>
         {/* Row 2: Teams centered */}
-        <div className="flex items-center justify-center gap-3">
-          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={28} />
-          <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
-          <span className="text-[12px] font-bold" style={{ color: "#8494A7" }}>vs</span>
-          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={28} />
-          <span className="text-[15px] font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={32} />
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
+          <span style={{ fontSize: "13px", color: "#8494A7" }}>vs</span>
+          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={32} />
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
         </div>
       </div>
     </Link>
@@ -97,12 +101,9 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
 
 function SkeletonCards() {
   return (
-    <div className="space-y-2">
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} className="rounded-xl p-3 animate-pulse" style={{ background: "#1A2332" }}>
-          <div className="h-4 rounded w-48 mb-2" style={{ background: "#263344" }} />
-          <div className="h-3 rounded w-24" style={{ background: "#263344" }} />
-        </div>
+        <div key={i} className="rounded-xl animate-pulse" style={{ background: "#1A2332", padding: "16px", height: "80px" }} />
       ))}
     </div>
   );
@@ -124,7 +125,6 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
     return matches.filter(m => m.league === selectedLeague);
   }, [matches, selectedLeague]);
 
-  // Fade transition on league switch
   useEffect(() => {
     setFadeIn(false);
     const t = requestAnimationFrame(() => setFadeIn(true));
@@ -133,27 +133,27 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
 
   return (
     <section id="match-list">
-      <div className="flex items-center gap-1.5 mb-4">
-        <span className="text-[16px]">⚽</span>
-        <span className="text-[14px] font-bold text-bg-100">오늘의 전체 경기</span>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
+        <span style={{ fontSize: "16px" }}>⚽</span>
+        <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF" }}>오늘의 전체 경기</span>
       </div>
 
       {loading ? (
         <SkeletonCards />
       ) : matches.length === 0 ? (
-        <div className="text-center py-8 text-[14px] text-text-muted">
+        <div style={{ textAlign: "center", padding: "32px 0", fontSize: "14px", color: "#566378" }}>
           오늘은 분석 경기가 없습니다
         </div>
       ) : (
         <>
-          {/* League pills */}
           {leagues.length > 1 && (
-            <div className="-mx-5 px-5 overflow-x-auto mb-3 scrollbar-hide">
-              <div className="flex gap-2 flex-nowrap pb-1">
+            <div style={{ overflowX: "auto", marginBottom: "16px" }} className="scrollbar-hide">
+              <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap", paddingBottom: "4px" }}>
                 <button
                   onClick={() => setSelectedLeague("전체")}
-                  className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition cursor-pointer min-h-[34px]"
+                  className="cursor-pointer"
                   style={{
+                    flexShrink: 0, borderRadius: "9999px", padding: "6px 12px", fontSize: "12px", fontWeight: 500,
                     background: selectedLeague === "전체" ? "#10B981" : "transparent",
                     color: selectedLeague === "전체" ? "white" : "#8494A7",
                     border: selectedLeague === "전체" ? "1px solid #10B981" : "1px solid #263344",
@@ -165,8 +165,9 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
                   <button
                     key={league}
                     onClick={() => setSelectedLeague(league)}
-                    className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition cursor-pointer min-h-[34px]"
+                    className="cursor-pointer"
                     style={{
+                      flexShrink: 0, borderRadius: "9999px", padding: "6px 12px", fontSize: "12px", fontWeight: 500,
                       background: selectedLeague === league ? "#10B981" : "transparent",
                       color: selectedLeague === league ? "white" : "#8494A7",
                       border: selectedLeague === league ? "1px solid #10B981" : "1px solid #263344",
@@ -179,11 +180,7 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
             </div>
           )}
 
-          {/* Match cards with fade transition */}
-          <div
-            className="transition-opacity duration-200"
-            style={{ opacity: fadeIn ? 1 : 0 }}
-          >
+          <div style={{ opacity: fadeIn ? 1 : 0, transition: "opacity 0.2s" }}>
             {filtered.map(m => (
               <MatchCard
                 key={m.id}
@@ -193,7 +190,7 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
             ))}
 
             {filtered.length === 0 && (
-              <div className="text-center py-6 text-[13px] text-text-muted">
+              <div style={{ textAlign: "center", padding: "24px 0", fontSize: "13px", color: "#566378" }}>
                 해당 리그의 경기가 없습니다
               </div>
             )}

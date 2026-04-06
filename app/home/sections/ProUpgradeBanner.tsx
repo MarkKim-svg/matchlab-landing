@@ -51,16 +51,16 @@ export default function ProUpgradeBanner({ dashboard, loading }: Props) {
         월 9,900원 · 커피 2잔 값
       </div>
 
-      <Link
-        href="/#pricing"
-        className="inline-block text-white font-bold rounded-lg px-4 py-2 text-sm"
+      <button
+        onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+        className="inline-block text-white font-bold rounded-lg px-4 py-2 text-sm cursor-pointer"
         style={{
           background: "linear-gradient(135deg, #d97706, #b45309)",
           boxShadow: "0 4px 12px rgba(217,119,6,0.25)",
         }}
       >
         Pro 시작하기 →
-      </Link>
+      </button>
     </div>
   );
 }

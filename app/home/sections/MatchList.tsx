@@ -43,6 +43,21 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
   const isHigh = match.confidence >= 4;
   const [home, away] = splitTeams(match.match);
 
+  // 3-column team row: [홈팀명 홈로고 | VS | 원정로고 원정팀명]
+  const teamRow = (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+        <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{home}</span>
+        <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={32} />
+      </div>
+      <span style={{ fontSize: "14px", fontWeight: 700, color: "#10B981", padding: "0 4px" }}>VS</span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
+        <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={32} />
+        <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+      </div>
+    </div>
+  );
+
   if (locked) {
     return (
       <div
@@ -50,21 +65,13 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
         className="rounded-xl cursor-pointer"
         style={{ background: "#1A2332", border: "1px solid #F59E0B55", padding: "16px", marginBottom: "16px" }}
       >
-        {/* Row 1: League + Pro badge */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
           <LeagueBadge league={match.league} />
           <span style={{ background: "#FBBF2425", color: "#FBBF24", border: "1px solid #FBBF2450", borderRadius: "9999px", padding: "3px 10px", fontSize: "11px", fontWeight: 700 }}>
             🔒 Pro
           </span>
         </div>
-        {/* Row 2: Teams centered, fully visible */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
-          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={32} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
-          <span style={{ fontSize: "13px", color: "#8494A7" }}>vs</span>
-          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={32} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
-        </div>
+        {teamRow}
       </div>
     );
   }
@@ -81,19 +88,11 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
           marginBottom: "16px",
         }}
       >
-        {/* Row 1: League + Stars */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
           <LeagueBadge league={match.league} />
           <GoldStars count={match.confidence} />
         </div>
-        {/* Row 2: Teams centered */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
-          <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={32} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
-          <span style={{ fontSize: "13px", color: "#8494A7" }}>vs</span>
-          <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={32} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
-        </div>
+        {teamRow}
       </div>
     </Link>
   );

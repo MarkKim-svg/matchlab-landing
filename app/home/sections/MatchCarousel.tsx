@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { TeamLogo, LeagueBadge, splitTeams } from "@/components/match-ui";
 
@@ -23,7 +23,7 @@ function GoldStars({ count }: { count: number }) {
   return (
     <span className="inline-flex gap-0.5">
       {Array.from({ length: 5 }, (_, i) => (
-        <svg key={i} width="12" height="12" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
+        <svg key={i} width="10" height="10" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
           <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
         </svg>
       ))}
@@ -33,62 +33,39 @@ function GoldStars({ count }: { count: number }) {
 
 export default function MatchCarousel({ predictions, loading }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [current, setCurrent] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
   const matches = predictions?.matches ?? [];
 
-  const scrollTo = useCallback((index: number) => {
+  const scrollOneCard = useCallback(() => {
     const el = scrollRef.current;
-    if (!el) return;
-    const child = el.children[index] as HTMLElement | undefined;
-    if (child) {
-      el.scrollTo({ left: child.offsetLeft - el.offsetLeft, behavior: "smooth" });
+    if (!el || matches.length <= 1) return;
+    const cardWidth = (el.children[0] as HTMLElement)?.offsetWidth ?? 260;
+    const gap = 12; // gap-3 = 0.75rem = 12px
+    const step = cardWidth + gap;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+
+    if (el.scrollLeft >= maxScroll - 2) {
+      // At end → jump back to start
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      el.scrollBy({ left: step, behavior: "smooth" });
     }
-  }, []);
-
-  const next = useCallback(() => {
-    if (matches.length === 0) return;
-    const n = (current + 1) % matches.length;
-    setCurrent(n);
-    scrollTo(n);
-  }, [current, matches.length, scrollTo]);
-
-  const prev = useCallback(() => {
-    if (matches.length === 0) return;
-    const n = (current - 1 + matches.length) % matches.length;
-    setCurrent(n);
-    scrollTo(n);
-  }, [current, matches.length, scrollTo]);
-
-  // Auto slide
-  useEffect(() => {
-    if (matches.length <= 1) return;
-    intervalRef.current = setInterval(next, 3000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [next, matches.length]);
-
-  // Sync current index on manual scroll
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      const scrollLeft = el.scrollLeft;
-      const childWidth = (el.children[0] as HTMLElement)?.offsetWidth ?? 1;
-      const idx = Math.round(scrollLeft / childWidth);
-      setCurrent(Math.min(idx, matches.length - 1));
-    };
-    el.addEventListener("scrollend", onScroll);
-    return () => el.removeEventListener("scrollend", onScroll);
   }, [matches.length]);
 
-  // Pause auto-slide on hover/touch
+  // Auto slide every 3s
+  useEffect(() => {
+    if (matches.length <= 1) return;
+    intervalRef.current = setInterval(scrollOneCard, 3000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [scrollOneCard, matches.length]);
+
   const pauseAuto = () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  const resumeAuto = () => {
+  const resumeAuto = useCallback(() => {
     if (matches.length <= 1) return;
     if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(next, 3000);
-  };
+    intervalRef.current = setInterval(scrollOneCard, 3000);
+  }, [scrollOneCard, matches.length]);
 
   if (loading) {
     return (
@@ -97,7 +74,11 @@ export default function MatchCarousel({ predictions, loading }: Props) {
           <span className="text-[16px]">🎯</span>
           <span className="text-[14px] font-bold text-bg-100">오늘의 경기</span>
         </div>
-        <div className="h-[88px] rounded-xl animate-pulse" style={{ background: "#1A2332" }} />
+        <div className="flex gap-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="w-[260px] shrink-0 h-[80px] rounded-xl animate-pulse" style={{ background: "#1A2332" }} />
+          ))}
+        </div>
       </section>
     );
   }
@@ -113,90 +94,39 @@ export default function MatchCarousel({ predictions, loading }: Props) {
       </div>
 
       <div
-        className="relative"
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-5 px-5"
         onMouseEnter={pauseAuto}
         onMouseLeave={resumeAuto}
         onTouchStart={pauseAuto}
         onTouchEnd={resumeAuto}
       >
-        {/* Scroll container */}
-        <div
-          ref={scrollRef}
-          className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-          style={{ scrollBehavior: "smooth" }}
-        >
-          {matches.map((m) => {
-            const [home, away] = splitTeams(m.match);
-            const isHigh = m.confidence >= 4;
-            return (
-              <Link
-                key={m.id}
-                href={`/report/${m.id}`}
-                className="snap-start shrink-0 w-full rounded-xl p-4 flex items-center gap-3 transition-all duration-200 hover:border-emerald-500/30"
-                style={{
-                  background: "linear-gradient(145deg, #1A2332, #1E293B)",
-                  border: isHigh ? "1px solid #F59E0B44" : "1px solid #263344",
-                }}
-              >
-                {/* League */}
-                <div className="shrink-0 hidden sm:block">
-                  <LeagueBadge league={m.league} />
-                </div>
-
-                {/* Teams */}
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <TeamLogo teamId={m.homeTeamId ?? ""} teamName={home} size={28} />
-                  <span className="text-[14px] font-bold text-bg-50 truncate">{home}</span>
-                  <span className="text-[12px] text-text-muted font-bold px-1">VS</span>
-                  <TeamLogo teamId={m.awayTeamId ?? ""} teamName={away} size={28} />
-                  <span className="text-[14px] font-bold text-bg-50 truncate">{away}</span>
-                </div>
-
-                {/* Stars + League mobile */}
-                <div className="shrink-0 flex flex-col items-end gap-1">
-                  <GoldStars count={m.confidence} />
-                  <span className="sm:hidden text-[10px] text-text-muted">{m.league}</span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Arrows */}
-        {matches.length > 1 && (
-          <>
-            <button
-              onClick={() => { pauseAuto(); prev(); resumeAuto(); }}
-              className="absolute left-1.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-bg-deep/80 backdrop-blur flex items-center justify-center text-text-secondary hover:text-white hover:bg-bg-deep transition-colors cursor-pointer"
+        {matches.map((m) => {
+          const [home, away] = splitTeams(m.match);
+          return (
+            <Link
+              key={m.id}
+              href={`/report/${m.id}`}
+              className="snap-start shrink-0 w-[260px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            </button>
-            <button
-              onClick={() => { pauseAuto(); next(); resumeAuto(); }}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-bg-deep/80 backdrop-blur flex items-center justify-center text-text-secondary hover:text-white hover:bg-bg-deep transition-colors cursor-pointer"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
-          </>
-        )}
+              {/* Row 1: League + Stars */}
+              <div className="flex items-center justify-between mb-2">
+                <LeagueBadge league={m.league} />
+                <GoldStars count={m.confidence} />
+              </div>
+
+              {/* Row 2: Teams */}
+              <div className="flex items-center gap-1.5">
+                <TeamLogo teamId={m.homeTeamId ?? ""} teamName={home} size={22} />
+                <span className="text-[13px] font-bold text-bg-100 truncate">{home}</span>
+                <span className="text-[11px] text-text-muted font-bold px-0.5">vs</span>
+                <TeamLogo teamId={m.awayTeamId ?? ""} teamName={away} size={22} />
+                <span className="text-[13px] font-bold text-bg-100 truncate">{away}</span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
-
-      {/* Dot indicators */}
-      {matches.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-3">
-          {matches.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => { setCurrent(i); scrollTo(i); }}
-              className={`rounded-full transition-all duration-300 cursor-pointer ${
-                i === current
-                  ? "w-5 h-1.5 bg-emerald-400"
-                  : "w-1.5 h-1.5 bg-text-muted/40 hover:bg-text-muted"
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </section>
   );
 }

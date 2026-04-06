@@ -39,8 +39,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // "/" 분기: 로그인 사용자 → /home으로 리다이렉트
-  if (pathname === "/" && user) {
+  // "/" 분기: 로그인 사용자 → /home으로 리다이렉트 (landing=true 쿼리 시 예외)
+  if (pathname === "/" && user && !request.nextUrl.searchParams.has("landing")) {
     const url = request.nextUrl.clone();
     url.pathname = "/home";
     return NextResponse.redirect(url);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { TeamLogo, LeagueBadge, splitTeams } from "@/components/match-ui";
 
@@ -117,6 +117,7 @@ function SkeletonCards() {
 
 export default function MatchList({ predictions, loading, isPro }: Props) {
   const [selectedLeague, setSelectedLeague] = useState("전체");
+  const [fadeIn, setFadeIn] = useState(true);
 
   const matches = predictions?.matches ?? [];
 
@@ -129,6 +130,13 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
     if (selectedLeague === "전체") return matches;
     return matches.filter(m => m.league === selectedLeague);
   }, [matches, selectedLeague]);
+
+  // Fade transition on league switch
+  useEffect(() => {
+    setFadeIn(false);
+    const t = requestAnimationFrame(() => setFadeIn(true));
+    return () => cancelAnimationFrame(t);
+  }, [selectedLeague]);
 
   return (
     <section id="match-list">
@@ -178,20 +186,25 @@ export default function MatchList({ predictions, loading, isPro }: Props) {
             </div>
           )}
 
-          {/* Match cards */}
-          {filtered.map(m => (
-            <MatchCard
-              key={m.id}
-              match={m}
-              locked={m.isProOnly && !isPro}
-            />
-          ))}
+          {/* Match cards with fade transition */}
+          <div
+            className="transition-opacity duration-200"
+            style={{ opacity: fadeIn ? 1 : 0 }}
+          >
+            {filtered.map(m => (
+              <MatchCard
+                key={m.id}
+                match={m}
+                locked={m.isProOnly && !isPro}
+              />
+            ))}
 
-          {filtered.length === 0 && (
-            <div className="text-center py-6 text-[13px] text-text-muted">
-              해당 리그의 경기가 없습니다
-            </div>
-          )}
+            {filtered.length === 0 && (
+              <div className="text-center py-6 text-[13px] text-text-muted">
+                해당 리그의 경기가 없습니다
+              </div>
+            )}
+          </div>
         </>
       )}
     </section>

@@ -93,9 +93,9 @@ export default function Navbar() {
   }
 
   return (
-    <nav className={`sticky top-0 z-50 px-6 transition-all duration-300 ${scrolled ? "bg-[#060B14]/95 backdrop-blur-lg border-b border-[#1E2D47]" : "bg-transparent border-b border-transparent"}`}>
+    <nav className={`sticky top-0 z-50 px-6 transition-all duration-300 ${scrolled ? "bg-[#060B14]/95 backdrop-blur-lg" : "bg-[#060B14]"}`}>
       <div className="max-w-[1120px] mx-auto flex justify-between items-center h-14">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="group flex items-center gap-2 transition-all duration-200" style={{ filter: "drop-shadow(0 0 0px transparent)" }} onMouseEnter={e => e.currentTarget.style.filter = "drop-shadow(0 0 6px rgba(16,185,129,0.4))"} onMouseLeave={e => e.currentTarget.style.filter = "drop-shadow(0 0 0px transparent)"}>
           <BeakerIcon />
           <span className="font-display font-bold text-xl tracking-[-1.5px] text-[#E1E7EF]">MATCHLAB</span>
         </Link>
@@ -124,13 +124,12 @@ export default function Navbar() {
 
               {menuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-44 bg-bg-800 border border-bg-700 rounded-[14px] overflow-hidden">
-                  <Link
-                    href="/"
-                    onClick={() => setMenuOpen(false)}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors"
+                  <button
+                    onClick={() => { setMenuOpen(false); window.location.href = "/?landing=true"; }}
+                    className="block w-full text-left px-4 py-2.5 text-sm text-bg-200 hover:bg-bg-700 transition-colors cursor-pointer"
                   >
                     🏠 홈페이지 소개
-                  </Link>
+                  </button>
                   <Link
                     href="/mypage"
                     onClick={() => setMenuOpen(false)}

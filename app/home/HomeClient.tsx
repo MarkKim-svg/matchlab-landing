@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, type ReactNode } from "react";
 import GreetingSection from "./sections/GreetingSection";
 import TodaySummary from "./sections/TodaySummary";
 import TopPick from "./sections/TopPick";
@@ -61,6 +61,36 @@ interface PredictionsResponse {
   proCount: number;
 }
 
+function FadeInCard({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`bg-bg-card rounded-[14px] border border-bg-border p-5 transition-all duration-200 hover:border-emerald-500/30 ${className ?? ""}`}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms, border-color 0.2s`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function HomeClient({ userName, plan }: { userName: string; plan: string }) {
   const [predictions, setPredictions] = useState<PredictionsResponse | null>(null);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
@@ -85,36 +115,36 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-6">
       {/* 인사 + 오늘 요약 (풀와이드) */}
-      <div className="md:col-span-2 bg-bg-card rounded-[14px] border border-bg-border p-5">
+      <FadeInCard className="md:col-span-2">
         <GreetingSection userName={userName} plan={plan} />
         <TodaySummary predictions={predictions} loading={predLoading} isPro={isPro} />
-      </div>
+      </FadeInCard>
 
       {/* TopPick (좌) */}
-      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+      <FadeInCard delay={100}>
         <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
-      </div>
+      </FadeInCard>
 
       {/* 적중률 요약 (우) */}
-      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+      <FadeInCard delay={200}>
         <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
-      </div>
+      </FadeInCard>
 
       {/* 전체경기 (좌) */}
-      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+      <FadeInCard delay={100}>
         <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
-      </div>
+      </FadeInCard>
 
       {/* 최근결과 (우) */}
-      <div className="bg-bg-card rounded-[14px] border border-bg-border p-5">
+      <FadeInCard delay={200}>
         <RecentResults />
-      </div>
+      </FadeInCard>
 
       {/* Pro배너/CTA + 카카오 (풀와이드) */}
-      <div className="md:col-span-2 bg-bg-card rounded-[14px] border border-bg-border p-5 flex flex-col gap-4">
+      <FadeInCard className="md:col-span-2 flex flex-col gap-4">
         {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
         <KakaoBanner />
-      </div>
+      </FadeInCard>
     </div>
   );
 }

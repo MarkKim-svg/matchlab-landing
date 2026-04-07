@@ -207,12 +207,27 @@ export default function ReportPage() {
 
   // Fetch API-Football structured data
   useEffect(() => {
-    if (!match?.fixtureId) return;
+    const fid = match?.fixtureId?.trim();
+    if (!fid) {
+      console.log("[report] fixtureId is empty, skipping match-detail fetch. match:", match?.match, "fixtureId:", match?.fixtureId);
+      return;
+    }
+    console.log("[report] Fetching match-detail for fixtureId:", fid);
     setDetailLoading(true);
-    fetch(`/api/match-detail/${match.fixtureId}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d && !d.error) setMatchDetail(d); })
-      .catch(() => {})
+    fetch(`/api/match-detail/${fid}`)
+      .then(r => {
+        if (!r.ok) { console.log("[report] match-detail API error:", r.status); return null; }
+        return r.json();
+      })
+      .then(d => {
+        if (d && !d.error) {
+          console.log("[report] match-detail loaded:", Object.keys(d));
+          setMatchDetail(d);
+        } else {
+          console.log("[report] match-detail empty or error:", d);
+        }
+      })
+      .catch(err => console.log("[report] match-detail fetch failed:", err))
       .finally(() => setDetailLoading(false));
   }, [match?.fixtureId]);
 
@@ -224,7 +239,9 @@ export default function ReportPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#0F172A] text-white">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <Navbar />
+        <AuthTabBar />
+        <div className="mx-auto max-w-5xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
           <Skeleton />
         </div>
       </main>
@@ -235,7 +252,9 @@ export default function ReportPage() {
   if (notFound) {
     return (
       <main className="min-h-screen bg-[#0F172A] text-white">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <Navbar />
+        <AuthTabBar />
+        <div className="mx-auto max-w-5xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
           <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
             <p className="mb-2 text-3xl">⚽</p>
             <p className="text-lg text-slate-300">경기를 찾을 수 없습니다</p>
@@ -255,7 +274,9 @@ export default function ReportPage() {
   if (error || !match) {
     return (
       <main className="min-h-screen bg-[#0F172A] text-white">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <Navbar />
+        <AuthTabBar />
+        <div className="mx-auto max-w-5xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
             <p className="text-red-400">{error ?? "알 수 없는 오류"}</p>
             <button

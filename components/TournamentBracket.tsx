@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface TieData {
   team1: string;
@@ -115,6 +115,7 @@ function Connector({ count }: { count: number }) {
 export default function TournamentBracket({ leagueId, season }: Props) {
   const [rounds, setRounds] = useState<Record<string, TieData[]>>({});
   const [loading, setLoading] = useState(true);
+  const bracketRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -165,7 +166,11 @@ export default function TournamentBracket({ leagueId, season }: Props) {
   };
 
   return (
-    <div style={{ overflowX: "auto", padding: "8px 0" }} className="scrollbar-hide">
+    <div style={{ position: "relative" }}>
+      {/* Scroll arrows */}
+      <button onClick={() => bracketRef.current?.scrollBy({ left: -250, behavior: "smooth" })} className="cursor-pointer" style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: "32px", height: "32px", borderRadius: "50%", background: "#111827ee", border: "1px solid #1E2D47", color: "#8494A7", fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>◀</button>
+      <button onClick={() => bracketRef.current?.scrollBy({ left: 250, behavior: "smooth" })} className="cursor-pointer" style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: "32px", height: "32px", borderRadius: "50%", background: "#111827ee", border: "1px solid #1E2D47", color: "#8494A7", fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}>▶</button>
+    <div ref={bracketRef} style={{ overflowX: "auto", padding: "8px 0" }} className="scrollbar-hide">
       <div style={{ display: "flex", alignItems: "stretch", justifyContent: "center", minWidth: "fit-content", gap: "0px" }}>
         {/* ── Left side ── */}
         {r16L.length > 0 && (
@@ -218,6 +223,7 @@ export default function TournamentBracket({ leagueId, season }: Props) {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 }

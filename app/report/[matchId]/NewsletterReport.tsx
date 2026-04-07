@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
+import { FormTable, StatsTable, H2HTable, InjuriesList, MatchDetailSkeleton, type MatchDetail } from "@/components/report/MatchDetailTables";
 import type { MatchPrediction } from "@/lib/notion";
 import type { MatchReport, ReportBlock, ReportRich, ReportSection } from "@/lib/notion";
 
@@ -265,10 +266,14 @@ export default function NewsletterReport({
   match,
   report,
   locked,
+  matchDetail,
+  detailLoading,
 }: {
   match: MatchPrediction;
   report: MatchReport;
   locked: boolean;
+  matchDetail?: MatchDetail | null;
+  detailLoading?: boolean;
 }) {
   const [home, away] = splitTeams(match.match);
 
@@ -369,6 +374,18 @@ export default function NewsletterReport({
             </SectionCard>
           </div>
         ))}
+
+        {/* Structured data from API-Football (Free) */}
+        {detailLoading ? (
+          <MatchDetailSkeleton />
+        ) : matchDetail && (
+          <div className="space-y-5">
+            <FormTable form={matchDetail.form} homeName={home} awayName={away} />
+            <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} />
+            <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
+            <InjuriesList injuries={matchDetail.injuries} />
+          </div>
+        )}
 
         {/* Locked sections — single overlay */}
         {locked && report.sections.length > publicSectionCount && (

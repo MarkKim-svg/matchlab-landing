@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
+import { FormTable, StatsTable, H2HTable, InjuriesList, MatchDetailSkeleton, type MatchDetail } from "@/components/report/MatchDetailTables";
 import type { MatchPrediction, MatchReport } from "@/lib/notion";
 import NewsletterReport from "./NewsletterReport";
 
@@ -151,7 +152,9 @@ export default function ReportPage() {
 
   const [match, setMatch] = useState<MatchPrediction | null>(null);
   const [report, setReport] = useState<MatchReport | null>(null);
+  const [matchDetail, setMatchDetail] = useState<MatchDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [userPlan, setUserPlan] = useState<string>("free");
@@ -201,6 +204,17 @@ export default function ReportPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Fetch API-Football structured data
+  useEffect(() => {
+    if (!match?.fixtureId) return;
+    setDetailLoading(true);
+    fetch(`/api/match-detail/${match.fixtureId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d && !d.error) setMatchDetail(d); })
+      .catch(() => {})
+      .finally(() => setDetailLoading(false));
+  }, [match?.fixtureId]);
 
   const isPro = userPlan === "pro";
   // 상세 분석 섹션은 모든 Free 유저에게 잠금 (확신도 무관)
@@ -258,7 +272,7 @@ export default function ReportPage() {
 
   // Newsletter layout when posting DB content is available
   if (report && (report.sections.length > 0 || report.leadingBlocks.length > 0)) {
-    return <NewsletterReport match={match} report={report} locked={!!locked} />;
+    return <NewsletterReport match={match} report={report} locked={!!locked} matchDetail={matchDetail} detailLoading={detailLoading} />;
   }
 
   const [home, away] = splitTeams(match.match);
@@ -345,6 +359,18 @@ export default function ReportPage() {
             </div>
           )}
         </div>
+
+        {/* ---- Structured data from API-Football (Free) ---- */}
+        {detailLoading ? (
+          <MatchDetailSkeleton />
+        ) : matchDetail && (
+          <div className="space-y-5">
+            <FormTable form={matchDetail.form} homeName={home} awayName={away} />
+            <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} />
+            <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
+            <InjuriesList injuries={matchDetail.injuries} />
+          </div>
+        )}
 
         {/* ---- Pro sections (single overlay wrapper) ---- */}
         {locked ? (

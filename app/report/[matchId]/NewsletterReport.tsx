@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import AuthTabBar from "@/components/AuthTabBar";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
 import type { MatchReport, ReportBlock, ReportRich, ReportSection } from "@/lib/notion";
@@ -188,22 +190,13 @@ function ProOverlay() {
       <span className="text-3xl">🔒</span>
       <p className="mt-2 text-sm font-bold text-white">프리미엄 전용 분석</p>
       <p className="mt-1 text-xs text-center px-4" style={{ color: "#8494A7" }}>전술 분석 · 핵심 변수 · 상세 예측 데이터</p>
-      <div className="mt-3 flex gap-2">
-        <button
-          onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
-          className="rounded-lg px-4 py-1.5 text-xs font-bold text-white cursor-pointer"
-          style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
-        >
-          Pro 시작하기
-        </button>
-        <a
-          href="/?landing=true#pricing"
-          className="rounded-lg border px-4 py-1.5 text-xs font-medium transition"
-          style={{ borderColor: "#475569", color: "#94a3b8" }}
-        >
-          요금제 보기
-        </a>
-      </div>
+      <button
+        onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+        className="mt-3 rounded-lg px-5 py-2 text-xs font-bold text-white cursor-pointer"
+        style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
+      >
+        Pro 시작하기
+      </button>
     </div>
   );
 }
@@ -232,7 +225,9 @@ export default function NewsletterReport({
 
   return (
     <main className="min-h-screen" style={{ background: "#0F172A", color: "#E1E7EF" }}>
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 space-y-5">
+      <Navbar />
+      <AuthTabBar />
+      <div className="mx-auto max-w-2xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
         {/* Back + date */}
         <div className="flex items-center justify-between">
           <Link
@@ -308,24 +303,26 @@ export default function NewsletterReport({
           </section>
         )}
 
-        {/* Sections */}
-        {report.sections.map((section, idx) => {
-          const isLocked = locked && idx >= publicSectionCount;
-          const card = (
+        {/* Public sections */}
+        {report.sections.slice(0, locked ? publicSectionCount : report.sections.length).map((section, idx) => (
+          <div key={idx}>
             <SectionCard section={section}>
               {idx === rationaleIdx && <EnsembleCard match={match} />}
             </SectionCard>
-          );
-          if (!isLocked) return <div key={idx}>{card}</div>;
-          return (
-            <div key={idx} className="relative">
-              <div className="pointer-events-none select-none" style={{ filter: "blur(10px)" }}>
-                {card}
-              </div>
-              <ProOverlay />
+          </div>
+        ))}
+
+        {/* Locked sections — single overlay */}
+        {locked && report.sections.length > publicSectionCount && (
+          <div className="relative">
+            <div className="space-y-5 pointer-events-none select-none" style={{ filter: "blur(10px)" }}>
+              {report.sections.slice(publicSectionCount).map((section, idx) => (
+                <SectionCard key={idx} section={section} />
+              ))}
             </div>
-          );
-        })}
+            <ProOverlay />
+          </div>
+        )}
 
         {/* If rationale section didn't exist, add ensemble as standalone */}
         {rationaleIdx === -1 && (

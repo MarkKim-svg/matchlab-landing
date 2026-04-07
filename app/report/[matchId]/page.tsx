@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
+import Navbar from "@/components/Navbar";
+import AuthTabBar from "@/components/AuthTabBar";
 import type { MatchPrediction, MatchReport } from "@/lib/notion";
 import NewsletterReport from "./NewsletterReport";
 
@@ -78,36 +80,25 @@ function ProOverlay() {
       <span className="text-3xl">🔒</span>
       <p className="mt-2 text-sm font-bold text-white">프리미엄 전용 분석</p>
       <p className="mt-1 text-xs text-slate-400 text-center px-4">전술 분석 · 핵심 변수 · 상세 예측 데이터</p>
-      <div className="mt-3 flex gap-2">
-        <button
-          onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
-          className="rounded-lg px-4 py-1.5 text-xs font-bold text-white cursor-pointer"
-          style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
-        >
-          Pro 시작하기
-        </button>
-        <a
-          href="/?landing=true#pricing"
-          className="rounded-lg border border-slate-500 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700 transition"
-        >
-          요금제 보기
-        </a>
-      </div>
+      <button
+        onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+        className="mt-3 rounded-lg px-5 py-2 text-xs font-bold text-white cursor-pointer"
+        style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
+      >
+        Pro 시작하기
+      </button>
     </div>
   );
 }
 
 function BlurCard({ title, locked, children }: { title: string; locked: boolean; children: React.ReactNode }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-[#334155] bg-[#1E293B] p-5">
+    <div className="overflow-hidden rounded-xl border border-[#334155] bg-[#1E293B] p-5">
       <h3 className="mb-4 text-base font-bold text-white">{title}</h3>
       {locked ? (
-        <>
-          <div className="pointer-events-none select-none" style={{ filter: "blur(12px)" }}>
-            {children}
-          </div>
-          <ProOverlay />
-        </>
+        <div className="pointer-events-none select-none" style={{ filter: "blur(12px)" }}>
+          {children}
+        </div>
       ) : (
         children
       )}
@@ -280,7 +271,9 @@ export default function ReportPage() {
 
   return (
     <main className="min-h-screen bg-[#0F172A] text-white">
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 space-y-5">
+      <Navbar />
+      <AuthTabBar />
+      <div className="mx-auto max-w-2xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
         {/* ---- 1. back + date ---- */}
         <div className="flex items-center justify-between">
           <Link
@@ -353,36 +346,69 @@ export default function ReportPage() {
           )}
         </div>
 
-        {/* ---- 4. 4-model ensemble (Pro section) ---- */}
-        <BlurCard title="모델별 분석" locked={!!locked}>
-          <div className="divide-y divide-[#334155]">
-            <ModelRow name="푸아송 모델" home={match.poisson.home} away={match.poisson.away} />
-            <ModelRow name="ELO 레이팅" home={match.elo.home} away={match.elo.away} />
-            <ModelRow name="배당 역산" home={match.odds.home} away={match.odds.away} />
-            <ModelRow name="xG 기반" home={match.xg.home} away={match.xg.away} />
-          </div>
-
-          {/* model agreement */}
-          {match.modelAgreement && (
-            <div className="mt-4 rounded-lg bg-[#0F172A] px-4 py-3">
-              <span className="text-sm text-slate-400">모델 일치도: </span>
-              <span className="text-sm font-medium text-white">{agreementLabel(match.modelAgreement)}</span>
+        {/* ---- Pro sections (single overlay wrapper) ---- */}
+        {locked ? (
+          <div className="relative">
+            <div className="space-y-5 pointer-events-none select-none" style={{ filter: "blur(10px)" }}>
+              <BlurCard title="모델별 분석" locked={false}>
+                <div className="divide-y divide-[#334155]">
+                  <ModelRow name="푸아송 모델" home={match.poisson.home} away={match.poisson.away} />
+                  <ModelRow name="ELO 레이팅" home={match.elo.home} away={match.elo.away} />
+                  <ModelRow name="배당 역산" home={match.odds.home} away={match.odds.away} />
+                  <ModelRow name="xG 기반" home={match.xg.home} away={match.xg.away} />
+                </div>
+              </BlurCard>
+              <BlurCard title="AI 정성 분석" locked={false}>
+                <div className="flex items-start gap-2">
+                  <span className="text-lg shrink-0">🤖</span>
+                  <p className="text-sm text-slate-300 leading-relaxed">분석 내용이 여기에 표시됩니다...</p>
+                </div>
+              </BlurCard>
+              <BlurCard title="배당 분석" locked={false}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-[#0F172A] p-4 text-center">
+                    <p className="text-xs text-slate-400 mb-1">홈승 배당</p>
+                    <p className="text-xl font-bold text-white">-</p>
+                  </div>
+                  <div className="rounded-lg bg-[#0F172A] p-4 text-center">
+                    <p className="text-xs text-slate-400 mb-1">원정승 배당</p>
+                    <p className="text-xl font-bold text-white">-</p>
+                  </div>
+                </div>
+              </BlurCard>
             </div>
-          )}
-        </BlurCard>
-
-        {/* ---- 5. AI adjustment (Pro section) ---- */}
-        <BlurCard title="AI 정성 분석" locked={!!locked}>
-          <div className="flex items-start gap-2">
-            <span className="text-lg shrink-0">🤖</span>
-            <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
-              {match.aiAdjustment || "AI 분석 데이터가 없습니다."}
-            </p>
+            <ProOverlay />
           </div>
-        </BlurCard>
+        ) : (
+          <>
+            {/* ---- 4. 4-model ensemble ---- */}
+            <BlurCard title="모델별 분석" locked={false}>
+              <div className="divide-y divide-[#334155]">
+                <ModelRow name="푸아송 모델" home={match.poisson.home} away={match.poisson.away} />
+                <ModelRow name="ELO 레이팅" home={match.elo.home} away={match.elo.away} />
+                <ModelRow name="배당 역산" home={match.odds.home} away={match.odds.away} />
+                <ModelRow name="xG 기반" home={match.xg.home} away={match.xg.away} />
+              </div>
+              {match.modelAgreement && (
+                <div className="mt-4 rounded-lg bg-[#0F172A] px-4 py-3">
+                  <span className="text-sm text-slate-400">모델 일치도: </span>
+                  <span className="text-sm font-medium text-white">{agreementLabel(match.modelAgreement)}</span>
+                </div>
+              )}
+            </BlurCard>
 
-        {/* ---- 6. odds analysis (Pro section) ---- */}
-        <BlurCard title="배당 분석" locked={!!locked}>
+            {/* ---- 5. AI adjustment ---- */}
+            <BlurCard title="AI 정성 분석" locked={false}>
+              <div className="flex items-start gap-2">
+                <span className="text-lg shrink-0">🤖</span>
+                <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                  {match.aiAdjustment || "AI 분석 데이터가 없습니다."}
+                </p>
+              </div>
+            </BlurCard>
+
+            {/* ---- 6. odds analysis ---- */}
+            <BlurCard title="배당 분석" locked={false}>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-[#0F172A] p-4 text-center">
               <p className="text-xs text-slate-400 mb-1">홈승 배당</p>
@@ -409,6 +435,8 @@ export default function ReportPage() {
             </div>
           )}
         </BlurCard>
+          </>
+        )}
 
         {/* ---- 7. transparency (always public) ---- */}
         <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-5 text-center">

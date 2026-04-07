@@ -104,8 +104,9 @@ export default function Navbar() {
   const showTabs = user && isAuthPage;
 
   return (
+    <>
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 border-b ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
         scrolled
           ? "bg-[#0A1121]/95 backdrop-blur-lg border-bg-border"
           : "bg-[#0A1121] border-bg-border/50"
@@ -228,6 +229,9 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+    {/* Spacer for fixed navbar */}
+    <div style={{ height: "68px" }} />
+    </>
   );
 }
 

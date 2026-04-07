@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const revalidate = 3600;
 
 const API_BASE = "https://v3.football.api-sports.io";
+function pad2(n: number) { return String(n).padStart(2, "0"); }
 
 async function apiFetch(path: string, apiKey: string) {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -157,12 +158,25 @@ export async function GET(
       reason: inj.player?.reason ?? "",
     }));
 
+    // 8. Fixture info (kickoff time, round)
+    const fixtureDate = fixture.fixture?.date ?? "";
+    const kickoffUTC = fixtureDate.includes("T") ? fixtureDate : "";
+    // Convert to KST
+    let kickoffKST = "";
+    if (kickoffUTC) {
+      const d = new Date(kickoffUTC);
+      const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+      kickoffKST = `${pad2(kst.getUTCHours())}:${pad2(kst.getUTCMinutes())}`;
+    }
+    const round = fixture.league?.round ?? "";
+
     return NextResponse.json({
       form,
       stats,
       h2h,
       standings,
       injuries,
+      fixtureInfo: { kickoffKST, round },
     });
   } catch (err) {
     console.error("match-detail API error:", err);

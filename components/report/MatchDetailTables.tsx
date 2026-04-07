@@ -59,6 +59,7 @@ export interface MatchDetail {
   h2h: H2HData;
   standings: { home: StandingData | null; away: StandingData | null };
   injuries: InjuryData[];
+  fixtureInfo?: { kickoffKST: string; round: string };
 }
 
 // ── Styles ──

@@ -9,6 +9,21 @@ import { FormTable, StatsTable, H2HTable, InjuriesList, MatchDetailSkeleton, typ
 import type { MatchPrediction } from "@/lib/notion";
 import type { MatchReport, ReportBlock, ReportRich, ReportSection } from "@/lib/notion";
 
+function translateRound(round: string): string {
+  if (!round) return "";
+  const r = round.toLowerCase();
+  if (r.includes("final") && !r.includes("quarter") && !r.includes("semi")) return "결승";
+  if (r.includes("semi")) return r.includes("2nd") ? "4강 2차전" : r.includes("1st") ? "4강 1차전" : "4강";
+  if (r.includes("quarter")) return r.includes("2nd") ? "8강 2차전" : r.includes("1st") ? "8강 1차전" : "8강";
+  if (r.includes("round of 16")) return r.includes("2nd") ? "16강 2차전" : r.includes("1st") ? "16강 1차전" : "16강";
+  if (r.includes("round of 32")) return "32강";
+  const regMatch = round.match(/Regular Season\s*-?\s*(\d+)/i);
+  if (regMatch) return `${regMatch[1]}라운드`;
+  const groupMatch = round.match(/Group\s+([A-Z])/i);
+  if (groupMatch) return `${groupMatch[1]}조`;
+  return round;
+}
+
 function RichSpan({ parts }: { parts: ReportRich[] }) {
   return (
     <>
@@ -302,22 +317,26 @@ export default function NewsletterReport({
 
         {/* Header card */}
         <header style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "32px 24px", textAlign: "center" }}>
-          {/* Date */}
+          {/* Date + time */}
           <div style={{ fontSize: "13px", color: "#566378", marginBottom: "16px" }}>
             {formatKoreanDate(match.date)}
+            {matchDetail?.fixtureInfo?.kickoffKST && (
+              <span style={{ fontWeight: 600, color: "#8494A7" }}> {matchDetail.fixtureInfo.kickoffKST} KST</span>
+            )}
           </div>
 
-          {/* League (big) */}
-          <div style={{ marginBottom: "24px", display: "flex", justifyContent: "center" }}>
+          {/* League logo + name + round */}
+          <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
             {(() => {
               const config = LEAGUE_CONFIG[match.league];
-              return (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "10px", borderRadius: "9999px", padding: "8px 20px", fontSize: "18px", fontWeight: 700, color: "rgba(255,255,255,0.95)", backgroundColor: (config?.color ?? "#334155") + "55" }}>
-                  {config && <img src={config.logo} alt={match.league} style={{ width: "36px", height: "36px", borderRadius: "9999px", background: "white", padding: "2px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                  {match.league}
-                </span>
-              );
+              return config ? (
+                <img src={config.logo} alt={match.league} style={{ width: "48px", height: "48px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              ) : null;
             })()}
+            <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF" }}>{match.league}</span>
+            {matchDetail?.fixtureInfo?.round && (
+              <span style={{ fontSize: "13px", color: "#8494A7" }}>{translateRound(matchDetail.fixtureInfo.round)}</span>
+            )}
           </div>
 
           {/* Teams */}

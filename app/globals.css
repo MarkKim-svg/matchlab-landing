@@ -80,7 +80,8 @@
 .scrollbar-hide::-webkit-scrollbar { display:none; }
 
 /* Home page grid layout */
-.home-layout { display:flex; flex-direction:column; gap:16px; padding:24px 16px; }
+.home-layout { display:flex; flex-direction:column; gap:16px; padding:24px 16px; padding-bottom:96px; }
+@media (min-width:768px) { .home-layout { padding-bottom:24px; } }
 .home-main { display:flex; flex-direction:column; gap:16px; }
 .home-sidebar { }
 .home-2col { display:grid; grid-template-columns:1fr; gap:16px; }

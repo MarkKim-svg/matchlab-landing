@@ -115,18 +115,18 @@ export default function MatchCarousel({ predictions, loading }: Props) {
             <Link
               key={m.id}
               href={`/report/${m.id}`}
-              className="snap-start shrink-0 w-[260px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200 flex flex-col items-center gap-2"
+              className="snap-start shrink-0 w-[240px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200 flex flex-col items-center gap-2 overflow-hidden"
             >
               {/* League badge */}
               <LeagueBadge league={m.league} />
 
               {/* Teams */}
-              <div className="flex items-center justify-center gap-1.5">
-                <TeamLogo teamId={m.homeTeamId ?? ""} teamName={home} size={22} />
-                <span className="text-[14px] font-bold text-bg-100 truncate">{home}</span>
-                <span className="text-[11px] text-text-muted font-bold px-0.5">vs</span>
-                <TeamLogo teamId={m.awayTeamId ?? ""} teamName={away} size={22} />
-                <span className="text-[14px] font-bold text-bg-100 truncate">{away}</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", width: "100%", overflow: "hidden" }}>
+                <TeamLogo teamId={m.homeTeamId ?? ""} teamName={home} size={18} />
+                <span style={{ fontSize: "12px", fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "70px" }}>{home}</span>
+                <span style={{ fontSize: "10px", color: "#566378", fontWeight: 700, flexShrink: 0 }}>vs</span>
+                <TeamLogo teamId={m.awayTeamId ?? ""} teamName={away} size={18} />
+                <span style={{ fontSize: "12px", fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "70px" }}>{away}</span>
               </div>
 
               {/* Stars */}

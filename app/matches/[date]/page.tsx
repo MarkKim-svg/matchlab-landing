@@ -92,7 +92,7 @@ function FixtureCard({ f }: { f: ApiFixture }) {
   }
 
   return (
-    <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "12px", padding: "16px" }}>
+    <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "12px", padding: "16px", overflow: "hidden" }}>
       {/* Row 1: League + Round + time */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
         <span style={{ fontSize: "11px", color: "#566378" }}>{f.league || ""} {f.round || ""}</span>
@@ -100,10 +100,10 @@ function FixtureCard({ f }: { f: ApiFixture }) {
       </div>
 
       {/* Row 2: Teams + Score/VS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{f.homeTeam}</span>
-          <img src={f.homeLogo} alt="" style={{ width: "40px", height: "40px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", minWidth: 0 }}>
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.homeTeam}</span>
+          <img src={f.homeLogo} alt="" style={{ width: "32px", height: "32px", objectFit: "contain", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
         </div>
         {isFinished && hasScore ? (
           <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF", padding: "0 8px", fontFamily: "'JetBrains Mono',monospace" }}>
@@ -112,9 +112,9 @@ function FixtureCard({ f }: { f: ApiFixture }) {
         ) : (
           <span style={{ fontSize: "15px", fontWeight: 700, color: "#10B981", padding: "0 8px" }}>VS</span>
         )}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
-          <img src={f.awayLogo} alt="" style={{ width: "40px", height: "40px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{f.awayTeam}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "6px", minWidth: 0 }}>
+          <img src={f.awayLogo} alt="" style={{ width: "32px", height: "32px", objectFit: "contain", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.awayTeam}</span>
         </div>
       </div>
 
@@ -146,8 +146,8 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
 
   const inner = (
     <div
-      className="rounded-xl border border-[#334155] border-l-4 p-5 transition hover:border-emerald-500/40"
-      style={{ background: "#1E293B", ...cardStyle }}
+      className="rounded-xl border border-[#334155] border-l-4 transition hover:border-emerald-500/40"
+      style={{ background: "#1E293B", ...cardStyle, padding: "16px", overflow: "hidden" }}
     >
       {/* Row 1: League + confidence */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
@@ -159,10 +159,10 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
       </div>
 
       {/* Row 2: Teams + Score/VS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-          <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{home}</span>
-          <TeamLogo teamId={m.homeTeamId} teamName={home} size={44} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px", marginBottom: "12px", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", minWidth: 0 }}>
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
+          <TeamLogo teamId={m.homeTeamId} teamName={home} size={32} />
         </div>
         {hasResult ? (
           <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF", padding: "0 8px", fontFamily: "'JetBrains Mono',monospace" }}>
@@ -171,9 +171,9 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
         ) : (
           <span style={{ fontSize: "14px", fontWeight: 700, color: "#10B981", padding: "0 8px" }}>VS</span>
         )}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
-          <TeamLogo teamId={m.awayTeamId} teamName={away} size={44} />
-          <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "6px", minWidth: 0 }}>
+          <TeamLogo teamId={m.awayTeamId} teamName={away} size={32} />
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{away}</span>
         </div>
       </div>
 
@@ -361,7 +361,7 @@ export default function MatchesDatePage() {
             {/* Date nav */}
             <div className="mb-6">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">← 이전</button>
+                <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white cursor-pointer" style={{ minWidth: "44px", minHeight: "44px", padding: "8px 12px", position: "relative", zIndex: 5 }}>← 이전</button>
                 <div className="text-center">
                   <DarkCalendar
                     value={dateStr}
@@ -369,7 +369,7 @@ export default function MatchesDatePage() {
                     label={formatKoreanDate(dateStr)}
                   />
                 </div>
-                <button onClick={() => goDate(shiftDate(dateStr, 1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">다음 →</button>
+                <button onClick={() => goDate(shiftDate(dateStr, 1))} className="rounded-lg border border-[#334155] bg-[#1E293B] text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white cursor-pointer" style={{ minWidth: "44px", minHeight: "44px", padding: "8px 12px", position: "relative", zIndex: 5 }}>다음 →</button>
               </div>
 
               {!loading && !error && (

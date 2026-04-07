@@ -231,47 +231,48 @@ export function H2HTable({ h2h, homeName, awayName }: { h2h: H2HData; homeName: 
 // ── 4. Injuries List ──
 
 export function InjuriesList({ injuries }: { injuries: InjuryData[] }) {
-  const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   if (injuries.length === 0) return null;
 
+  const canCollapse = injuries.length > 3;
+  const visible = canCollapse && !expanded ? injuries.slice(0, 3) : injuries;
+  const remaining = injuries.length - 3;
+
   return (
     <div>
-      <button
-        onClick={() => setOpen(v => !v)}
-        className="cursor-pointer"
-        style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: open ? "12px" : "0", background: "none", border: "none", padding: 0 }}
-      >
-        <span style={{ fontSize: "16px" }}>🏥</span>
-        <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF" }}>
-          {open ? "▼" : "▶"} 부상/출장정지 {injuries.length}명
-        </span>
-      </button>
-
-      {open && (
-        <div style={{ ...WRAP, animation: "fadeIn 0.2s ease" }}>
-          <table style={{ width: "100%", minWidth: "300px", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #1E2D47" }}>
-                <th style={TH}>선수</th>
-                <th style={TH}>팀</th>
-                <th style={TH}>유형</th>
-                <th style={TH}>사유</th>
+      <SectionHeader emoji="🏥" title={`부상/출장정지 ${injuries.length}명`} />
+      <div style={{ ...WRAP, overflow: "hidden" }}>
+        <table style={{ width: "100%", minWidth: "300px", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ borderBottom: "2px solid #1E2D47" }}>
+              <th style={TH}>선수</th>
+              <th style={TH}>팀</th>
+              <th style={TH}>유형</th>
+              <th style={TH}>사유</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((inj, i) => (
+              <tr key={i} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
+                <td style={{ ...TD, fontWeight: 600 }}>{inj.player}</td>
+                <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.team}</td>
+                <td style={TD}>{inj.type}</td>
+                <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.reason}</td>
               </tr>
-            </thead>
-            <tbody>
-              {injuries.map((inj, i) => (
-                <tr key={i} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
-                  <td style={{ ...TD, fontWeight: 600 }}>{inj.player}</td>
-                  <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.team}</td>
-                  <td style={TD}>{inj.type}</td>
-                  <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.reason}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+        {canCollapse && (
+          <button
+            onClick={() => setExpanded(v => !v)}
+            className="cursor-pointer"
+            style={{ width: "100%", padding: "10px", background: "#0A1121", border: "none", borderTop: "1px solid #1E2D47", color: "#10B981", fontSize: "12px", fontWeight: 600 }}
+          >
+            {expanded ? "▲ 접기" : `▼ 더보기 (${remaining}명 더)`}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

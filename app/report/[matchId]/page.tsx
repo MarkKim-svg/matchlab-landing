@@ -9,6 +9,7 @@ import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPc
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import { FormTable, StatsTable, H2HTable, InjuriesList, MatchDetailSkeleton, type MatchDetail } from "@/components/report/MatchDetailTables";
+import LineupPitch from "@/components/report/LineupPitch";
 import type { MatchPrediction, MatchReport } from "@/lib/notion";
 import NewsletterReport from "./NewsletterReport";
 
@@ -433,6 +434,7 @@ export default function ReportPage() {
             <FormTable form={matchDetail.form} homeName={home} awayName={away} />
             <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} />
             <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
+            {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} />}
             <InjuriesList injuries={matchDetail.injuries} />
           </div>
         )}

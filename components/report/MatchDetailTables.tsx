@@ -53,6 +53,10 @@ interface InjuryData {
   reason: string;
 }
 
+export interface LineupPlayer { name: string; number: number; pos: string; }
+export interface TeamLineup { formation: string; startXI: LineupPlayer[]; subs: LineupPlayer[]; }
+export interface LineupsData { home: TeamLineup | null; away: TeamLineup | null; }
+
 export interface MatchDetail {
   form: { home: FormData; away: FormData };
   stats: { home: StatsData | null; away: StatsData | null };
@@ -60,6 +64,7 @@ export interface MatchDetail {
   standings: { home: StandingData | null; away: StandingData | null };
   injuries: InjuryData[];
   fixtureInfo?: { kickoffKST: string; round: string };
+  lineups?: LineupsData | null;
 }
 
 // ── Styles ──

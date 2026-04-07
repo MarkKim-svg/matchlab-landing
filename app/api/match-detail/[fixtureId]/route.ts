@@ -58,7 +58,7 @@ export async function GET(
     const season = fixture.league?.season ?? 2025;
 
     // 2. Fetch all data in parallel
-    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData] = await Promise.all([
+    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, predictionsData] = await Promise.all([
       apiFetch(`/fixtures?team=${homeTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures?team=${awayTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}&last=5`, apiKey),
@@ -66,6 +66,7 @@ export async function GET(
       leagueId ? apiFetch(`/teams/statistics?team=${awayTeamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       leagueId ? apiFetch(`/standings?league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       apiFetch(`/injuries?fixture=${fixtureId}`, apiKey),
+      apiFetch(`/predictions?fixture=${fixtureId}`, apiKey),
     ]);
 
     // 3. Parse form
@@ -170,6 +171,37 @@ export async function GET(
     }
     const round = fixture.league?.round ?? "";
 
+    // 9. Lineups from predictions
+    let lineups = null;
+    try {
+      const pred = Array.isArray(predictionsData) ? predictionsData[0] : predictionsData;
+      if (pred?.teams) {
+        const parseTeam = (team: any) => {
+          if (!team) return null;
+          const startXI = (team.players?.startXI ?? []).map((p: any) => ({
+            name: p.player?.name ?? "",
+            number: p.player?.number ?? 0,
+            pos: p.player?.pos ?? "",
+          }));
+          const subs = (team.players?.substitutes ?? []).map((p: any) => ({
+            name: p.player?.name ?? "",
+            number: p.player?.number ?? 0,
+            pos: p.player?.pos ?? "",
+          }));
+          return {
+            formation: team.formation ?? "",
+            startXI,
+            subs,
+          };
+        };
+        const home = parseTeam(pred.teams.home);
+        const away = parseTeam(pred.teams.away);
+        if (home?.startXI.length > 0 || away?.startXI.length > 0) {
+          lineups = { home, away };
+        }
+      }
+    } catch { /* graceful fallback */ }
+
     return NextResponse.json({
       form,
       stats,
@@ -177,6 +209,7 @@ export async function GET(
       standings,
       injuries,
       fixtureInfo: { kickoffKST, round },
+      lineups,
     });
   } catch (err) {
     console.error("match-detail API error:", err);

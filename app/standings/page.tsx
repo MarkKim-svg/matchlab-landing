@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import TournamentBracket from "@/components/TournamentBracket";
@@ -80,6 +80,23 @@ export default function StandingsPage() {
 
   const [playerTab, setPlayerTab] = useState<"goals" | "assists" | "points">("goals");
   const [showAll, setShowAll] = useState(false);
+  const playerSectionRef = useRef<HTMLDivElement>(null);
+
+  // Auto-select player tab from URL query
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab === "scorers" || tab === "goals") {
+      setPlayerTab("goals");
+      setTimeout(() => playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 500);
+    } else if (tab === "assists") {
+      setPlayerTab("assists");
+      setTimeout(() => playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 500);
+    } else if (tab === "points") {
+      setPlayerTab("points");
+      setTimeout(() => playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 500);
+    }
+  }, []);
 
   // Fetch standings
   useEffect(() => {
@@ -215,6 +232,7 @@ export default function StandingsPage() {
         )}
 
         {/* ── Section 2: Player Rankings ── */}
+        <div ref={playerSectionRef} />
         <h2 className="text-[15px] font-bold text-bg-100 mb-3 flex items-center gap-2">
           <span>⚽</span> 선수 순위
         </h2>

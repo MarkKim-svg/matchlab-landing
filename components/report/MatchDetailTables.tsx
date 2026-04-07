@@ -222,6 +222,15 @@ export function H2HTable({ h2h, homeName, awayName }: { h2h: H2HData; homeName: 
 
 // ── 4. Injuries List ──
 
+function injurySeverity(type: string, reason: string): { color: string; label: string } {
+  const t = `${type} ${reason}`.toLowerCase();
+  if (/acl|cruciate|season|months|surgery/.test(t)) return { color: "#EF4444", label: "장기" };
+  if (/weeks|muscle|hamstring|fracture|ligament/.test(t)) return { color: "#F97316", label: "중기" };
+  if (/doubtful|knock|minor|day.to.day|illness/.test(t)) return { color: "#EAB308", label: "단기" };
+  if (/training|returning|expected|match.fit|available/.test(t)) return { color: "#22C55E", label: "복귀임박" };
+  return { color: "#6B7280", label: "" };
+}
+
 export function InjuriesList({ injuries }: { injuries: InjuryData[] }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -245,16 +254,33 @@ export function InjuriesList({ injuries }: { injuries: InjuryData[] }) {
             </tr>
           </thead>
           <tbody>
-            {visible.map((inj, i) => (
-              <tr key={i} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
-                <td style={{ ...TD, fontWeight: 600 }}>{inj.player}</td>
-                <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.team}</td>
-                <td style={TD}>{inj.type}</td>
-                <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.reason}</td>
-              </tr>
-            ))}
+            {visible.map((inj, i) => {
+              const sev = injurySeverity(inj.type, inj.reason);
+              return (
+                <tr key={i} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
+                  <td style={{ ...TD, fontWeight: 600, borderLeft: `3px solid ${sev.color}`, paddingLeft: "12px" }}>{inj.player}</td>
+                  <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.team}</td>
+                  <td style={TD}>{inj.type}</td>
+                  <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.reason}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {/* Legend */}
+        <div style={{ display: "flex", gap: "12px", padding: "6px 14px", background: "#0A1121", borderTop: "1px solid #1E2D47", fontSize: "10px", color: "#8494A7" }}>
+          {[
+            { color: "#EF4444", label: "장기" },
+            { color: "#F97316", label: "중기" },
+            { color: "#EAB308", label: "단기" },
+            { color: "#22C55E", label: "복귀임박" },
+          ].map(s => (
+            <span key={s.label} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: s.color, display: "inline-block" }} />
+              {s.label}
+            </span>
+          ))}
+        </div>
         {canCollapse && (
           <button
             onClick={() => setExpanded(v => !v)}

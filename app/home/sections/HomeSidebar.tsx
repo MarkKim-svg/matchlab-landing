@@ -136,7 +136,7 @@ export default function HomeSidebar() {
       <SidebarCard>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF" }}>⚽ 득점 TOP 5</span>
-          <Link href="/standings" style={{ fontSize: "11px", fontWeight: 600, color: "#10B981" }}>전체 →</Link>
+          <Link href="/standings?tab=scorers" style={{ fontSize: "11px", fontWeight: 600, color: "#10B981" }}>전체 →</Link>
         </div>
         {scorersLoading ? <SkeletonRows count={5} /> : topGoals.length === 0 ? (
           <div style={{ textAlign: "center", padding: "12px 0", fontSize: "12px", color: "#566378" }}>시즌 준비 중</div>
@@ -149,7 +149,7 @@ export default function HomeSidebar() {
       <SidebarCard>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF" }}>🅰️ 도움 TOP 5</span>
-          <Link href="/standings" style={{ fontSize: "11px", fontWeight: 600, color: "#10B981" }}>전체 →</Link>
+          <Link href="/standings?tab=assists" style={{ fontSize: "11px", fontWeight: 600, color: "#10B981" }}>전체 →</Link>
         </div>
         {scorersLoading ? <SkeletonRows count={5} /> : topAssists.length === 0 ? (
           <div style={{ textAlign: "center", padding: "12px 0", fontSize: "12px", color: "#566378" }}>시즌 준비 중</div>

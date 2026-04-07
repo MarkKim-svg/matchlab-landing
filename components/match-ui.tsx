@@ -26,6 +26,7 @@ export function TeamLogo({ teamId, teamName, size = 32 }: { teamId: string; team
       width={size}
       height={size}
       className="shrink-0 object-contain"
+      style={{ filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }}
       onError={() => setError(true)}
     />
   );

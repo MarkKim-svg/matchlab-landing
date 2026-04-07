@@ -7,12 +7,28 @@ interface TieData {
   team2: string;
   team1Logo: string;
   team2Logo: string;
-  leg1: { home: number | null; away: number | null; status: string; date: string } | null;
-  leg2: { home: number | null; away: number | null; status: string; date: string } | null;
+  leg1: { home: number | null; away: number | null; status: string; date: string; kickoffUTC?: string } | null;
+  leg2: { home: number | null; away: number | null; status: string; date: string; kickoffUTC?: string } | null;
   aggTeam1: number;
   aggTeam2: number;
   winner: string | null;
   finished: boolean;
+  firstFixtureId?: number;
+}
+
+function formatKSTShort(utc: string): string {
+  if (!utc) return "";
+  try {
+    const d = new Date(utc);
+    const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    const m = kst.getUTCMonth() + 1;
+    const dd = kst.getUTCDate();
+    const day = dayNames[kst.getUTCDay()];
+    const hh = String(kst.getUTCHours()).padStart(2, "0");
+    const mm = String(kst.getUTCMinutes()).padStart(2, "0");
+    return `${m}/${dd} (${day}) ${hh}:${mm}`;
+  } catch { return ""; }
 }
 
 interface Props { leagueId: string; season: string; }
@@ -55,7 +71,8 @@ function TieCard({ tie, mirror }: { tie: TieData; mirror?: boolean }) {
     );
   }
 
-  const nextDate = !tie.finished ? (tie.leg2?.date || tie.leg1?.date || "") : "";
+  const nextKickoff = !tie.finished ? (tie.leg2?.kickoffUTC || tie.leg1?.kickoffUTC || "") : "";
+  const nextLabel = nextKickoff ? formatKSTShort(nextKickoff) : (!tie.finished ? (tie.leg2?.date || tie.leg1?.date || "미정") : "");
 
   return (
     <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "8px", overflow: "hidden", width: "170px", flexShrink: 0 }}>
@@ -63,7 +80,7 @@ function TieCard({ tie, mirror }: { tie: TieData; mirror?: boolean }) {
       <div style={{ height: "1px", background: "#334155" }} />
       <Row name={tie.team2} logo={tie.team2Logo} agg={tie.aggTeam2} isWin={t2Win} />
       <div style={{ background: "#0F172A", padding: "2px 8px", fontSize: "9px", color: "#566378", textAlign: "center" }}>
-        {tie.finished ? (hasLeg2 ? "합산" : "종료") : nextDate || "미정"}
+        {tie.finished ? (hasLeg2 ? "합산" : "종료") : nextLabel || "미정"}
       </div>
     </div>
   );

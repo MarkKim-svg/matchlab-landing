@@ -30,12 +30,13 @@ export interface TieData {
   team2: string;
   team1Logo: string;
   team2Logo: string;
-  leg1: { home: number | null; away: number | null; status: string; date: string } | null;
-  leg2: { home: number | null; away: number | null; status: string; date: string } | null;
+  leg1: { home: number | null; away: number | null; status: string; date: string; kickoffUTC: string } | null;
+  leg2: { home: number | null; away: number | null; status: string; date: string; kickoffUTC: string } | null;
   aggTeam1: number;
   aggTeam2: number;
-  winner: string | null; // team name or null
+  winner: string | null;
   finished: boolean;
+  firstFixtureId: number; // for ordering
 }
 
 export async function GET(
@@ -110,14 +111,15 @@ export async function GET(
         const team1Logo = f1.teams?.home?.logo ?? "";
         const team2Logo = f1.teams?.away?.logo ?? "";
 
+        const firstFixtureId = f1.fixture?.id ?? 0;
         const leg1Home = f1.goals?.home ?? null;
         const leg1Away = f1.goals?.away ?? null;
         const leg1Status = f1.fixture?.status?.short ?? "";
         const leg1Date = f1.fixture?.date?.split("T")[0] ?? "";
+        const leg1Kickoff = f1.fixture?.date ?? "";
 
         let leg2Data: TieData["leg2"] = null;
         if (f2) {
-          // In leg2, teams might be swapped (away team hosts)
           const f2Home = f2.teams?.home?.name ?? "";
           const isSwapped = f2Home === team2;
           leg2Data = {
@@ -125,6 +127,7 @@ export async function GET(
             away: f2.goals?.away ?? null,
             status: f2.fixture?.status?.short ?? "",
             date: f2.fixture?.date?.split("T")[0] ?? "",
+            kickoffUTC: f2.fixture?.date ?? "",
           };
 
           // Aggregate: team1 goals across both legs
@@ -140,25 +143,28 @@ export async function GET(
 
           ties.push({
             team1, team2, team1Logo, team2Logo,
-            leg1: { home: leg1Home, away: leg1Away, status: leg1Status, date: leg1Date },
+            leg1: { home: leg1Home, away: leg1Away, status: leg1Status, date: leg1Date, kickoffUTC: leg1Kickoff },
             leg2: leg2Data,
             aggTeam1: agg1, aggTeam2: agg2,
             winner: fin ? (agg1 > agg2 ? team1 : agg2 > agg1 ? team2 : null) : null,
             finished: fin,
+            firstFixtureId,
           });
         } else {
-          // Single leg (final or only leg1 played)
           const fin = leg1Status === "FT" || leg1Status === "AET" || leg1Status === "PEN";
           ties.push({
             team1, team2, team1Logo, team2Logo,
-            leg1: { home: leg1Home, away: leg1Away, status: leg1Status, date: leg1Date },
+            leg1: { home: leg1Home, away: leg1Away, status: leg1Status, date: leg1Date, kickoffUTC: leg1Kickoff },
             leg2: null,
             aggTeam1: leg1Home ?? 0, aggTeam2: leg1Away ?? 0,
             winner: fin ? ((leg1Home ?? 0) > (leg1Away ?? 0) ? team1 : (leg1Away ?? 0) > (leg1Home ?? 0) ? team2 : null) : null,
             finished: fin,
+            firstFixtureId,
           });
         }
       }
+      // Sort by fixture ID for consistent seed-based ordering
+      ties.sort((a, b) => a.firstFixtureId - b.firstFixtureId);
       rounds[br] = ties;
     }
 

@@ -639,11 +639,11 @@ export default function Home() {
               <p className="text-text-secondary text-sm mt-2 font-body">무료는 맛보기, Pro는 매일 전체 분석</p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-5 max-w-[640px] mx-auto">
-              {/* Free */}
+            <div className="grid sm:grid-cols-2 gap-5 max-w-[720px] mx-auto">
+              {/* Free card + blurred mockup */}
               <div className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-6">
                 <div className="font-body font-bold text-lg mb-4 text-emerald-500">Free</div>
-                <ul className="space-y-3 text-sm font-body">
+                <ul className="space-y-3 text-sm font-body mb-5">
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
                     전경기 AI 예측 열람
@@ -657,12 +657,51 @@ export default function Home() {
                     예측 결과만 표시
                   </li>
                 </ul>
+                {/* Mini report — blurred/locked */}
+                <div className="rounded-xl overflow-hidden border border-bg-border-subtle relative" style={{ background: "#0F172A" }}>
+                  <div className="p-3 space-y-2 blur-[4px] pointer-events-none select-none">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-medium text-white/80" style={{ backgroundColor: "#3D195B55" }}>EPL</span>
+                      <span className="text-[8px] text-text-muted ml-auto">⭐⭐⭐⭐</span>
+                    </div>
+                    <div className="text-center text-[11px] font-bold text-bg-50">아스널 vs 첼시</div>
+                    <div className="flex justify-center">
+                      <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">AI 예측: 아스널 승</span>
+                    </div>
+                    <div className="space-y-1">
+                      {[{ l: "홈승", w: 72 }, { l: "무", w: 18 }, { l: "원정", w: 10 }].map(b => (
+                        <div key={b.l} className="flex items-center gap-1">
+                          <span className="w-7 text-[7px] text-text-muted text-right">{b.l}</span>
+                          <div className="flex-1 h-2 rounded-full" style={{ background: "#1A2332" }}>
+                            <div className="h-full rounded-full bg-slate-500" style={{ width: `${b.w}%` }} />
+                          </div>
+                          <span className="text-[7px] text-text-muted w-6">{b.w}%</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-lg p-2 space-y-1" style={{ background: "#1A2332" }}>
+                      <div className="text-[7px] text-text-muted">모델별 분석</div>
+                      <div className="grid grid-cols-2 gap-1">
+                        {["푸아송", "ELO", "xG", "배당"].map(m => (
+                          <div key={m} className="rounded py-0.5 px-1 text-center" style={{ background: "#0F172A" }}>
+                            <div className="text-[6px] text-text-muted">{m}</div>
+                            <div className="text-[7px] text-bg-200">--% : --%</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl" style={{ background: "rgba(6,11,20,0.6)" }}>
+                    <span className="text-xl">🔒</span>
+                    <span className="text-text-muted text-[10px] font-bold">상세 근거 잠김</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Pro */}
+              {/* Pro card + open mockup */}
               <div className="rounded-[14px] p-6" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #d97706" }}>
                 <div className="font-body font-bold text-lg mb-4 text-gold-400">Pro</div>
-                <ul className="space-y-3 text-sm font-body">
+                <ul className="space-y-3 text-sm font-body mb-5">
                   <li className="flex items-start gap-2 text-gold-400 font-semibold">
                     <span className="text-emerald-500 shrink-0">✅</span>
                     고확신 ⭐4+⭐5 경기
@@ -680,6 +719,49 @@ export default function Home() {
                     전경기 상세 리포트
                   </li>
                 </ul>
+                {/* Mini report — fully open */}
+                <div className="rounded-xl overflow-hidden border border-bg-border" style={{ background: "#0F172A" }}>
+                  <div className="p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-medium text-white/80" style={{ backgroundColor: "#3D195B55" }}>EPL</span>
+                      <span className="text-[8px] text-gold-400 ml-auto">⭐⭐⭐⭐</span>
+                    </div>
+                    <div className="text-center text-[11px] font-bold text-bg-50">아스널 vs 첼시</div>
+                    <div className="flex justify-center">
+                      <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>AI 예측: 아스널 승</span>
+                    </div>
+                    <div className="space-y-1">
+                      {[{ l: "홈승", w: 72, h: true }, { l: "무", w: 18, h: false }, { l: "원정", w: 10, h: false }].map(b => (
+                        <div key={b.l} className="flex items-center gap-1">
+                          <span className="w-7 text-[7px] text-text-muted text-right">{b.l}</span>
+                          <div className="flex-1 h-2 rounded-full" style={{ background: "#1A2332" }}>
+                            <div className="h-full rounded-full" style={{ width: `${b.w}%`, background: b.h ? "#10B981" : "#475569" }} />
+                          </div>
+                          <span className={`text-[7px] w-6 font-mono-data ${b.h ? "text-emerald-400" : "text-text-muted"}`}>{b.w}%</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-lg p-2 space-y-1" style={{ background: "#1A2332" }}>
+                      <div className="text-[7px] text-text-secondary font-semibold">모델별 분석</div>
+                      <div className="grid grid-cols-2 gap-1">
+                        {[
+                          { m: "푸아송", h: "68%", a: "12%" },
+                          { m: "ELO", h: "71%", a: "11%" },
+                          { m: "xG", h: "74%", a: "9%" },
+                          { m: "배당", h: "70%", a: "13%" },
+                        ].map(d => (
+                          <div key={d.m} className="rounded py-0.5 px-1 text-center" style={{ background: "#0F172A" }}>
+                            <div className="text-[6px] text-text-muted">{d.m}</div>
+                            <div className="text-[7px] text-bg-200 font-mono-data">{d.h} : {d.a}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-[8px] text-text-secondary border-t border-bg-border-subtle pt-1.5">
+                      홈 최근 8경기 6승, 상대 전적 우위. 4개 모델 모두 홈승 일치.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

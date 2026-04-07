@@ -241,7 +241,7 @@ export default function ReportPage() {
       <main className="min-h-screen bg-[#0F172A] text-white">
         <Navbar />
         <AuthTabBar />
-        <div className="mx-auto max-w-5xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 md:px-8 py-8 pb-24 md:pb-8">
           <Skeleton />
         </div>
       </main>
@@ -254,7 +254,7 @@ export default function ReportPage() {
       <main className="min-h-screen bg-[#0F172A] text-white">
         <Navbar />
         <AuthTabBar />
-        <div className="mx-auto max-w-5xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 md:px-8 py-8 pb-24 md:pb-8">
           <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
             <p className="mb-2 text-3xl">⚽</p>
             <p className="text-lg text-slate-300">경기를 찾을 수 없습니다</p>
@@ -276,7 +276,7 @@ export default function ReportPage() {
       <main className="min-h-screen bg-[#0F172A] text-white">
         <Navbar />
         <AuthTabBar />
-        <div className="mx-auto max-w-5xl px-4 py-8 pb-24 md:pb-8 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 md:px-8 py-8 pb-24 md:pb-8">
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
             <p className="text-red-400">{error ?? "알 수 없는 오류"}</p>
             <button
@@ -308,7 +308,7 @@ export default function ReportPage() {
     <main className="min-h-screen bg-[#0F172A] text-white">
       <Navbar />
       <AuthTabBar />
-      <div className="mx-auto max-w-5xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
+      <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 pb-24 md:pb-8 space-y-5">
         {/* ---- 1. back + date ---- */}
         <div className="flex items-center justify-between">
           <Link

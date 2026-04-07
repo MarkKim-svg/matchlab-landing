@@ -71,7 +71,7 @@ export default function MyPage() {
   return (
     <div className="min-h-dvh bg-[#0F172A]">
       <AuthTabBar />
-      <div className="w-full max-w-lg mx-auto space-y-5 px-4 py-12 pb-24 md:pb-12">
+      <div className="w-full max-w-7xl mx-auto space-y-5 px-4 md:px-8 py-12 pb-24 md:pb-12">
         {/* 뒤로가기 */}
         <Link
           href="/"

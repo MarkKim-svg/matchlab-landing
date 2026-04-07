@@ -112,7 +112,7 @@ export default function Navbar() {
           : "bg-[#0A1121] border-bg-border/50"
       }`}
     >
-      <div className="max-w-[1120px] mx-auto flex items-center justify-between h-[68px] px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto flex items-center justify-between h-[68px] px-4 md:px-8">
         {/* ── Logo ── */}
         <Link
           href={user ? "/home" : "/"}

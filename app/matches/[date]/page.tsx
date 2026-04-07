@@ -153,7 +153,7 @@ export default function MatchesDatePage() {
     <main className="min-h-screen bg-[#0F172A] text-white">
       <Navbar />
       <AuthTabBar />
-      <div className="mx-auto max-w-3xl px-4 py-6 pb-24 md:pb-8 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 pb-24 md:pb-8">
         {/* ---- header ---- */}
         <div className="mb-6">
           <div className="flex items-center justify-between">

@@ -108,7 +108,7 @@ export default function StandingsPage() {
     <div className="min-h-screen" style={{ background: "#0F172A" }}>
       <Navbar />
       <AuthTabBar />
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-24 md:pb-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 pb-24 md:pb-8">
         {/* ── League selector + Season dropdown ── */}
         <div className="flex items-center gap-3 mb-6">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 flex-1">

@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen" style={{ background: "#0F172A" }}>
       <Navbar />
       <AuthTabBar />
-      <main className="max-w-3xl mx-auto pb-20 md:pb-0">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 pb-20 md:pb-0">
         <DashboardClient />
       </main>
       <Footer />

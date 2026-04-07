@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { LEAGUE_CONFIG } from "@/lib/constants";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
@@ -319,9 +320,22 @@ export default function ReportPage() {
 
         {/* ---- 2. match header ---- */}
         <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "32px 24px", textAlign: "center" }}>
-          {/* League */}
+          {/* Date + time */}
+          <div style={{ fontSize: "13px", color: "#566378", marginBottom: "16px" }}>
+            {formatKoreanDate(match.date)}
+          </div>
+
+          {/* League (big) */}
           <div style={{ marginBottom: "20px", display: "flex", justifyContent: "center" }}>
-            <LeagueBadge league={match.league} />
+            {(() => {
+              const config = LEAGUE_CONFIG[match.league];
+              return (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", borderRadius: "9999px", padding: "6px 16px", fontSize: "15px", fontWeight: 600, color: "rgba(255,255,255,0.9)", backgroundColor: (config?.color ?? "#334155") + "55" }}>
+                  {config && <img src={config.logo} alt={match.league} style={{ width: "28px", height: "28px", borderRadius: "9999px", background: "white", padding: "2px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                  {match.league}
+                </span>
+              );
+            })()}
           </div>
 
           {/* Teams */}

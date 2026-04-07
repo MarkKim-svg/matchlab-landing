@@ -263,10 +263,11 @@ export default function MatchesDatePage() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">← 이전</button>
                 <div className="text-center">
-                  <h1 className="text-lg font-bold sm:text-xl inline-flex items-center gap-1.5 relative">
-                    <span className="cursor-pointer hover:text-emerald-400 transition-colors" onClick={() => dateInputRef.current?.showPicker()}>
+                  <h1 className="text-lg font-bold sm:text-xl inline-flex items-center gap-1 relative cursor-pointer" onClick={() => dateInputRef.current?.showPicker()}>
+                    <span className="hover:text-emerald-400 transition-colors">
                       {formatKoreanDate(dateStr)}
                     </span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8494A7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     <input ref={dateInputRef} type="date" className="absolute inset-0 opacity-0 cursor-pointer" value={dateStr} onChange={(e) => { if (e.target.value) goDate(e.target.value); }} />
                   </h1>
                   {!isToday && (

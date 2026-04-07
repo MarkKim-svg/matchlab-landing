@@ -6,7 +6,7 @@ import TopPick from "./sections/TopPick";
 import WeeklyAccuracy from "./sections/WeeklyAccuracy";
 import MatchList from "./sections/MatchList";
 import ProUpgradeBanner from "./sections/ProUpgradeBanner";
-import MiniStandings from "./sections/MiniStandings";
+import HomeSidebar from "./sections/HomeSidebar";
 import KakaoBanner from "./sections/KakaoBanner";
 
 interface MatchPrediction {
@@ -99,37 +99,40 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
   const isPro = plan === "pro";
 
   return (
-    <div className="home-grid">
-      {/* 캐러셀 */}
-      <Card className="home-full">
-        <MatchCarousel predictions={predictions} loading={predLoading} />
-      </Card>
-
-      {/* TopPick + 적중률 (2열) */}
-      <div className="home-2col">
+    <div className="home-layout">
+      {/* ── Main content (left) ── */}
+      <div className="home-main">
+        {/* 캐러셀 */}
         <Card>
-          <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
+          <MatchCarousel predictions={predictions} loading={predLoading} />
         </Card>
-        <Card>
-          <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
-        </Card>
-      </div>
 
-      {/* 전체경기 + 미니순위표 (3:2 비율) */}
-      <div className="home-matchrow">
-        <Card className="home-match-main">
+        {/* TopPick + 적중률 (2열) */}
+        <div className="home-2col">
+          <Card>
+            <TopPick predictions={predictions} loading={predLoading} isPro={isPro} />
+          </Card>
+          <Card>
+            <WeeklyAccuracy dashboard={dashboard} loading={dashLoading} />
+          </Card>
+        </div>
+
+        {/* 전체경기 */}
+        <Card>
           <MatchList predictions={predictions} loading={predLoading} isPro={isPro} />
         </Card>
-        <Card className="home-match-side">
-          <MiniStandings />
+
+        {/* Pro배너/CTA + 카카오 */}
+        <Card style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
+          <KakaoBanner />
         </Card>
       </div>
 
-      {/* Pro배너/CTA + 카카오 */}
-      <Card className="home-full" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        {!isPro && <ProUpgradeBanner dashboard={dashboard} loading={dashLoading} />}
-        <KakaoBanner />
-      </Card>
+      {/* ── Sidebar (right, sticky on desktop) ── */}
+      <aside className="home-sidebar">
+        <HomeSidebar />
+      </aside>
     </div>
   );
 }

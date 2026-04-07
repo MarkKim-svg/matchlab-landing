@@ -80,14 +80,13 @@
 .scrollbar-hide::-webkit-scrollbar { display:none; }
 
 /* Home page grid layout */
-.home-grid { display:flex; flex-direction:column; gap:16px; padding:24px 16px; }
-.home-full { width:100%; }
+.home-layout { display:flex; flex-direction:column; gap:16px; padding:24px 16px; }
+.home-main { display:flex; flex-direction:column; gap:16px; }
+.home-sidebar { }
 .home-2col { display:grid; grid-template-columns:1fr; gap:16px; }
-.home-matchrow { display:grid; grid-template-columns:1fr; gap:16px; align-items:start; }
-.home-match-main { }
-.home-match-side { }
 
 @media (min-width:768px) {
+  .home-layout { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
+  .home-sidebar { position:sticky; top:72px; align-self:start; max-height:calc(100vh - 80px); overflow-y:auto; }
   .home-2col { grid-template-columns:1fr 1fr; }
-  .home-matchrow { grid-template-columns:3fr 2fr; }
 }

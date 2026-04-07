@@ -249,10 +249,10 @@ function ConfidenceTab({ rows }: { rows: Array<{ stars: number; label: string; h
                 {r.label}
               </span>
               <span className="text-[11px] font-mono-data" style={{ color: MUTED }}>
-                {r.correct}/{r.total}
+                {Math.round(r.hitRate)}% ({r.correct}/{r.total})
               </span>
             </div>
-            <HBar percent={r.hitRate} color={color} />
+            <HBar percent={r.hitRate} color={color} showLabel={false} />
           </div>
         );
       })}
@@ -280,10 +280,10 @@ function LeagueTab({ rows }: { rows: Array<{ league: string; hitRate: number; co
                 {r.league}
               </span>
               <span className="text-[11px] font-mono-data ml-2 shrink-0" style={{ color: MUTED }}>
-                {r.correct}/{r.total}
+                {Math.round(r.hitRate)}% ({r.correct}/{r.total})
               </span>
             </div>
-            <HBar percent={r.hitRate} color={color} />
+            <HBar percent={r.hitRate} color={color} showLabel={false} />
           </div>
         );
       })}
@@ -291,25 +291,15 @@ function LeagueTab({ rows }: { rows: Array<{ league: string; hitRate: number; co
   );
 }
 
-/* Horizontal bar with % label on top of bar */
-function HBar({ percent, color }: { percent: number; color: string }) {
+/* Horizontal bar — clean, no label inside */
+function HBar({ percent, color, showLabel = true }: { percent: number; color: string; showLabel?: boolean }) {
   const w = Math.max(Math.min(percent, 100), 0);
   return (
-    <div className="relative h-6 rounded" style={{ background: TRACK }}>
+    <div className="h-4 rounded" style={{ background: TRACK }}>
       <div
         className="h-full rounded transition-all"
         style={{ width: `${w}%`, background: color }}
       />
-      <span
-        className="absolute top-1/2 -translate-y-1/2 text-[11px] font-mono-data font-bold"
-        style={{
-          left: w > 15 ? `calc(${w}% - 8px)` : `calc(${w}% + 6px)`,
-          transform: w > 15 ? "translate(-100%, -50%)" : "translateY(-50%)",
-          color: w > 15 ? "#0A1121" : "#d4d4d4",
-        }}
-      >
-        {Math.round(percent)}%
-      </span>
     </div>
   );
 }

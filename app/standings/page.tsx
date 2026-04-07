@@ -122,7 +122,7 @@ export default function StandingsPage() {
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 pb-24 md:pb-8">
         {/* ── League selector + Season dropdown ── */}
         <div className="flex items-center gap-3 mb-6">
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
           <HScrollArrows>
             {LEAGUES.map((league) => {
               const active = league.id === leagueId;

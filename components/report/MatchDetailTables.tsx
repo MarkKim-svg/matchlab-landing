@@ -200,29 +200,17 @@ export function H2HTable({ h2h, homeName, awayName }: { h2h: H2HData; homeName: 
         ))}
       </div>
 
-      {/* Recent matches */}
+      {/* Recent matches — card list */}
       {h2h.recentMatches.length > 0 && (
-        <div style={WRAP}>
-          <table style={{ width: "100%", minWidth: "340px", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #1E2D47" }}>
-                <th style={TH}>날짜</th>
-                <th style={{ ...TH, textAlign: "center" }}>홈</th>
-                <th style={{ ...TH, textAlign: "center" }}>스코어</th>
-                <th style={{ ...TH, textAlign: "center" }}>원정</th>
-              </tr>
-            </thead>
-            <tbody>
-              {h2h.recentMatches.map((m, i) => (
-                <tr key={i} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
-                  <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{m.date}</td>
-                  <td style={{ ...TD, textAlign: "center", fontSize: "12px" }}>{m.homeTeam}</td>
-                  <td style={{ ...TD_NUM, textAlign: "center" }}>{m.homeGoals} - {m.awayGoals}</td>
-                  <td style={{ ...TD, textAlign: "center", fontSize: "12px" }}>{m.awayTeam}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          {h2h.recentMatches.map((m, i) => (
+            <div key={i} style={{ background: rowBg(i), borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "11px", color: "#566378", flexShrink: 0, width: "60px" }}>{m.date.replace(/-/g, "/").slice(2)}</span>
+              <span style={{ fontSize: "12px", color: "#d4d4d4", flex: 1, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.homeTeam}</span>
+              <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0, padding: "0 4px" }}>{m.homeGoals}-{m.awayGoals}</span>
+              <span style={{ fontSize: "12px", color: "#d4d4d4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.awayTeam}</span>
+            </div>
+          ))}
         </div>
       )}
     </div>

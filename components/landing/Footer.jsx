@@ -3,7 +3,7 @@ import { BLOG_URL, INSTAGRAM_URL, BETMAN_URL, GAMBLING_HELPLINE } from "@/lib/co
 
 export default function Footer() {
   return (
-    <footer className="bg-bg-900 border-t border-[#152035] pt-8 pb-10 px-6">
+    <footer className="bg-bg-900 border-t border-[#152035] pt-8 pb-28 md:pb-10 px-6">
       <div className="max-w-[1120px] mx-auto">
         {/* 상단: 로고 + 외부링크 */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">

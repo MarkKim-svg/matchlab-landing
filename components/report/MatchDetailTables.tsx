@@ -200,17 +200,20 @@ export function H2HTable({ h2h, homeName, awayName }: { h2h: H2HData; homeName: 
         ))}
       </div>
 
-      {/* Recent matches — card list */}
+      {/* Recent matches — compact card list */}
       {h2h.recentMatches.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          {h2h.recentMatches.map((m, i) => (
-            <div key={i} style={{ background: rowBg(i), borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "11px", color: "#566378", flexShrink: 0, width: "60px" }}>{m.date.replace(/-/g, "/").slice(2)}</span>
-              <span style={{ fontSize: "12px", color: "#d4d4d4", flex: 1, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.homeTeam}</span>
-              <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0, padding: "0 4px" }}>{m.homeGoals}-{m.awayGoals}</span>
-              <span style={{ fontSize: "12px", color: "#d4d4d4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.awayTeam}</span>
-            </div>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          {h2h.recentMatches.map((m, i) => {
+            const shortDate = m.date ? m.date.slice(2).replace(/-/g, ".") : "";
+            return (
+              <div key={i} style={{ background: rowBg(i), borderRadius: "8px", padding: "8px 10px", display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
+                <span style={{ fontSize: "10px", color: "#566378", flexShrink: 0, whiteSpace: "nowrap" }}>{shortDate}</span>
+                <span style={{ fontSize: "11px", color: "#d4d4d4", flex: 1, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{m.homeTeam}</span>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0, whiteSpace: "nowrap" }}>{m.homeGoals}-{m.awayGoals}</span>
+                <span style={{ fontSize: "11px", color: "#d4d4d4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{m.awayTeam}</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

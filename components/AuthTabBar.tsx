@@ -31,8 +31,8 @@ export default function AuthTabBar() {
   // 모바일 하단 탭바만 렌더 (데스크톱 탭은 Navbar에 통합됨)
   return (
     <>
-      {/* Spacer — prevents content from being hidden behind fixed tab bar */}
-      <div className="md:hidden" style={{ height: "80px" }} />
+      {/* Mobile spacer for fixed bottom tab bar */}
+      <div className="md:hidden" style={{ height: "72px" }} />
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-bg-border bg-[#0A1121]/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-around">
           {tabs.map((tab) => {

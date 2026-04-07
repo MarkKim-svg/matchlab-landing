@@ -9,23 +9,33 @@ interface Props {
   awayName: string;
 }
 
-// ── Formation → position coordinates (% based, 0-100 for x/y within half-pitch) ──
-// y=0 is goal line, y=100 is halfway line. x=0 is left, x=100 is right.
+// Position colors
+const POS_COLORS: Record<string, { bg: string; text: string }> = {
+  G: { bg: "#EAB308", text: "#000" },
+  D: { bg: "#3B82F6", text: "#fff" },
+  M: { bg: "#10B981", text: "#fff" },
+  F: { bg: "#EF4444", text: "#fff" },
+};
 
+function posColor(pos: string) {
+  const p = pos?.charAt(0)?.toUpperCase() ?? "";
+  return POS_COLORS[p] ?? { bg: "#374151", text: "#fff" };
+}
+
+// Formation → coordinates (% based within half-pitch)
 function getPositions(formation: string, count: number): { x: number; y: number }[] {
-  // Parse formation like "4-3-3" → [4,3,3]
   const parts = formation.split("-").map(Number).filter(n => n > 0);
   if (parts.length === 0) return evenSpread(count);
 
-  const lines: number[] = [1, ...parts]; // GK + formation lines
+  const lines: number[] = [1, ...parts];
   const positions: { x: number; y: number }[] = [];
   const totalLines = lines.length;
 
   for (let li = 0; li < totalLines; li++) {
     const n = lines[li];
-    const y = 8 + (li / (totalLines - 1 || 1)) * 82; // 8% to 90%
+    const y = 8 + (li / (totalLines - 1 || 1)) * 82;
     for (let pi = 0; pi < n; pi++) {
-      const x = n === 1 ? 50 : 12 + (pi / (n - 1)) * 76;
+      const x = n === 1 ? 50 : 14 + (pi / (n - 1)) * 72;
       positions.push({ x, y });
     }
   }
@@ -39,29 +49,22 @@ function evenSpread(count: number): { x: number; y: number }[] {
   }));
 }
 
-// ── Half Pitch SVG ──
-
+// Half Pitch
 function HalfPitch({ players, formation, teamName, flip }: { players: LineupPlayer[]; formation: string; teamName: string; flip?: boolean }) {
   const positions = getPositions(formation, players.length);
 
   return (
-    <div style={{ position: "relative", width: "100%", paddingBottom: "65%", overflow: "hidden", borderRadius: flip ? "0 0 12px 12px" : "12px 12px 0 0" }}>
-      {/* Pitch background */}
-      <svg viewBox="0 0 400 260" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-        {/* Grass stripes */}
-        {Array.from({ length: 8 }, (_, i) => (
-          <rect key={i} x={0} y={i * 32.5} width={400} height={32.5} fill={i % 2 === 0 ? "#1a4d2e" : "#1d5a35"} />
+    <div style={{ position: "relative", width: "100%", paddingBottom: "75%", overflow: "hidden", borderRadius: flip ? "0 0 12px 12px" : "12px 12px 0 0" }}>
+      {/* Pitch background SVG */}
+      <svg viewBox="0 0 400 300" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+        {Array.from({ length: 10 }, (_, i) => (
+          <rect key={i} x={0} y={i * 30} width={400} height={30} fill={i % 2 === 0 ? "#1a4d2e" : "#1d5a35"} />
         ))}
-        {/* Pitch lines */}
-        <rect x={2} y={2} width={396} height={256} rx={0} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={1.5} />
-        {/* Halfway line */}
-        <line x1={0} y1={flip ? 2 : 258} x2={400} y2={flip ? 2 : 258} stroke="rgba(255,255,255,0.2)" strokeWidth={1.5} />
-        {/* Center circle (half) */}
-        <path d={flip ? "M 160 2 A 40 40 0 0 1 240 2" : "M 160 258 A 40 40 0 0 0 240 258"} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={1.5} />
-        {/* Penalty box */}
-        <rect x={110} y={flip ? 2 : 200} width={180} height={58} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
-        {/* Goal box */}
-        <rect x={155} y={flip ? 2 : 230} width={90} height={28} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+        <rect x={2} y={2} width={396} height={296} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={1.5} />
+        <line x1={0} y1={flip ? 2 : 298} x2={400} y2={flip ? 2 : 298} stroke="rgba(255,255,255,0.2)" strokeWidth={1.5} />
+        <path d={flip ? "M 155 2 A 45 45 0 0 1 245 2" : "M 155 298 A 45 45 0 0 0 245 298"} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={1.5} />
+        <rect x={105} y={flip ? 2 : 230} width={190} height={68} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
+        <rect x={150} y={flip ? 2 : 260} width={100} height={38} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
       </svg>
 
       {/* Players */}
@@ -69,44 +72,44 @@ function HalfPitch({ players, formation, teamName, flip }: { players: LineupPlay
         const pos = positions[i] ?? { x: 50, y: 50 };
         const px = pos.x;
         const py = flip ? (100 - pos.y) : pos.y;
+        const c = posColor(p.pos);
+        const lastName = p.name.split(" ").pop() ?? p.name;
+
         return (
           <div
             key={i}
             style={{
-              position: "absolute",
-              left: `${px}%`,
-              top: `${py}%`,
+              position: "absolute", left: `${px}%`, top: `${py}%`,
               transform: "translate(-50%, -50%)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              zIndex: 2,
+              display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2,
             }}
           >
             <div style={{
-              width: "28px", height: "28px", borderRadius: "50%",
-              background: "#111827", border: "2px solid rgba(255,255,255,0.6)",
+              width: "36px", height: "36px", borderRadius: "50%",
+              background: c.bg, border: "2px solid rgba(255,255,255,0.5)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "11px", fontWeight: 700, color: "#E1E7EF",
+              fontSize: "13px", fontWeight: 700, color: c.text,
               fontFamily: "'JetBrains Mono', monospace",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
             }}>
               {p.number || ""}
             </div>
             <span style={{
-              fontSize: "8px", color: "rgba(255,255,255,0.8)", marginTop: "2px",
-              whiteSpace: "nowrap", maxWidth: "60px", overflow: "hidden", textOverflow: "ellipsis",
-              textAlign: "center", fontWeight: 600, textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+              fontSize: "9px", color: "rgba(255,255,255,0.85)", marginTop: "2px",
+              whiteSpace: "nowrap", maxWidth: "56px", overflow: "hidden", textOverflow: "ellipsis",
+              textAlign: "center", fontWeight: 600, textShadow: "0 1px 3px rgba(0,0,0,0.9)",
             }}>
-              {p.name.split(" ").pop()}
+              {lastName}
             </span>
           </div>
         );
       })}
 
-      {/* Team name + formation overlay */}
+      {/* Team name + formation */}
       <div style={{
         position: "absolute", [flip ? "bottom" : "top"]: "6px", left: "50%", transform: "translateX(-50%)",
-        fontSize: "10px", color: "rgba(255,255,255,0.5)", fontWeight: 600, zIndex: 3,
+        fontSize: "11px", color: "rgba(255,255,255,0.5)", fontWeight: 600, zIndex: 3,
+        background: "rgba(0,0,0,0.3)", padding: "2px 8px", borderRadius: "4px",
       }}>
         {teamName} {formation}
       </div>
@@ -114,8 +117,7 @@ function HalfPitch({ players, formation, teamName, flip }: { players: LineupPlay
   );
 }
 
-// ── Subs List ──
-
+// Subs
 function SubsList({ subs, label }: { subs: LineupPlayer[]; label: string }) {
   const [open, setOpen] = useState(false);
   if (subs.length === 0) return null;
@@ -137,14 +139,13 @@ function SubsList({ subs, label }: { subs: LineupPlayer[]; label: string }) {
   );
 }
 
-// ── Main Component ──
-
+// Main
 export default function LineupPitch({ lineups, homeName, awayName }: Props) {
   if (!lineups?.home?.startXI.length && !lineups?.away?.startXI.length) return null;
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
         <span style={{ fontSize: "16px" }}>📋</span>
         <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF" }}>예상 라인업</span>
         {lineups.home?.formation && lineups.away?.formation && (
@@ -154,7 +155,22 @@ export default function LineupPitch({ lineups, homeName, awayName }: Props) {
         )}
       </div>
 
-      {/* Full pitch (home top, away bottom) */}
+      {/* Position legend */}
+      <div style={{ display: "flex", gap: "12px", marginBottom: "10px", fontSize: "10px", color: "#8494A7" }}>
+        {[
+          { label: "GK", color: "#EAB308" },
+          { label: "DF", color: "#3B82F6" },
+          { label: "MF", color: "#10B981" },
+          { label: "FW", color: "#EF4444" },
+        ].map(p => (
+          <span key={p.label} style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: p.color, display: "inline-block" }} />
+            {p.label}
+          </span>
+        ))}
+      </div>
+
+      {/* Full pitch */}
       <div style={{ border: "1px solid #1E2D47", borderRadius: "14px", overflow: "hidden", background: "#0F172A" }}>
         {lineups.home && lineups.home.startXI.length > 0 && (
           <HalfPitch players={lineups.home.startXI} formation={lineups.home.formation} teamName={homeName} />

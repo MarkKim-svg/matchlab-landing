@@ -61,7 +61,9 @@ const LEAGUE_TABS = [
 interface ApiFixture {
   id: string;
   date: string;
-  time: string;
+  time?: string;
+  kickoffUTC?: string;
+  league?: string;
   homeTeam: string;
   awayTeam: string;
   homeTeamId: string;
@@ -79,12 +81,22 @@ function FixtureCard({ f }: { f: ApiFixture }) {
   const isFinished = f.status === "FT" || f.status === "AET" || f.status === "PEN";
   const hasScore = f.homeGoals !== null && f.awayGoals !== null;
 
+  // KST time from kickoffUTC or time field
+  let timeLabel = f.time ? `${f.time}` : "";
+  if (!timeLabel && f.kickoffUTC) {
+    try {
+      const d = new Date(f.kickoffUTC);
+      const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+      timeLabel = `${String(kst.getUTCHours()).padStart(2, "0")}:${String(kst.getUTCMinutes()).padStart(2, "0")}`;
+    } catch { /* skip */ }
+  }
+
   return (
     <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "12px", padding: "16px" }}>
-      {/* Row 1: Round + time */}
+      {/* Row 1: League + Round + time */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-        {f.round && <span style={{ fontSize: "11px", color: "#566378" }}>{f.round}</span>}
-        <span style={{ fontSize: "11px", color: "#566378" }}>{f.time ? `${f.time} KST` : ""}</span>
+        <span style={{ fontSize: "11px", color: "#566378" }}>{f.league || ""} {f.round || ""}</span>
+        {timeLabel && <span style={{ fontSize: "11px", color: "#566378" }}>{timeLabel} KST</span>}
       </div>
 
       {/* Row 2: Teams + Score/VS */}
@@ -229,6 +241,7 @@ export default function MatchesDatePage() {
   const [error, setError] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string>("free");
   const [selectedLeague, setSelectedLeague] = useState<string>("전체");
+  const [dateFixtures, setDateFixtures] = useState<ApiFixture[]>([]);
 
   // League tab state
   const [leagueTab, setLeagueTab] = useState("epl");
@@ -252,17 +265,33 @@ export default function MatchesDatePage() {
     checkAuth();
   }, []);
 
-  // Fetch date predictions
+  // Fetch date predictions + API-Football fixtures
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/predictions/${dateStr}`);
-      if (!res.ok) throw new Error("Failed");
-      const json = await res.json();
-      setMatches(json.matches ?? []);
-      setTotalCount(json.totalCount ?? 0);
-      setProCount(json.proCount ?? 0);
+      const [predRes, fxRes] = await Promise.all([
+        fetch(`/api/predictions/${dateStr}`),
+        fetch(`/api/fixtures/${dateStr}`).catch(() => null),
+      ]);
+      if (!predRes.ok) throw new Error("Failed");
+      const predJson = await predRes.json();
+      const preds: MatchPrediction[] = predJson.matches ?? [];
+      setMatches(preds);
+      setTotalCount(predJson.totalCount ?? 0);
+      setProCount(predJson.proCount ?? 0);
+
+      // Merge fixtures — exclude already-predicted matches
+      if (fxRes?.ok) {
+        const fxJson = await fxRes.json();
+        const predictedSet = new Set(preds.map(p => `${p.homeTeamId}-${p.awayTeamId}`));
+        const unpredicted = (fxJson.fixtures ?? []).filter((f: ApiFixture) =>
+          !predictedSet.has(`${f.homeTeamId}-${f.awayTeamId}`)
+        );
+        setDateFixtures(unpredicted);
+      } else {
+        setDateFixtures([]);
+      }
     } catch {
       setError("데이터를 불러오지 못했습니다.");
     } finally {
@@ -380,10 +409,10 @@ export default function MatchesDatePage() {
                 <button onClick={fetchData} className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500">다시 시도</button>
               </div>
             )}
-            {!loading && !error && matches.length === 0 && (
+            {!loading && !error && matches.length === 0 && dateFixtures.length === 0 && (
               <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
                 <p className="mb-2 text-3xl">⚽</p>
-                <p className="text-lg text-slate-300">이 날짜에 분석된 경기가 없습니다</p>
+                <p className="text-lg text-slate-300">이 날짜에 예정된 경기가 없습니다</p>
               </div>
             )}
 
@@ -405,6 +434,22 @@ export default function MatchesDatePage() {
                 </div>
               </section>
             ))}
+
+            {/* Unanalyzed fixtures from API-Football */}
+            {!loading && !error && dateFixtures.length > 0 && (
+              <section style={{ marginBottom: "32px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                  <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#8494A7" }}>
+                    🔬 기타 경기 <span style={{ fontSize: "14px", fontWeight: 400 }}>({dateFixtures.length}경기)</span>
+                  </h2>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {dateFixtures.map(f => (
+                    <FixtureCard key={f.id} f={f} />
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         )}
 

@@ -339,13 +339,16 @@ export type ReportBlockType =
   | "quote"
   | "callout"
   | "divider"
-  | "heading";
+  | "heading"
+  | "table";
 
 export interface ReportBlock {
   type: ReportBlockType;
   level?: number;
   icon?: string;
   rich: ReportRich[];
+  tableRows?: ReportRich[][][];  // rows → cells → rich parts
+  hasColumnHeader?: boolean;
 }
 
 export interface ReportSection {
@@ -386,7 +389,30 @@ async function fetchAllBlocks(pageId: string): Promise<any[]> {
     hasMore = res.has_more;
     cursor = res.next_cursor ?? undefined;
   }
-  return out;
+
+  // Fetch table children
+  const withChildren: any[] = [];
+  for (const block of out) {
+    if (block.type === "table" && block.has_children) {
+      const rows: any[] = [];
+      let rc: string | undefined = undefined;
+      let rm = true;
+      while (rm) {
+        const rr = await notion.blocks.children.list({
+          block_id: block.id,
+          start_cursor: rc,
+          page_size: 100,
+        });
+        rows.push(...rr.results);
+        rm = rr.has_more;
+        rc = rr.next_cursor ?? undefined;
+      }
+      withChildren.push({ ...block, _tableRows: rows });
+    } else {
+      withChildren.push(block);
+    }
+  }
+  return withChildren;
 }
 
 function blockToReport(b: any): ReportBlock | null {
@@ -414,6 +440,18 @@ function blockToReport(b: any): ReportBlock | null {
       };
     case "divider":
       return { type: "divider", rich: [] };
+    case "table": {
+      const rows = (b._tableRows ?? []).map((row: any) => {
+        const cells = row.table_row?.cells ?? [];
+        return cells.map((cell: any) => parseRich(cell));
+      });
+      return {
+        type: "table",
+        rich: [],
+        tableRows: rows,
+        hasColumnHeader: b.table?.has_column_header ?? false,
+      };
+    }
     default:
       return null;
   }

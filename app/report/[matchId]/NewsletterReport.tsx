@@ -100,9 +100,67 @@ function Block({ block }: { block: ReportBlock }) {
           </div>
         </div>
       );
+    case "table":
+      return <DataTable rows={block.tableRows ?? []} hasHeader={block.hasColumnHeader ?? false} />;
     default:
       return null;
   }
+}
+
+function DataTable({ rows, hasHeader }: { rows: ReportRich[][][]; hasHeader: boolean }) {
+  if (rows.length === 0) return null;
+  const headerRow = hasHeader ? rows[0] : null;
+  const bodyRows = hasHeader ? rows.slice(1) : rows;
+
+  return (
+    <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid #1E2D47" }}>
+      <table className="w-full text-[13px]" style={{ minWidth: "320px" }}>
+        {headerRow && (
+          <thead>
+            <tr style={{ borderBottom: "2px solid #1E2D47" }}>
+              {headerRow.map((cell, i) => (
+                <th
+                  key={i}
+                  className="text-left text-[11px] font-semibold uppercase tracking-wider"
+                  style={{ color: "#10B981", padding: "12px 16px", background: "#0A1121" }}
+                >
+                  <RichSpan parts={cell} />
+                </th>
+              ))}
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {bodyRows.map((row, ri) => (
+            <tr
+              key={ri}
+              style={{
+                background: ri % 2 === 0 ? "#0F172A" : "#1A2332",
+                borderBottom: ri < bodyRows.length - 1 ? "1px solid #1E2D4766" : "none",
+              }}
+            >
+              {row.map((cell, ci) => {
+                const text = cell.map(c => c.text).join("");
+                const isNumeric = /^[\d.,+\-%]+$/.test(text.trim());
+                return (
+                  <td
+                    key={ci}
+                    className={isNumeric ? "font-mono-data font-bold" : ""}
+                    style={{
+                      padding: "10px 16px",
+                      color: isNumeric ? "#E1E7EF" : "#d4d4d4",
+                    }}
+                  >
+                    <RichSpan parts={cell} />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function SectionCard({ section, children }: { section: ReportSection; children?: React.ReactNode }) {

@@ -336,45 +336,47 @@ export default function ReportPage() {
         </div>
 
         {/* ---- 2. match header ---- */}
-        <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "32px 24px", textAlign: "center" }}>
+        <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "40px 32px", textAlign: "center" }}>
           {/* Date + time */}
-          <div style={{ fontSize: "13px", color: "#566378", marginBottom: "16px" }}>
+          <div style={{ fontSize: "14px", color: "#8494A7", marginBottom: "20px" }}>
             {formatKoreanDate(match.date)}
             {matchDetail?.fixtureInfo?.kickoffKST && (
-              <span style={{ fontWeight: 600, color: "#8494A7" }}> {matchDetail.fixtureInfo.kickoffKST} KST</span>
+              <span style={{ fontWeight: 600 }}> {matchDetail.fixtureInfo.kickoffKST} KST</span>
             )}
           </div>
 
-          {/* League logo + name + round */}
-          <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+          {/* League logo + name · round (same line) */}
+          <div style={{ marginBottom: "28px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
             {(() => {
               const config = LEAGUE_CONFIG[match.league];
               return config ? (
                 <img src={config.logo} alt={match.league} style={{ width: "48px", height: "48px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               ) : null;
             })()}
-            <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF" }}>{match.league}</span>
-            {matchDetail?.fixtureInfo?.round && (
-              <span style={{ fontSize: "13px", color: "#8494A7" }}>{translateRound(matchDetail.fixtureInfo.round)}</span>
-            )}
+            <span style={{ fontSize: "18px", fontWeight: 600, color: "#E1E7EF" }}>
+              {match.league}
+              {matchDetail?.fixtureInfo?.round && (
+                <span style={{ color: "#8494A7" }}> · {translateRound(matchDetail.fixtureInfo.round)}</span>
+              )}
+            </span>
           </div>
 
           {/* Teams */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "20px", marginBottom: "24px" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-              <TeamLogo teamId={match.homeTeamId} teamName={home} size={80} />
-              <span style={{ fontSize: "24px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "24px", marginBottom: "28px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+              <TeamLogo teamId={match.homeTeamId} teamName={home} size={88} />
+              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               {match.result ? (
-                <span style={{ fontSize: "32px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
+                <span style={{ fontSize: "36px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
               ) : (
-                <span style={{ fontSize: "20px", fontWeight: 700, color: "#10B981" }}>VS</span>
+                <span style={{ fontSize: "22px", fontWeight: 700, color: "#10B981" }}>VS</span>
               )}
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-              <TeamLogo teamId={match.awayTeamId} teamName={away} size={80} />
-              <span style={{ fontSize: "24px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+              <TeamLogo teamId={match.awayTeamId} teamName={away} size={88} />
+              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
             </div>
           </div>
 

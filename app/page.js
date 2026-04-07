@@ -65,11 +65,11 @@ const LEAGUES_PILLS = ["EPL", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UC
 const FAQS = [
   {
     q: "MATCHLAB은 뭔가요?",
-    a: "매일 유럽 축구 경기를 4종 앙상블 AI 모델로 분석하고, 확신도별로 분류해서 카카오톡으로 보내드리는 데이터 분석 서비스입니다.",
+    a: "매일 유럽 축구 경기를 4종 앙상블 AI 모델로 분석하고, 확신도별로 분류해 제공하는 데이터 분석 서비스입니다.",
   },
   {
     q: "무료로도 쓸 수 있나요?",
-    a: "네, 가입만 하면 매일 2경기 프리뷰를 무료로 볼 수 있고, 적중률 대시보드도 열람 가능합니다.",
+    a: "네, 가입만 하면 전경기 AI 예측을 무료로 볼 수 있고, 적중률 대시보드도 열람 가능합니다.",
   },
   {
     q: "Pro는 언제든 해지할 수 있나요?",
@@ -495,9 +495,9 @@ export default function Home() {
               </div>
 
               <h1 className="font-body font-bold text-[24px] sm:text-[32px] md:text-[40px] leading-[1.2] tracking-[-0.5px] text-text-primary mb-2">
-                매일 아침, AI가 고른
+                매일 업데이트되는
                 <br />
-                <span className="text-emerald-400">승부 예측</span>
+                <span className="text-emerald-400">AI 축구 분석 리포트</span>
               </h1>
               {highConfRate > 0 && (
                 <p className="text-emerald-400 text-lg font-display font-bold mb-4">
@@ -505,7 +505,7 @@ export default function Home() {
                 </p>
               )}
               <p className="text-text-secondary text-[14px] md:text-[16px] mb-8 max-w-md leading-relaxed font-body break-keep">
-                푸아송 · ELO · xG · 배당 앙상블이 매일 수십 경기를 분석하고, 가장 유리한 경기만 골라드립니다.
+                4개 통계 모델이 매일 수십 경기를 분석합니다. 가장 적중 확률 높은 경기만 골라, 근거와 함께 제공합니다.
               </p>
 
               {/* CTAs */}
@@ -517,10 +517,10 @@ export default function Home() {
                   무료로 시작하기
                 </a>
                 <a
-                  href="#accuracy"
+                  href="#pricing"
                   className="border border-bg-border text-text-secondary hover:text-text-primary font-semibold px-7 py-3.5 rounded-[14px] text-[15px] transition-colors font-body"
                 >
-                  분석 데이터 보기
+                  Pro 상품 보기
                 </a>
               </div>
               <p className="text-xs text-text-muted font-body mb-8">30초 가입 · 카드 불필요</p>
@@ -575,7 +575,7 @@ export default function Home() {
               >
                 전체 분석 보기 →
               </a>
-              <p className="text-xs text-text-muted mt-2">무료 가입으로 매일 2경기 열람</p>
+              <p className="text-xs text-text-muted mt-2">무료 가입으로 전경기 예측 열람</p>
             </div>
           </SectionWrap>
         </FadeSection>
@@ -628,15 +628,82 @@ export default function Home() {
           </SectionWrap>
         </FadeSection>
 
+        {/* ═══ 5. Pro 비교 ═══ */}
+        <FadeSection>
+          <SectionWrap>
+            <div className="text-center mb-10">
+              <span className="section-label mb-3">PRO</span>
+              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
+                Pro 구독자는 매일 이런 분석을 받습니다
+              </h2>
+              <p className="text-text-secondary text-sm mt-2 font-body">무료는 맛보기, Pro는 매일 전체 분석</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-5 max-w-[640px] mx-auto">
+              {/* Free */}
+              <div className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-6">
+                <div className="font-body font-bold text-lg mb-4 text-emerald-500">Free</div>
+                <ul className="space-y-3 text-sm font-body">
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    전경기 AI 예측 열람
+                  </li>
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    확신도 ⭐~⭐⭐⭐
+                  </li>
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    예측 결과만 표시
+                  </li>
+                </ul>
+              </div>
+
+              {/* Pro */}
+              <div className="rounded-[14px] p-6" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #d97706" }}>
+                <div className="font-body font-bold text-lg mb-4 text-gold-400">Pro</div>
+                <ul className="space-y-3 text-sm font-body">
+                  <li className="flex items-start gap-2 text-gold-400 font-semibold">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    고확신 ⭐4+⭐5 경기
+                  </li>
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    4개 모델 상세 근거 · 확률
+                  </li>
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    배당 이동 분석
+                  </li>
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    전경기 상세 리포트
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="text-center mt-8">
+              <a
+                href="/login"
+                className="inline-block py-3.5 px-8 rounded-[14px] text-[15px] font-bold text-white transition-all font-body"
+                style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
+              >
+                Pro 시작하기 →
+              </a>
+            </div>
+          </SectionWrap>
+        </FadeSection>
+
         {/* ═══ 6. Pricing ═══ */}
         <FadeSection id="pricing">
           <SectionWrap>
             <div className="text-center mb-10">
               <span className="section-label mb-3">PRICING</span>
               <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
-                매일 아침, AI가 고른 최고의 경기
+                AI 축구 분석 리포트 구독
                 <br />
-                카톡으로 — 월 9,900원
+                — 월 9,900원
               </h2>
               <p className="text-text-secondary text-sm mt-2 font-body">커피 2잔 값으로 매일 AI 분석</p>
             </div>
@@ -648,11 +715,11 @@ export default function Home() {
                 <div className="font-display font-bold text-[28px] tracking-[-1px] text-text-primary mb-1">₩0</div>
                 <ul className="mt-5 mb-6 space-y-2">
                   {[
-                    { ok: true, text: "매일 오전 카톡 알림" },
-                    { ok: true, text: "무료 프리뷰 2경기" },
+                    { ok: true, text: "전경기 AI 예측 열람" },
+                    { ok: true, text: "확신도 ⭐~⭐⭐⭐ 경기" },
                     { ok: true, text: "적중률 리포트 (전체 공개)" },
                     { ok: false, text: "고확신 ⭐4+ 경기" },
-                    { ok: false, text: "전경기 상세 분석" },
+                    { ok: false, text: "상세 분석 근거" },
                     { ok: false, text: "배당 이동 분석" },
                   ].map((item) => (
                     <li key={item.text} className="text-sm flex items-start gap-2 font-body">
@@ -692,8 +759,8 @@ export default function Home() {
                 <ul className="mt-3 mb-6 space-y-2">
                   {[
                     { text: "Free의 모든 것 +", highlight: false },
-                    { text: "고확신 ⭐4+⭐5 경기", highlight: true },
-                    { text: "전경기 상세 분석 (매일 10~30경기)", highlight: false },
+                    { text: "고확신 ⭐4+⭐5 경기 (AI가 가장 자신 있는 경기)", highlight: true },
+                    { text: "4개 모델 상세 근거 · 확률", highlight: false },
                     { text: "배당 이동 분석", highlight: false },
                     { text: "웹 대시보드 열람", highlight: false },
                   ].map((item) => (
@@ -712,7 +779,65 @@ export default function Home() {
                 >
                   Pro 시작하기
                 </a>
+                {dashData?.highConfidence && dashData.highConfidence.total > 0 && (
+                  <p className="text-[11px] text-emerald-400 text-center mt-3 font-body">
+                    어제 고확신 경기 결과: {dashData.highConfidence.correct}/{dashData.highConfidence.total} 적중 ✅
+                  </p>
+                )}
               </div>
+            </div>
+          </SectionWrap>
+        </FadeSection>
+
+        {/* ═══ HOW IT WORKS ═══ */}
+        <FadeSection>
+          <SectionWrap>
+            <div className="text-center mb-10">
+              <span className="section-label mb-3">HOW IT WORKS</span>
+              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
+                3단계로 시작하세요
+              </h2>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-4">
+              {[
+                {
+                  step: "①",
+                  title: "무료 가입",
+                  desc: "30초, 카드 불필요",
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" />
+                    </svg>
+                  ),
+                },
+                {
+                  step: "②",
+                  title: "매일 분석 확인",
+                  desc: "웹에서 오늘의 경기 확인. 고확신 경기는 Pro에서",
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                  ),
+                },
+                {
+                  step: "③",
+                  title: "투명한 검증",
+                  desc: "모든 예측은 자동 기록. 적중률 투명 공개",
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                  ),
+                },
+              ].map((item) => (
+                <div key={item.step} className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-6 text-center hover:border-bg-border transition-colors">
+                  <div className="flex justify-center mb-3">{item.icon}</div>
+                  <div className="text-text-primary font-bold text-base mb-1 font-body">{item.step} {item.title}</div>
+                  <p className="text-text-secondary text-sm font-body">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </SectionWrap>
         </FadeSection>

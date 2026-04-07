@@ -65,6 +65,7 @@ export interface MatchDetail {
   injuries: InjuryData[];
   fixtureInfo?: { kickoffKST: string; round: string };
   lineups?: LineupsData | null;
+  isEstimatedLineup?: boolean;
 }
 
 // ── Styles ──

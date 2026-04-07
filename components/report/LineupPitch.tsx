@@ -7,6 +7,7 @@ interface Props {
   lineups: LineupsData;
   homeName: string;
   awayName: string;
+  isEstimated?: boolean;
 }
 
 // Position colors
@@ -140,14 +141,23 @@ function SubsList({ subs, label }: { subs: LineupPlayer[]; label: string }) {
 }
 
 // Main
-export default function LineupPitch({ lineups, homeName, awayName }: Props) {
+export default function LineupPitch({ lineups, homeName, awayName, isEstimated }: Props) {
   if (!lineups?.home?.startXI.length && !lineups?.away?.startXI.length) return null;
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
         <span style={{ fontSize: "16px" }}>📋</span>
-        <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF" }}>예상 라인업</span>
+        <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF" }}>
+          {isEstimated ? "예상 라인업" : "확정 라인업"}
+        </span>
+        <span style={{
+          fontSize: "10px", fontWeight: 700, borderRadius: "9999px", padding: "2px 8px",
+          background: isEstimated ? "#F97316" + "25" : "#22C55E" + "25",
+          color: isEstimated ? "#F97316" : "#22C55E",
+        }}>
+          {isEstimated ? "예상" : "확정"}
+        </span>
         {lineups.home?.formation && lineups.away?.formation && (
           <span style={{ fontSize: "12px", color: "#8494A7", fontFamily: "'JetBrains Mono',monospace" }}>
             {lineups.home.formation} vs {lineups.away.formation}
@@ -187,7 +197,9 @@ export default function LineupPitch({ lineups, homeName, awayName }: Props) {
       </div>
 
       <p style={{ fontSize: "10px", color: "#566378", marginTop: "8px" }}>
-        예상 라인업은 API 제공 데이터 기반이며, 실제 출전 명단과 다를 수 있습니다
+        {isEstimated
+          ? "최근 3경기 출전 기록과 부상 정보를 기반으로 구성된 예상 라인업입니다"
+          : "공식 확정 라인업입니다"}
       </p>
     </div>
   );

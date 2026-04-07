@@ -58,7 +58,7 @@ export async function GET(
     const season = fixture.league?.season ?? 2025;
 
     // 2. Fetch all data in parallel
-    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, predictionsData] = await Promise.all([
+    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, confirmedLineups, homeRecentLineups, awayRecentLineups] = await Promise.all([
       apiFetch(`/fixtures?team=${homeTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures?team=${awayTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}&last=5`, apiKey),
@@ -66,7 +66,9 @@ export async function GET(
       leagueId ? apiFetch(`/teams/statistics?team=${awayTeamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       leagueId ? apiFetch(`/standings?league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       apiFetch(`/injuries?fixture=${fixtureId}`, apiKey),
-      apiFetch(`/predictions?fixture=${fixtureId}`, apiKey),
+      apiFetch(`/fixtures/lineups?fixture=${fixtureId}`, apiKey),
+      apiFetch(`/fixtures/lineups?team=${homeTeamId}&last=3`, apiKey),
+      apiFetch(`/fixtures/lineups?team=${awayTeamId}&last=3`, apiKey),
     ]);
 
     // 3. Parse form
@@ -171,54 +173,116 @@ export async function GET(
     }
     const round = fixture.league?.round ?? "";
 
-    // 9. Lineups from /predictions
+    // 9. Lineups — confirmed first, then estimated from recent matches
     let lineups = null;
+    let isEstimated = false;
     try {
-      const pred = Array.isArray(predictionsData) ? predictionsData[0] : null;
-
-      // DEBUG: log predictions structure
-      console.log("[match-detail] predictions raw keys:", pred ? Object.keys(pred) : "null");
-      if (pred?.teams) {
-        console.log("[match-detail] teams.home keys:", Object.keys(pred.teams.home ?? {}));
-        console.log("[match-detail] teams.home.players?:", typeof pred.teams.home?.players, pred.teams.home?.players ? "exists" : "undefined");
-        console.log("[match-detail] teams.home.league?:", JSON.stringify(pred.teams.home?.league ?? {}).slice(0, 200));
-        if (pred.teams.home?.players) {
-          console.log("[match-detail] home players keys:", Object.keys(pred.teams.home.players));
-          console.log("[match-detail] home startXI sample:", JSON.stringify((pred.teams.home.players.startXI ?? []).slice(0, 2)).slice(0, 300));
-        }
-      }
-
-      if (pred?.teams) {
-        const parseTeamPred = (team: any) => {
-          if (!team) return null;
-          // Try multiple paths for formation
-          const formation = team.league?.formation ?? team.formation ?? "";
-          // Try multiple paths for startXI
-          const rawXI = team.players?.startXI ?? team.startXI ?? [];
-          const rawSubs = team.players?.substitutes ?? team.substitutes ?? [];
-          const startXI = rawXI.map((item: any) => ({
-            name: item.player?.name ?? item.name ?? "",
-            number: item.player?.number ?? item.number ?? 0,
-            pos: item.player?.pos ?? item.pos ?? "",
+      // A) Try confirmed lineups (available after match starts)
+      const confirmedArr = Array.isArray(confirmedLineups) ? confirmedLineups : [];
+      if (confirmedArr.length >= 2) {
+        const parseConfirmed = (entry: any) => {
+          if (!entry) return null;
+          const startXI = (entry.startXI ?? []).map((item: any) => ({
+            name: item.player?.name ?? "",
+            number: item.player?.number ?? 0,
+            pos: item.player?.pos ?? "",
           }));
-          const subs = rawSubs.map((item: any) => ({
-            name: item.player?.name ?? item.name ?? "",
-            number: item.player?.number ?? item.number ?? 0,
-            pos: item.player?.pos ?? item.pos ?? "",
+          const subs = (entry.substitutes ?? []).map((item: any) => ({
+            name: item.player?.name ?? "",
+            number: item.player?.number ?? 0,
+            pos: item.player?.pos ?? "",
           }));
-          return { formation, startXI, subs };
+          return { formation: entry.formation ?? "", startXI, subs };
         };
-        const home = parseTeamPred(pred.teams.home);
-        const away = parseTeamPred(pred.teams.away);
-        if ((home?.startXI.length ?? 0) > 0 || (away?.startXI.length ?? 0) > 0) {
-          lineups = { home, away };
+        const homeEntry = confirmedArr.find((e: any) => e.team?.id === homeTeamId) ?? confirmedArr[0];
+        const awayEntry = confirmedArr.find((e: any) => e.team?.id === awayTeamId) ?? confirmedArr[1];
+        const h = parseConfirmed(homeEntry);
+        const a = parseConfirmed(awayEntry);
+        if ((h?.startXI.length ?? 0) > 0) {
+          lineups = { home: h, away: a };
+          isEstimated = false;
         }
       }
-    } catch (e) {
-      console.log("[match-detail] lineups parse error:", e);
-    }
 
-    console.log("[match-detail] final lineups:", lineups ? `home:${lineups.home?.startXI.length} away:${lineups.away?.startXI.length}` : "null");
+      // B) If no confirmed, build estimated from recent 3 matches
+      if (!lineups) {
+        const injuredNames = new Set(injuriesData.map((inj: any) => (inj.player?.name ?? "").toLowerCase()));
+
+        function buildEstimated(recentLineups: any[], teamId: number) {
+          const entries = (Array.isArray(recentLineups) ? recentLineups : [])
+            .filter((e: any) => e.team?.id === teamId);
+          if (entries.length === 0) return null;
+
+          // Use most recent formation
+          const formation = entries[0].formation ?? "";
+
+          // Count appearances by player
+          const appearances = new Map<string, { name: string; number: number; pos: string; count: number; lastIdx: number }>();
+          entries.forEach((entry: any, idx: number) => {
+            for (const item of (entry.startXI ?? [])) {
+              const name = item.player?.name ?? "";
+              const key = name.toLowerCase();
+              const existing = appearances.get(key);
+              if (existing) {
+                existing.count++;
+                if (idx < existing.lastIdx) existing.lastIdx = idx;
+              } else {
+                appearances.set(key, {
+                  name,
+                  number: item.player?.number ?? 0,
+                  pos: item.player?.pos ?? "",
+                  count: 1,
+                  lastIdx: idx,
+                });
+              }
+            }
+          });
+
+          // Sort by count desc, then recency
+          const sorted = Array.from(appearances.values())
+            .filter(p => !injuredNames.has(p.name.toLowerCase()))
+            .sort((a, b) => b.count - a.count || a.lastIdx - b.lastIdx);
+
+          // Pick by position based on formation
+          const posOrder = ["G", "D", "M", "F"];
+          const parts = formation.split("-").map(Number).filter(n => n > 0);
+          const needed: Record<string, number> = { G: 1 };
+          const posMap = ["D", "M", "F"];
+          parts.forEach((n, i) => { needed[posMap[i] ?? "M"] = (needed[posMap[i] ?? "M"] ?? 0) + n; });
+
+          const startXI: { name: string; number: number; pos: string }[] = [];
+          const used = new Set<string>();
+
+          for (const posKey of posOrder) {
+            const need = needed[posKey] ?? 0;
+            const candidates = sorted.filter(p => p.pos === posKey && !used.has(p.name.toLowerCase()));
+            for (let i = 0; i < need && i < candidates.length; i++) {
+              startXI.push({ name: candidates[i].name, number: candidates[i].number, pos: candidates[i].pos });
+              used.add(candidates[i].name.toLowerCase());
+            }
+          }
+
+          // Fill remaining spots if formation parsing missed some
+          if (startXI.length < 11) {
+            const remaining = sorted.filter(p => !used.has(p.name.toLowerCase()));
+            for (const p of remaining) {
+              if (startXI.length >= 11) break;
+              startXI.push({ name: p.name, number: p.number, pos: p.pos });
+              used.add(p.name.toLowerCase());
+            }
+          }
+
+          return { formation, startXI: startXI.slice(0, 11), subs: [] as { name: string; number: number; pos: string }[] };
+        }
+
+        const estHome = buildEstimated(homeRecentLineups, homeTeamId);
+        const estAway = buildEstimated(awayRecentLineups, awayTeamId);
+        if ((estHome?.startXI.length ?? 0) > 0 || (estAway?.startXI.length ?? 0) > 0) {
+          lineups = { home: estHome, away: estAway };
+          isEstimated = true;
+        }
+      }
+    } catch { /* graceful fallback */ }
 
     return NextResponse.json({
       form,
@@ -228,6 +292,7 @@ export async function GET(
       injuries,
       fixtureInfo: { kickoffKST, round },
       lineups,
+      isEstimatedLineup: isEstimated,
     });
   } catch (err) {
     console.error("match-detail API error:", err);

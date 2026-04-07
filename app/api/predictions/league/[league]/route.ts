@@ -12,6 +12,11 @@ const LEAGUE_MAP: Record<string, { name: string; apiId: number }> = {
   ucl: { name: "챔피언스리그", apiId: 2 },
   uel: { name: "유로파리그", apiId: 3 },
   uecl: { name: "컨퍼런스리그", apiId: 848 },
+  facup: { name: "FA컵", apiId: 45 },
+  copadelrey: { name: "코파델레이", apiId: 143 },
+  coppaitalia: { name: "코파이탈리아", apiId: 137 },
+  dfbpokal: { name: "DFB포칼", apiId: 81 },
+  coupedefrance: { name: "쿠프드프랑스", apiId: 66 },
 };
 
 interface ApiFixture {

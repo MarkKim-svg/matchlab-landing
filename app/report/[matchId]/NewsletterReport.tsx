@@ -308,12 +308,12 @@ export default function NewsletterReport({
           </div>
 
           {/* League (big) */}
-          <div style={{ marginBottom: "20px", display: "flex", justifyContent: "center" }}>
+          <div style={{ marginBottom: "24px", display: "flex", justifyContent: "center" }}>
             {(() => {
               const config = LEAGUE_CONFIG[match.league];
               return (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", borderRadius: "9999px", padding: "6px 16px", fontSize: "15px", fontWeight: 600, color: "rgba(255,255,255,0.9)", backgroundColor: (config?.color ?? "#334155") + "55" }}>
-                  {config && <img src={config.logo} alt={match.league} style={{ width: "28px", height: "28px", borderRadius: "9999px", background: "white", padding: "2px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "10px", borderRadius: "9999px", padding: "8px 20px", fontSize: "18px", fontWeight: 700, color: "rgba(255,255,255,0.95)", backgroundColor: (config?.color ?? "#334155") + "55" }}>
+                  {config && <img src={config.logo} alt={match.league} style={{ width: "36px", height: "36px", borderRadius: "9999px", background: "white", padding: "2px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
                   {match.league}
                 </span>
               );
@@ -321,21 +321,21 @@ export default function NewsletterReport({
           </div>
 
           {/* Teams */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-              <TeamLogo teamId={match.homeTeamId} teamName={home} size={72} />
-              <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "20px", marginBottom: "24px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+              <TeamLogo teamId={match.homeTeamId} teamName={home} size={80} />
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               {match.result ? (
-                <span style={{ fontSize: "28px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
+                <span style={{ fontSize: "32px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
               ) : (
-                <span style={{ fontSize: "18px", fontWeight: 700, color: "#10B981" }}>VS</span>
+                <span style={{ fontSize: "20px", fontWeight: 700, color: "#10B981" }}>VS</span>
               )}
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-              <TeamLogo teamId={match.awayTeamId} teamName={away} size={72} />
-              <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+              <TeamLogo teamId={match.awayTeamId} teamName={away} size={80} />
+              <span style={{ fontSize: "24px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
             </div>
           </div>
 

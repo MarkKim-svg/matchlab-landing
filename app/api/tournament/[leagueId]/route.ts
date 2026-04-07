@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 3600;
 
-const ALLOWED = new Set(["2", "3", "848"]);
+const ALLOWED = new Set(["2", "3", "848", "45", "143", "137", "81", "66"]);
 
 const ROUNDS_ORDER = [
   "Round of 16",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -8,6 +8,7 @@ import { LEAGUE_CONFIG } from "@/lib/constants";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate, fmtPct } from "@/components/match-ui";
+import DarkCalendar from "@/components/DarkCalendar";
 import type { MatchPrediction } from "@/lib/notion";
 
 // ── helpers ──
@@ -50,6 +51,11 @@ const LEAGUE_TABS = [
   { key: "ucl", name: "챔피언스리그", short: "UCL" },
   { key: "uel", name: "유로파리그", short: "UEL" },
   { key: "uecl", name: "컨퍼런스리그", short: "UECL" },
+  { key: "facup", name: "FA컵", short: "FA컵" },
+  { key: "copadelrey", name: "코파델레이", short: "코파" },
+  { key: "coppaitalia", name: "코파이탈리아", short: "코파IT" },
+  { key: "dfbpokal", name: "DFB포칼", short: "DFB" },
+  { key: "coupedefrance", name: "쿠프드프랑스", short: "쿠프" },
 ];
 
 interface ApiFixture {
@@ -82,21 +88,21 @@ function FixtureCard({ f }: { f: ApiFixture }) {
       </div>
 
       {/* Row 2: Teams + Score/VS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px" }}>
-          <span style={{ fontSize: "14px", fontWeight: 600, color: "#E1E7EF", textAlign: "right" }}>{f.homeTeam}</span>
-          <img src={f.homeLogo} alt="" style={{ width: "28px", height: "28px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{f.homeTeam}</span>
+          <img src={f.homeLogo} alt="" style={{ width: "40px", height: "40px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
         </div>
         {isFinished && hasScore ? (
-          <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF", padding: "0 6px", fontFamily: "'JetBrains Mono',monospace" }}>
+          <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF", padding: "0 8px", fontFamily: "'JetBrains Mono',monospace" }}>
             {f.homeGoals} : {f.awayGoals}
           </span>
         ) : (
-          <span style={{ fontSize: "13px", fontWeight: 700, color: "#566378", padding: "0 6px" }}>VS</span>
+          <span style={{ fontSize: "15px", fontWeight: 700, color: "#10B981", padding: "0 8px" }}>VS</span>
         )}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "6px" }}>
-          <img src={f.awayLogo} alt="" style={{ width: "28px", height: "28px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-          <span style={{ fontSize: "14px", fontWeight: 600, color: "#E1E7EF" }}>{f.awayTeam}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
+          <img src={f.awayLogo} alt="" style={{ width: "40px", height: "40px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{f.awayTeam}</span>
         </div>
       </div>
 
@@ -141,10 +147,10 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
       </div>
 
       {/* Row 2: Teams + Score/VS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{home}</span>
-          <TeamLogo teamId={m.homeTeamId} teamName={home} size={36} />
+          <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{home}</span>
+          <TeamLogo teamId={m.homeTeamId} teamName={home} size={44} />
         </div>
         {hasResult ? (
           <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF", padding: "0 8px", fontFamily: "'JetBrains Mono',monospace" }}>
@@ -154,8 +160,8 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
           <span style={{ fontSize: "14px", fontWeight: 700, color: "#10B981", padding: "0 8px" }}>VS</span>
         )}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
-          <TeamLogo teamId={m.awayTeamId} teamName={away} size={36} />
-          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+          <TeamLogo teamId={m.awayTeamId} teamName={away} size={44} />
+          <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
         </div>
       </div>
 
@@ -223,7 +229,6 @@ export default function MatchesDatePage() {
   const [error, setError] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string>("free");
   const [selectedLeague, setSelectedLeague] = useState<string>("전체");
-  const dateInputRef = useRef<HTMLInputElement>(null);
 
   // League tab state
   const [leagueTab, setLeagueTab] = useState("epl");
@@ -329,16 +334,11 @@ export default function MatchesDatePage() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">← 이전</button>
                 <div className="text-center">
-                  <h1 className="text-lg font-bold sm:text-xl inline-flex items-center gap-1 relative cursor-pointer" onClick={() => dateInputRef.current?.showPicker()}>
-                    <span className="hover:text-emerald-400 transition-colors">
-                      {formatKoreanDate(dateStr)}
-                    </span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8494A7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                    <input ref={dateInputRef} type="date" className="absolute inset-0 opacity-0 cursor-pointer" value={dateStr} onChange={(e) => { if (e.target.value) goDate(e.target.value); }} />
-                  </h1>
-                  {!isToday && (
-                    <button onClick={() => goDate(getKSTToday())} className="mt-1 block mx-auto text-xs text-emerald-400 hover:underline">오늘로 이동</button>
-                  )}
+                  <DarkCalendar
+                    value={dateStr}
+                    onChange={goDate}
+                    label={formatKoreanDate(dateStr)}
+                  />
                 </div>
                 <button onClick={() => goDate(shiftDate(dateStr, 1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">다음 →</button>
               </div>

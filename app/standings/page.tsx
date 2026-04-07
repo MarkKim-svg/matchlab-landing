@@ -14,6 +14,11 @@ const LEAGUES = [
   { id: "2", name: "UCL", logo: "https://media.api-sports.io/football/leagues/2.png", isCup: true },
   { id: "3", name: "UEL", logo: "https://media.api-sports.io/football/leagues/3.png", isCup: true },
   { id: "848", name: "UECL", logo: "https://media.api-sports.io/football/leagues/848.png", isCup: true },
+  { id: "45", name: "FA컵", logo: "https://media.api-sports.io/football/leagues/45.png", isCup: true },
+  { id: "143", name: "코파", logo: "https://media.api-sports.io/football/leagues/143.png", isCup: true },
+  { id: "137", name: "코파IT", logo: "https://media.api-sports.io/football/leagues/137.png", isCup: true },
+  { id: "81", name: "DFB", logo: "https://media.api-sports.io/football/leagues/81.png", isCup: true },
+  { id: "66", name: "쿠프", logo: "https://media.api-sports.io/football/leagues/66.png", isCup: true },
 ];
 
 interface Standing {

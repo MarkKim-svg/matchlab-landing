@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 3600;
 
-const ALLOWED_LEAGUES = new Set(["39", "140", "135", "78", "61", "2", "3", "848"]);
+const ALLOWED_LEAGUES = new Set(["39", "140", "135", "78", "61", "2", "3", "848", "45", "143", "137", "81", "66"]);
 
 export async function GET(request: NextRequest) {
   try {

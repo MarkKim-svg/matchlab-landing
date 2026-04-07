@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
 const LEAGUES = [
@@ -65,8 +65,8 @@ export default function HomeSidebar() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      {/* League tabs */}
-      <div style={{ display: "flex", gap: "4px", overflowX: "auto" }} className="scrollbar-hide">
+      {/* League tabs with arrows */}
+      <TabScroller>
         {LEAGUES.map((l) => (
           <button
             key={l.id}
@@ -82,7 +82,7 @@ export default function HomeSidebar() {
             {l.name}
           </button>
         ))}
-      </div>
+      </TabScroller>
 
       {/* Mini Standings */}
       <SidebarCard>
@@ -198,6 +198,22 @@ function SkeletonRows({ count }: { count: number }) {
       {Array.from({ length: count }, (_, i) => (
         <div key={i} style={{ height: "20px", borderRadius: "4px", background: "#1A2332" }} />
       ))}
+    </div>
+  );
+}
+
+function TabScroller({ children }: { children: React.ReactNode }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scroll = (dir: number) => {
+    scrollRef.current?.scrollBy({ left: dir * 100, behavior: "smooth" });
+  };
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+      <button onClick={() => scroll(-1)} className="cursor-pointer" style={{ flexShrink: 0, width: "22px", height: "22px", borderRadius: "50%", background: "#111827", border: "1px solid #1E2D47", color: "#8494A7", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>◀</button>
+      <div ref={scrollRef} className="scrollbar-hide" style={{ display: "flex", gap: "4px", overflowX: "auto", flex: 1 }}>
+        {children}
+      </div>
+      <button onClick={() => scroll(1)} className="cursor-pointer" style={{ flexShrink: 0, width: "22px", height: "22px", borderRadius: "50%", background: "#111827", border: "1px solid #1E2D47", color: "#8494A7", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>▶</button>
     </div>
   );
 }

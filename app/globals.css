@@ -87,6 +87,6 @@
 
 @media (min-width:768px) {
   .home-layout { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
-  .home-sidebar { position:sticky; top:72px; align-self:start; max-height:calc(100vh - 80px); overflow-y:auto; }
+  .home-sidebar { position:sticky; top:72px; align-self:start; }
   .home-2col { grid-template-columns:1fr 1fr; }
 }

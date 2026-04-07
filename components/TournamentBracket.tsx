@@ -19,6 +19,17 @@ interface Props { leagueId: string; season: string; }
 
 const LABELS: Record<string, string> = { R16: "16강", QF: "8강", SF: "4강", F: "결승" };
 
+const LEAGUE_LOGOS: Record<string, { logo: string; name: string }> = {
+  "2": { logo: "https://media.api-sports.io/football/leagues/2.png", name: "챔피언스리그" },
+  "3": { logo: "https://media.api-sports.io/football/leagues/3.png", name: "유로파리그" },
+  "848": { logo: "https://media.api-sports.io/football/leagues/848.png", name: "컨퍼런스리그" },
+  "45": { logo: "https://media.api-sports.io/football/leagues/45.png", name: "FA컵" },
+  "143": { logo: "https://media.api-sports.io/football/leagues/143.png", name: "코파 델 레이" },
+  "137": { logo: "https://media.api-sports.io/football/leagues/137.png", name: "코파 이탈리아" },
+  "81": { logo: "https://media.api-sports.io/football/leagues/81.png", name: "DFB 포칼" },
+  "66": { logo: "https://media.api-sports.io/football/leagues/66.png", name: "쿠프 드 프랑스" },
+};
+
 // ── Tie Card ──
 function TieCard({ tie, mirror }: { tie: TieData; mirror?: boolean }) {
   const t1Win = tie.winner === tie.team1;
@@ -175,10 +186,18 @@ export default function TournamentBracket({ leagueId, season }: Props) {
         {sfL.length > 0 && <Connector count={1} />}
 
         {/* ── Final (center) ── */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: "0 8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: "0 12px" }}>
+          {(() => {
+            const info = LEAGUE_LOGOS[leagueId];
+            return info ? (
+              <>
+                <img src={info.logo} alt={info.name} style={{ width: "64px", height: "64px", objectFit: "contain", marginBottom: "6px" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#E1E7EF", marginBottom: "4px" }}>{info.name}</div>
+              </>
+            ) : null;
+          })()}
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#FBBF24", marginBottom: "8px" }}>결승</div>
           {f.length > 0 ? <TieCard tie={f[0]} /> : <TBDCard />}
-          <div style={{ fontSize: "28px", marginTop: "8px" }}>🏆</div>
         </div>
 
         {/* ── Right side (mirror) ── */}

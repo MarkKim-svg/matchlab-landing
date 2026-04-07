@@ -48,7 +48,69 @@ const LEAGUE_TABS = [
   { key: "bundesliga", name: "분데스리가", short: "분데스" },
   { key: "ligue1", name: "리그1", short: "리그1" },
   { key: "ucl", name: "챔피언스리그", short: "UCL" },
+  { key: "uel", name: "유로파리그", short: "UEL" },
+  { key: "uecl", name: "컨퍼런스리그", short: "UECL" },
 ];
+
+interface ApiFixture {
+  id: string;
+  date: string;
+  time: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeTeamId: string;
+  awayTeamId: string;
+  homeLogo: string;
+  awayLogo: string;
+  homeGoals: number | null;
+  awayGoals: number | null;
+  status: string;
+  round: string;
+  hasPrediction: boolean;
+}
+
+function FixtureCard({ f }: { f: ApiFixture }) {
+  const isFinished = f.status === "FT" || f.status === "AET" || f.status === "PEN";
+  const hasScore = f.homeGoals !== null && f.awayGoals !== null;
+
+  return (
+    <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "12px", padding: "16px" }}>
+      {/* Row 1: Round + time */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+        {f.round && <span style={{ fontSize: "11px", color: "#566378" }}>{f.round}</span>}
+        <span style={{ fontSize: "11px", color: "#566378" }}>{f.time ? `${f.time} KST` : ""}</span>
+      </div>
+
+      {/* Row 2: Teams + Score/VS */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px" }}>
+          <span style={{ fontSize: "14px", fontWeight: 600, color: "#E1E7EF", textAlign: "right" }}>{f.homeTeam}</span>
+          <img src={f.homeLogo} alt="" style={{ width: "28px", height: "28px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+        </div>
+        {isFinished && hasScore ? (
+          <span style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF", padding: "0 6px", fontFamily: "'JetBrains Mono',monospace" }}>
+            {f.homeGoals} : {f.awayGoals}
+          </span>
+        ) : (
+          <span style={{ fontSize: "13px", fontWeight: 700, color: "#566378", padding: "0 6px" }}>VS</span>
+        )}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "6px" }}>
+          <img src={f.awayLogo} alt="" style={{ width: "28px", height: "28px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          <span style={{ fontSize: "14px", fontWeight: 600, color: "#E1E7EF" }}>{f.awayTeam}</span>
+        </div>
+      </div>
+
+      {/* Row 3: Status */}
+      <div style={{ textAlign: "center", marginTop: "8px" }}>
+        {isFinished ? (
+          <span style={{ fontSize: "11px", color: "#566378" }}>종료</span>
+        ) : (
+          <span style={{ fontSize: "11px", color: "#F59E0B" }}>⏳ 분석 준비중</span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // ── Match Card Component ──
 
@@ -170,6 +232,7 @@ export default function MatchesDatePage() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
   const [leagueMatches, setLeagueMatches] = useState<MatchPrediction[]>([]);
+  const [leagueFixtures, setLeagueFixtures] = useState<ApiFixture[]>([]);
   const [leagueLoading, setLeagueLoading] = useState(false);
 
   // Auth
@@ -205,14 +268,17 @@ export default function MatchesDatePage() {
   useEffect(() => { fetchData(); }, [fetchData]);
   useEffect(() => { setSelectedLeague("전체"); }, [dateStr]);
 
-  // Fetch league predictions (with month)
+  // Fetch league predictions + fixtures (with month)
   useEffect(() => {
     if (viewTab !== "league") return;
     setLeagueLoading(true);
     fetch(`/api/predictions/league/${leagueTab}?month=${leagueMonth}`)
       .then(r => r.json())
-      .then(d => setLeagueMatches(d.matches ?? []))
-      .catch(() => setLeagueMatches([]))
+      .then(d => {
+        setLeagueMatches(d.matches ?? []);
+        setLeagueFixtures(d.fixtures ?? []);
+      })
+      .catch(() => { setLeagueMatches([]); setLeagueFixtures([]); })
       .finally(() => setLeagueLoading(false));
   }, [viewTab, leagueTab, leagueMonth]);
 
@@ -392,43 +458,53 @@ export default function MatchesDatePage() {
             {/* League matches grouped by date */}
             {leagueLoading ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>
-            ) : leagueMatches.length === 0 ? (
+            ) : leagueMatches.length === 0 && leagueFixtures.length === 0 ? (
               <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
                 <p className="mb-2 text-3xl">⚽</p>
                 <p className="text-lg text-slate-300">이 달에 해당 리그의 경기가 없습니다</p>
               </div>
             ) : (
               (() => {
-                // Group by date
-                const byDate = new Map<string, MatchPrediction[]>();
+                // Merge predictions + fixtures by date
+                type DayItem = { type: "prediction"; data: MatchPrediction } | { type: "fixture"; data: ApiFixture };
+                const byDate = new Map<string, DayItem[]>();
+
                 for (const m of leagueMatches) {
                   const list = byDate.get(m.date) ?? [];
-                  list.push(m);
+                  list.push({ type: "prediction", data: m });
                   byDate.set(m.date, list);
                 }
+                for (const f of leagueFixtures) {
+                  const list = byDate.get(f.date) ?? [];
+                  list.push({ type: "fixture", data: f });
+                  byDate.set(f.date, list);
+                }
+
                 const sortedDates = Array.from(byDate.keys()).sort((a, b) => b.localeCompare(a));
 
                 return (
                   <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
                     {sortedDates.map(date => {
-                      const dayMatches = byDate.get(date)!;
+                      const items = byDate.get(date)!;
                       const d = new Date(date + "T00:00:00");
                       const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
                       const dayLabel = `${parseInt(date.split("-")[1])}월 ${parseInt(date.split("-")[2])}일 (${dayNames[d.getDay()]})`;
 
                       return (
                         <div key={date}>
-                          {/* Date header */}
                           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
                             <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF" }}>{dayLabel}</span>
                             <div style={{ flex: 1, height: "1px", background: "#1E2D47" }} />
-                            <span style={{ fontSize: "12px", color: "#566378" }}>{dayMatches.length}경기</span>
+                            <span style={{ fontSize: "12px", color: "#566378" }}>{items.length}경기</span>
                           </div>
-                          {/* Match cards */}
                           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                            {dayMatches.map(m => (
-                              <MatchCard key={m.id} m={m} locked={m.isProOnly && !isPro} isPro={isPro} />
-                            ))}
+                            {items.map(item =>
+                              item.type === "prediction" ? (
+                                <MatchCard key={item.data.id} m={item.data} locked={item.data.isProOnly && !isPro} isPro={isPro} />
+                              ) : (
+                                <FixtureCard key={item.data.id} f={item.data} />
+                              )
+                            )}
                           </div>
                         </div>
                       );

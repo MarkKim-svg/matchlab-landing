@@ -175,19 +175,36 @@ export async function GET(
     let lineups = null;
     try {
       const pred = Array.isArray(predictionsData) ? predictionsData[0] : null;
+
+      // DEBUG: log predictions structure
+      console.log("[match-detail] predictions raw keys:", pred ? Object.keys(pred) : "null");
+      if (pred?.teams) {
+        console.log("[match-detail] teams.home keys:", Object.keys(pred.teams.home ?? {}));
+        console.log("[match-detail] teams.home.players?:", typeof pred.teams.home?.players, pred.teams.home?.players ? "exists" : "undefined");
+        console.log("[match-detail] teams.home.league?:", JSON.stringify(pred.teams.home?.league ?? {}).slice(0, 200));
+        if (pred.teams.home?.players) {
+          console.log("[match-detail] home players keys:", Object.keys(pred.teams.home.players));
+          console.log("[match-detail] home startXI sample:", JSON.stringify((pred.teams.home.players.startXI ?? []).slice(0, 2)).slice(0, 300));
+        }
+      }
+
       if (pred?.teams) {
         const parseTeamPred = (team: any) => {
           if (!team) return null;
-          const formation = team.league?.formation ?? "";
-          const startXI = (team.players?.startXI ?? []).map((item: any) => ({
-            name: item.player?.name ?? "",
-            number: item.player?.number ?? 0,
-            pos: item.player?.pos ?? "",
+          // Try multiple paths for formation
+          const formation = team.league?.formation ?? team.formation ?? "";
+          // Try multiple paths for startXI
+          const rawXI = team.players?.startXI ?? team.startXI ?? [];
+          const rawSubs = team.players?.substitutes ?? team.substitutes ?? [];
+          const startXI = rawXI.map((item: any) => ({
+            name: item.player?.name ?? item.name ?? "",
+            number: item.player?.number ?? item.number ?? 0,
+            pos: item.player?.pos ?? item.pos ?? "",
           }));
-          const subs = (team.players?.substitutes ?? []).map((item: any) => ({
-            name: item.player?.name ?? "",
-            number: item.player?.number ?? 0,
-            pos: item.player?.pos ?? "",
+          const subs = rawSubs.map((item: any) => ({
+            name: item.player?.name ?? item.name ?? "",
+            number: item.player?.number ?? item.number ?? 0,
+            pos: item.player?.pos ?? item.pos ?? "",
           }));
           return { formation, startXI, subs };
         };
@@ -197,7 +214,11 @@ export async function GET(
           lineups = { home, away };
         }
       }
-    } catch { /* graceful fallback */ }
+    } catch (e) {
+      console.log("[match-detail] lineups parse error:", e);
+    }
+
+    console.log("[match-detail] final lineups:", lineups ? `home:${lineups.home?.startXI.length} away:${lineups.away?.startXI.length}` : "null");
 
     return NextResponse.json({
       form,

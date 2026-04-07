@@ -57,8 +57,8 @@ export async function GET(
     const leagueId = fixture.league?.id;
     const season = fixture.league?.season ?? 2025;
 
-    // 2. Fetch all data in parallel
-    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, confirmedLineups, homeRecentLineups, awayRecentLineups] = await Promise.all([
+    // 2. Fetch all data in parallel (phase 1)
+    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, confirmedLineups] = await Promise.all([
       apiFetch(`/fixtures?team=${homeTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures?team=${awayTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}&last=5`, apiKey),
@@ -67,8 +67,25 @@ export async function GET(
       leagueId ? apiFetch(`/standings?league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       apiFetch(`/injuries?fixture=${fixtureId}`, apiKey),
       apiFetch(`/fixtures/lineups?fixture=${fixtureId}`, apiKey),
-      apiFetch(`/fixtures/lineups?team=${homeTeamId}&last=3`, apiKey),
-      apiFetch(`/fixtures/lineups?team=${awayTeamId}&last=3`, apiKey),
+    ]);
+
+    // Phase 2: Fetch recent lineups using fixture IDs from homeFixtures/awayFixtures
+    const getRecentLineups = async (fixtures: any[]) => {
+      const finished = (Array.isArray(fixtures) ? fixtures : [])
+        .filter((f: any) => f.fixture?.status?.short === "FT")
+        .slice(0, 3);
+      const results: any[] = [];
+      for (const f of finished) {
+        try {
+          const lineups = await apiFetch(`/fixtures/lineups?fixture=${f.fixture.id}`, apiKey);
+          if (Array.isArray(lineups)) results.push(...lineups);
+        } catch { /* skip */ }
+      }
+      return results;
+    };
+    const [homeRecentLineups, awayRecentLineups] = await Promise.all([
+      getRecentLineups(homeFixtures),
+      getRecentLineups(awayFixtures),
     ]);
 
     // 3. Parse form

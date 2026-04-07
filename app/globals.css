@@ -90,12 +90,12 @@
   .home-layout { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
   .home-sidebar { position:sticky; top:72px; align-self:start; }
   .home-2col { grid-template-columns:1fr 1fr; }
-  .lineup-pitch-container { display:flex; flex-direction:row; }
-  .lineup-pitch-half { flex:1; min-width:0; }
-  .lineup-subs-row { display:flex; gap:16px; }
-  .lineup-subs-row > div { flex:1; }
+  .lineup-pitch { display:flex; flex-direction:row; }
+  .lineup-half { flex:1; min-width:0; }
+  .lineup-subs { display:flex; flex-direction:row; gap:16px; }
+  .lineup-subs > div { flex:1; }
 }
 
 /* Lineup pitch mobile */
-.lineup-pitch-container { display:flex; flex-direction:column; }
-.lineup-subs-row { display:flex; flex-direction:column; gap:4px; }
+.lineup-pitch { display:flex; flex-direction:column; }
+.lineup-subs { display:flex; flex-direction:column; gap:4px; }

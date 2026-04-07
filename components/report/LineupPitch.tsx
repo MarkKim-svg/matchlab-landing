@@ -180,22 +180,22 @@ export default function LineupPitch({ lineups, homeName, awayName, isEstimated }
         ))}
       </div>
 
-      {/* Full pitch — horizontal on desktop, vertical on mobile */}
-      <div className="lineup-pitch-container" style={{ border: "1px solid #1E2D47", borderRadius: "14px", overflow: "hidden", background: "#0F172A" }}>
+      {/* Full pitch */}
+      <div className="lineup-pitch" style={{ border: "1px solid #1E2D47", borderRadius: "14px", overflow: "hidden", background: "#0F172A" }}>
         {lineups.home && lineups.home.startXI.length > 0 && (
-          <div className="lineup-pitch-half">
+          <div className="lineup-half">
             <HalfPitch players={lineups.home.startXI} formation={lineups.home.formation} teamName={homeName} />
           </div>
         )}
         {lineups.away && lineups.away.startXI.length > 0 && (
-          <div className="lineup-pitch-half">
+          <div className="lineup-half">
             <HalfPitch players={lineups.away.startXI} formation={lineups.away.formation} teamName={awayName} flip />
           </div>
         )}
       </div>
 
-      {/* Subs — side by side on desktop */}
-      <div className="lineup-subs-row" style={{ marginTop: "8px" }}>
+      {/* Subs */}
+      <div className="lineup-subs" style={{ marginTop: "8px" }}>
         {lineups.home && <SubsList subs={lineups.home.subs} label={homeName} />}
         {lineups.away && <SubsList subs={lineups.away.subs} label={awayName} />}
       </div>

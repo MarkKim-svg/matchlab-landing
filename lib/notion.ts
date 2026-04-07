@@ -201,18 +201,34 @@ export async function getPredictionsByDate(dateStr: string): Promise<MatchPredic
   return predictions;
 }
 
-export async function getPredictionsByLeague(league: string, limit = 20): Promise<MatchPrediction[]> {
-  const response = await notion.databases.query({
-    database_id: DATABASE_ID,
-    page_size: limit,
-    filter: {
-      property: "리그",
-      select: { equals: league },
-    },
-    sorts: [{ property: "날짜", direction: "descending" }],
-  });
+export async function getPredictionsByLeague(
+  league: string,
+  opts?: { from?: string; to?: string; limit?: number }
+): Promise<MatchPrediction[]> {
+  const limit = opts?.limit ?? 100;
+  const filters: any[] = [{ property: "리그", select: { equals: league } }];
 
-  return response.results
+  if (opts?.from) filters.push({ property: "날짜", date: { on_or_after: opts.from } });
+  if (opts?.to) filters.push({ property: "날짜", date: { on_or_before: opts.to } });
+
+  const results: any[] = [];
+  let hasMore = true;
+  let cursor: string | undefined;
+
+  while (hasMore && results.length < limit) {
+    const response = await notion.databases.query({
+      database_id: DATABASE_ID,
+      start_cursor: cursor,
+      page_size: Math.min(100, limit - results.length),
+      filter: { and: filters },
+      sorts: [{ property: "날짜", direction: "descending" }],
+    });
+    results.push(...response.results);
+    hasMore = response.has_more;
+    cursor = response.next_cursor ?? undefined;
+  }
+
+  return results
     .map(parseMatchPrediction)
     .filter((p): p is MatchPrediction => p !== null);
 }

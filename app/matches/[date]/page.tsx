@@ -165,9 +165,12 @@ export default function MatchesDatePage() {
 
   // League tab state
   const [leagueTab, setLeagueTab] = useState("epl");
+  const [leagueMonth, setLeagueMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  });
   const [leagueMatches, setLeagueMatches] = useState<MatchPrediction[]>([]);
   const [leagueLoading, setLeagueLoading] = useState(false);
-  const [leagueShowCount, setLeagueShowCount] = useState(20);
 
   // Auth
   useEffect(() => {
@@ -202,16 +205,16 @@ export default function MatchesDatePage() {
   useEffect(() => { fetchData(); }, [fetchData]);
   useEffect(() => { setSelectedLeague("전체"); }, [dateStr]);
 
-  // Fetch league predictions
+  // Fetch league predictions (with month)
   useEffect(() => {
     if (viewTab !== "league") return;
     setLeagueLoading(true);
-    fetch(`/api/predictions/league/${leagueTab}`)
+    fetch(`/api/predictions/league/${leagueTab}?month=${leagueMonth}`)
       .then(r => r.json())
       .then(d => setLeagueMatches(d.matches ?? []))
       .catch(() => setLeagueMatches([]))
       .finally(() => setLeagueLoading(false));
-  }, [viewTab, leagueTab]);
+  }, [viewTab, leagueTab, leagueMonth]);
 
   const isPro = userPlan === "pro";
 
@@ -342,12 +345,12 @@ export default function MatchesDatePage() {
         {viewTab === "league" && (
           <>
             {/* League selector */}
-            <div style={{ overflowX: "auto", marginBottom: "20px" }} className="scrollbar-hide">
+            <div style={{ overflowX: "auto", marginBottom: "16px" }} className="scrollbar-hide">
               <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap" }}>
                 {LEAGUE_TABS.map(l => {
                   const config = LEAGUE_CONFIG[l.name];
                   return (
-                    <button key={l.key} onClick={() => { setLeagueTab(l.key); setLeagueShowCount(20); }} className="cursor-pointer" style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "6px", borderRadius: "12px", padding: "8px 14px", fontSize: "13px", fontWeight: 600, background: leagueTab === l.key ? "rgba(16,185,129,0.15)" : "#1E293B", color: leagueTab === l.key ? "#34D399" : "#8494A7", border: leagueTab === l.key ? "1px solid rgba(16,185,129,0.4)" : "1px solid #334155" }}>
+                    <button key={l.key} onClick={() => setLeagueTab(l.key)} className="cursor-pointer" style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "6px", borderRadius: "12px", padding: "8px 14px", fontSize: "13px", fontWeight: 600, background: leagueTab === l.key ? "rgba(16,185,129,0.15)" : "#1E293B", color: leagueTab === l.key ? "#34D399" : "#8494A7", border: leagueTab === l.key ? "1px solid rgba(16,185,129,0.4)" : "1px solid #334155" }}>
                       {config && <img src={config.logo} alt={l.name} width={18} height={18} className="rounded-full bg-white p-0.5 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
                       {l.short}
                     </button>
@@ -356,31 +359,82 @@ export default function MatchesDatePage() {
               </div>
             </div>
 
-            {/* League matches */}
+            {/* Month nav */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", marginBottom: "24px" }}>
+              <button
+                onClick={() => {
+                  const [y, m] = leagueMonth.split("-").map(Number);
+                  const prev = new Date(y, m - 2, 1);
+                  setLeagueMonth(`${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}`);
+                }}
+                className="cursor-pointer"
+                style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "8px", padding: "6px 12px", color: "#8494A7", fontSize: "14px" }}
+              >
+                ◀
+              </button>
+              <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>
+                {(() => { const [y, m] = leagueMonth.split("-"); return `${y}년 ${parseInt(m)}월`; })()}
+              </span>
+              <button
+                onClick={() => {
+                  const [y, m] = leagueMonth.split("-").map(Number);
+                  const next = new Date(y, m, 1);
+                  setLeagueMonth(`${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`);
+                }}
+                className="cursor-pointer"
+                style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "8px", padding: "6px 12px", color: "#8494A7", fontSize: "14px" }}
+              >
+                ▶
+              </button>
+            </div>
+
+            {/* League matches grouped by date */}
             {leagueLoading ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>
             ) : leagueMatches.length === 0 ? (
               <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
                 <p className="mb-2 text-3xl">⚽</p>
-                <p className="text-lg text-slate-300">이 리그의 최근 경기가 없습니다</p>
+                <p className="text-lg text-slate-300">이 달에 해당 리그의 경기가 없습니다</p>
               </div>
             ) : (
-              <>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {leagueMatches.slice(0, leagueShowCount).map(m => (
-                    <MatchCard key={m.id} m={m} locked={m.isProOnly && !isPro} isPro={isPro} showDate />
-                  ))}
-                </div>
-                {leagueMatches.length > leagueShowCount && (
-                  <button
-                    onClick={() => setLeagueShowCount(c => c + 20)}
-                    className="cursor-pointer"
-                    style={{ display: "block", width: "100%", marginTop: "16px", padding: "12px", borderRadius: "12px", background: "#1E293B", border: "1px solid #334155", color: "#10B981", fontSize: "14px", fontWeight: 600 }}
-                  >
-                    더보기 ({leagueMatches.length - leagueShowCount}경기 더)
-                  </button>
-                )}
-              </>
+              (() => {
+                // Group by date
+                const byDate = new Map<string, MatchPrediction[]>();
+                for (const m of leagueMatches) {
+                  const list = byDate.get(m.date) ?? [];
+                  list.push(m);
+                  byDate.set(m.date, list);
+                }
+                const sortedDates = Array.from(byDate.keys()).sort((a, b) => b.localeCompare(a));
+
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {sortedDates.map(date => {
+                      const dayMatches = byDate.get(date)!;
+                      const d = new Date(date + "T00:00:00");
+                      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+                      const dayLabel = `${parseInt(date.split("-")[1])}월 ${parseInt(date.split("-")[2])}일 (${dayNames[d.getDay()]})`;
+
+                      return (
+                        <div key={date}>
+                          {/* Date header */}
+                          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                            <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF" }}>{dayLabel}</span>
+                            <div style={{ flex: 1, height: "1px", background: "#1E2D47" }} />
+                            <span style={{ fontSize: "12px", color: "#566378" }}>{dayMatches.length}경기</span>
+                          </div>
+                          {/* Match cards */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            {dayMatches.map(m => (
+                              <MatchCard key={m.id} m={m} locked={m.isProOnly && !isPro} isPro={isPro} />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()
             )}
           </>
         )}

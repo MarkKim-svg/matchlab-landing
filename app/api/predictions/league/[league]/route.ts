@@ -13,14 +13,26 @@ const LEAGUE_MAP: Record<string, string> = {
 };
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ league: string }> }
 ) {
   try {
     const { league } = await params;
     const leagueName = LEAGUE_MAP[league.toLowerCase()] ?? league;
 
-    const matches = await getPredictionsByLeague(leagueName, 20);
+    // month param: "2026-04" format
+    const month = request.nextUrl.searchParams.get("month");
+    let from: string | undefined;
+    let to: string | undefined;
+
+    if (month && /^\d{4}-\d{2}$/.test(month)) {
+      from = `${month}-01`;
+      const [y, m] = month.split("-").map(Number);
+      const lastDay = new Date(y, m, 0).getDate();
+      to = `${month}-${String(lastDay).padStart(2, "0")}`;
+    }
+
+    const matches = await getPredictionsByLeague(leagueName, { from, to, limit: 100 });
 
     return NextResponse.json({
       matches,

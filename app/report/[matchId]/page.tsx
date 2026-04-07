@@ -360,7 +360,7 @@ export default function ReportPage() {
           )}
         </div>
 
-        {/* ---- Structured data from API-Football (Free) ---- */}
+        {/* ---- Structured data from API-Football (Free/Pro 공통) ---- */}
         {detailLoading ? (
           <MatchDetailSkeleton />
         ) : matchDetail && (

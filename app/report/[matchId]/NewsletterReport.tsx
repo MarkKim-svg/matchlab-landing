@@ -292,62 +292,54 @@ export default function NewsletterReport({
       <AuthTabBar />
       <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 pb-24 md:pb-8 space-y-5">
         {/* Back + date */}
-        <div className="flex items-center justify-between">
-          <Link
-            href={`/matches/${match.date}`}
-            className="text-sm transition"
-            style={{ color: "#8494A7" }}
-          >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href={`/matches/${match.date}`} style={{ fontSize: "14px", color: "#8494A7" }} className="hover:text-emerald-400 transition">
             ← 목록으로
           </Link>
-          <span className="text-sm" style={{ color: "#566378" }}>
-            {formatKoreanDate(match.date)}
-          </span>
+          <span style={{ fontSize: "13px", color: "#566378" }}>{formatKoreanDate(match.date)}</span>
         </div>
 
-        {/* Header card — league + teams + confidence */}
-        <header
-          className="rounded-xl py-8 px-6 text-center"
-          style={{ background: "#1E293B", border: "1px solid #334155" }}
-        >
-          <div className="mb-5 flex justify-center">
+        {/* Header card */}
+        <header style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "32px 24px", textAlign: "center" }}>
+          {/* League */}
+          <div style={{ marginBottom: "20px", display: "flex", justifyContent: "center" }}>
             <LeagueBadge league={match.league} />
           </div>
-          <div className="flex items-center justify-center gap-6 mb-5">
-            <div className="flex flex-col items-center gap-2">
-              <TeamLogo teamId={match.homeTeamId} teamName={home} size={64} />
-              <span className="text-xl md:text-2xl font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
+
+          {/* Teams */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <TeamLogo teamId={match.homeTeamId} teamName={home} size={72} />
+              <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
             </div>
-            <span className="text-lg font-bold" style={{ color: "#10B981" }}>VS</span>
-            <div className="flex flex-col items-center gap-2">
-              <TeamLogo teamId={match.awayTeamId} teamName={away} size={64} />
-              <span className="text-xl md:text-2xl font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              {match.result ? (
+                <span style={{ fontSize: "28px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
+              ) : (
+                <span style={{ fontSize: "18px", fontWeight: 700, color: "#10B981" }}>VS</span>
+              )}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <TeamLogo teamId={match.awayTeamId} teamName={away} size={72} />
+              <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
             </div>
           </div>
 
-          {/* Confidence + prediction badges */}
-          <div className="flex items-center justify-center gap-2 flex-wrap">
+          {/* Confidence + prediction */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", flexWrap: "wrap" }}>
             {match.confidenceLabel && (
-              <span className="text-[13px]" style={{ color: "#d4d4d4" }}>
-                {match.confidenceLabel}
-              </span>
+              <span style={{ fontSize: "14px", color: "#d4d4d4" }}>{match.confidenceLabel}</span>
             )}
             {match.prediction && (
-              <span
-                className="inline-block rounded-lg px-3 py-1 text-[13px] font-bold"
-                style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34d399" }}
-              >
+              <span style={{ background: "rgba(16,185,129,0.15)", color: "#34d399", borderRadius: "8px", padding: "4px 12px", fontSize: "13px", fontWeight: 700 }}>
                 {match.prediction}
               </span>
             )}
           </div>
 
           {(match.isCorrect === "적중" || match.isCorrect === "미적중") && (
-            <div className="mt-3 flex items-center justify-center gap-2">
+            <div style={{ marginTop: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
               <ResultBadge isCorrect={match.isCorrect} />
-              {match.result && (
-                <span className="text-sm" style={{ color: "#8494A7" }}>({match.result})</span>
-              )}
             </div>
           )}
         </header>

@@ -310,46 +310,53 @@ export default function ReportPage() {
       <AuthTabBar />
       <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 pb-24 md:pb-8 space-y-5">
         {/* ---- 1. back + date ---- */}
-        <div className="flex items-center justify-between">
-          <Link
-            href={`/matches/${match.date}`}
-            className="text-sm text-slate-400 hover:text-emerald-400 transition"
-          >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href={`/matches/${match.date}`} style={{ fontSize: "14px", color: "#8494A7" }} className="hover:text-emerald-400 transition">
             ← 목록으로
           </Link>
-          <span className="text-sm text-slate-500">{formatKoreanDate(match.date)}</span>
+          <span style={{ fontSize: "13px", color: "#566378" }}>{formatKoreanDate(match.date)}</span>
         </div>
 
-        {/* ---- 2. match header (always public) ---- */}
-        <div className="rounded-xl border border-[#334155] bg-[#1E293B] py-8 px-5 text-center">
-          {/* league */}
-          <div className="mb-5 flex justify-center">
+        {/* ---- 2. match header ---- */}
+        <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "32px 24px", textAlign: "center" }}>
+          {/* League */}
+          <div style={{ marginBottom: "20px", display: "flex", justifyContent: "center" }}>
             <LeagueBadge league={match.league} />
           </div>
 
-          {/* teams */}
-          <div className="flex items-center justify-center gap-6 mb-5">
-            <div className="flex flex-col items-center gap-2">
-              <TeamLogo teamId={match.homeTeamId} teamName={home} size={64} />
-              <span className="text-xl md:text-2xl font-bold text-white">{home}</span>
+          {/* Teams */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <TeamLogo teamId={match.homeTeamId} teamName={home} size={72} />
+              <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
             </div>
-            <span className="text-lg font-bold text-emerald-500">VS</span>
-            <div className="flex flex-col items-center gap-2">
-              <TeamLogo teamId={match.awayTeamId} teamName={away} size={64} />
-              <span className="text-xl md:text-2xl font-bold text-white">{away}</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              {match.result ? (
+                <span style={{ fontSize: "28px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
+              ) : (
+                <span style={{ fontSize: "18px", fontWeight: 700, color: "#10B981" }}>VS</span>
+              )}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <TeamLogo teamId={match.awayTeamId} teamName={away} size={72} />
+              <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
             </div>
           </div>
 
-          {/* confidence */}
-          <p className="text-lg mb-2">{match.confidenceLabel}</p>
+          {/* Confidence + prediction */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "14px", color: "#d4d4d4" }}>{match.confidenceLabel}</span>
+            {match.prediction && (
+              <span style={{ background: "rgba(16,185,129,0.15)", color: "#34d399", borderRadius: "8px", padding: "4px 12px", fontSize: "13px", fontWeight: 700 }}>
+                {match.prediction}
+              </span>
+            )}
+          </div>
 
-          {/* result */}
+          {/* Result badge */}
           {(match.isCorrect === "적중" || match.isCorrect === "미적중") && (
-            <div className="flex items-center justify-center gap-2">
+            <div style={{ marginTop: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
               <ResultBadge isCorrect={match.isCorrect} />
-              {match.result && (
-                <span className="text-sm text-slate-400">({match.result})</span>
-              )}
             </div>
           )}
         </div>

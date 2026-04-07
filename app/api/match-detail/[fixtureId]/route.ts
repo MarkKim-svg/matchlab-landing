@@ -66,7 +66,7 @@ export async function GET(
       leagueId ? apiFetch(`/teams/statistics?team=${awayTeamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       leagueId ? apiFetch(`/standings?league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       apiFetch(`/injuries?fixture=${fixtureId}`, apiKey),
-      apiFetch(`/predictions?fixture=${fixtureId}`, apiKey),
+      apiFetch(`/fixtures/lineups?fixture=${fixtureId}`, apiKey),
     ]);
 
     // 3. Parse form
@@ -171,32 +171,38 @@ export async function GET(
     }
     const round = fixture.league?.round ?? "";
 
-    // 9. Lineups from predictions
+    // 9. Lineups from /fixtures/lineups
     let lineups = null;
     try {
-      const pred = Array.isArray(predictionsData) ? predictionsData[0] : predictionsData;
-      if (pred?.teams) {
-        const parseTeam = (team: any) => {
-          if (!team) return null;
-          const startXI = (team.players?.startXI ?? []).map((p: any) => ({
-            name: p.player?.name ?? "",
-            number: p.player?.number ?? 0,
-            pos: p.player?.pos ?? "",
+      // predictionsData is actually lineups array: [{team, formation, startXI, substitutes}, ...]
+      const lineupsArr = Array.isArray(predictionsData) ? predictionsData : [];
+      if (lineupsArr.length >= 1) {
+        const parseTeamLineup = (entry: any) => {
+          if (!entry) return null;
+          const startXI = (entry.startXI ?? []).map((item: any) => ({
+            name: item.player?.name ?? "",
+            number: item.player?.number ?? 0,
+            pos: item.player?.pos ?? "",
           }));
-          const subs = (team.players?.substitutes ?? []).map((p: any) => ({
-            name: p.player?.name ?? "",
-            number: p.player?.number ?? 0,
-            pos: p.player?.pos ?? "",
+          const subs = (entry.substitutes ?? []).map((item: any) => ({
+            name: item.player?.name ?? "",
+            number: item.player?.number ?? 0,
+            pos: item.player?.pos ?? "",
           }));
           return {
-            formation: team.formation ?? "",
+            formation: entry.formation ?? "",
             startXI,
             subs,
           };
         };
-        const home = parseTeam(pred.teams.home);
-        const away = parseTeam(pred.teams.away);
-        if (home?.startXI.length > 0 || away?.startXI.length > 0) {
+
+        // Match home/away by team ID
+        const homeEntry = lineupsArr.find((e: any) => e.team?.id === homeTeamId) ?? lineupsArr[0];
+        const awayEntry = lineupsArr.find((e: any) => e.team?.id === awayTeamId) ?? lineupsArr[1];
+
+        const home = parseTeamLineup(homeEntry);
+        const away = parseTeamLineup(awayEntry);
+        if ((home?.startXI.length ?? 0) > 0 || (away?.startXI.length ?? 0) > 0) {
           lineups = { home, away };
         }
       }

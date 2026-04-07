@@ -9,6 +9,9 @@ const LEAGUES = [
   { id: "135", name: "세리에A" },
   { id: "78", name: "분데스" },
   { id: "61", name: "리그1" },
+  { id: "2", name: "UCL" },
+  { id: "3", name: "UEL" },
+  { id: "848", name: "UECL" },
 ];
 
 interface Standing {

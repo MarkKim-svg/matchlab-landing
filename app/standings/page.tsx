@@ -3,13 +3,17 @@
 import { useEffect, useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
+import TournamentBracket from "@/components/TournamentBracket";
 
 const LEAGUES = [
-  { id: "39", name: "프리미어리그", logo: "https://media.api-sports.io/football/leagues/39.png" },
-  { id: "140", name: "라리가", logo: "https://media.api-sports.io/football/leagues/140.png" },
-  { id: "135", name: "세리에A", logo: "https://media.api-sports.io/football/leagues/135.png" },
-  { id: "78", name: "분데스리가", logo: "https://media.api-sports.io/football/leagues/78.png" },
-  { id: "61", name: "리그1", logo: "https://media.api-sports.io/football/leagues/61.png" },
+  { id: "39", name: "프리미어리그", logo: "https://media.api-sports.io/football/leagues/39.png", isCup: false },
+  { id: "140", name: "라리가", logo: "https://media.api-sports.io/football/leagues/140.png", isCup: false },
+  { id: "135", name: "세리에A", logo: "https://media.api-sports.io/football/leagues/135.png", isCup: false },
+  { id: "78", name: "분데스리가", logo: "https://media.api-sports.io/football/leagues/78.png", isCup: false },
+  { id: "61", name: "리그1", logo: "https://media.api-sports.io/football/leagues/61.png", isCup: false },
+  { id: "2", name: "UCL", logo: "https://media.api-sports.io/football/leagues/2.png", isCup: true },
+  { id: "3", name: "UEL", logo: "https://media.api-sports.io/football/leagues/3.png", isCup: true },
+  { id: "848", name: "UECL", logo: "https://media.api-sports.io/football/leagues/848.png", isCup: true },
 ];
 
 interface Standing {
@@ -103,6 +107,7 @@ export default function StandingsPage() {
 
   const displayScorers = showAll ? sortedScorers : sortedScorers.slice(0, 10);
   const top4 = sortedScorers.slice(0, 4);
+  const selectedLeague = LEAGUES.find(l => l.id === leagueId);
 
   return (
     <div className="min-h-screen" style={{ background: "#0F172A" }}>
@@ -147,7 +152,41 @@ export default function StandingsPage() {
           </select>
         </div>
 
-        {/* ── Section 1: Team Standings ── */}
+        {/* ── Cup: Tournament Bracket ── */}
+        {selectedLeague?.isCup && (
+          <>
+            <h2 className="text-[15px] font-bold text-bg-100 mb-3 flex items-center gap-2">
+              <span>🏆</span> 토너먼트 대진표
+            </h2>
+            <div className="bg-bg-card rounded-[14px] border border-bg-border p-4 mb-6">
+              <TournamentBracket leagueId={leagueId} season={season} />
+            </div>
+
+            {/* Collapsible league stage standings */}
+            <details className="mb-8">
+              <summary className="cursor-pointer text-[14px] font-semibold text-text-secondary hover:text-text-primary transition-colors mb-3">
+                ▶ 리그 스테이지 순위
+              </summary>
+              <div className="bg-bg-card rounded-[14px] border border-bg-border overflow-hidden">
+                {standingsLoading ? (
+                  <div className="p-6 space-y-3 animate-pulse">
+                    {Array.from({ length: 6 }, (_, i) => (
+                      <div key={i} className="h-10 rounded-lg" style={{ background: "#1A2332" }} />
+                    ))}
+                  </div>
+                ) : standings.length === 0 ? (
+                  <div className="p-12 text-center text-text-muted text-[14px]">시즌 준비 중입니다</div>
+                ) : (
+                  <StandingsTable standings={standings} />
+                )}
+              </div>
+            </details>
+          </>
+        )}
+
+        {/* ── League: Team Standings ── */}
+        {!selectedLeague?.isCup && (
+        <>
         <h2 className="text-[15px] font-bold text-bg-100 mb-3 flex items-center gap-2">
           <span>🏆</span> 팀 순위
         </h2>
@@ -164,6 +203,8 @@ export default function StandingsPage() {
             <StandingsTable standings={standings} />
           )}
         </div>
+        </>
+        )}
 
         {/* ── Section 2: Player Rankings ── */}
         <h2 className="text-[15px] font-bold text-bg-100 mb-3 flex items-center gap-2">

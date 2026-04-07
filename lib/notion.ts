@@ -201,6 +201,22 @@ export async function getPredictionsByDate(dateStr: string): Promise<MatchPredic
   return predictions;
 }
 
+export async function getPredictionsByLeague(league: string, limit = 20): Promise<MatchPrediction[]> {
+  const response = await notion.databases.query({
+    database_id: DATABASE_ID,
+    page_size: limit,
+    filter: {
+      property: "리그",
+      select: { equals: league },
+    },
+    sorts: [{ property: "날짜", direction: "descending" }],
+  });
+
+  return response.results
+    .map(parseMatchPrediction)
+    .filter((p): p is MatchPrediction => p !== null);
+}
+
 export async function getPredictionById(pageId: string): Promise<MatchPrediction | null> {
   const page = await notion.pages.retrieve({ page_id: pageId });
   return parseMatchPrediction(page);

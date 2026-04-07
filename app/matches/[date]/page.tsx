@@ -10,7 +10,7 @@ import AuthTabBar from "@/components/AuthTabBar";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, getKSTToday, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import type { MatchPrediction } from "@/lib/notion";
 
-// --------------- helpers ---------------
+// ── helpers ──
 
 function resolveDate(param: string): string {
   return param === "today" ? getKSTToday() : param;
@@ -33,9 +33,7 @@ function getBestEnsemble(p: MatchPrediction): { label: string; pct: string } {
   return { label: "무승부", pct: draw.display };
 }
 
-// --------------- confidence sections ---------------
-
-const CONF_SECTIONS: { stars: number; label: string; sub: string }[] = [
+const CONF_SECTIONS = [
   { stars: 5, label: "⭐⭐⭐⭐⭐", sub: "최고 확신" },
   { stars: 4, label: "⭐⭐⭐⭐", sub: "높은 확신" },
   { stars: 3, label: "⭐⭐⭐", sub: "보통" },
@@ -43,25 +41,110 @@ const CONF_SECTIONS: { stars: number; label: string; sub: string }[] = [
   { stars: 1, label: "⭐", sub: "최저" },
 ];
 
-// --------------- skeleton ---------------
+const LEAGUE_TABS = [
+  { key: "epl", name: "프리미어리그", short: "EPL" },
+  { key: "laliga", name: "라리가", short: "라리가" },
+  { key: "seriea", name: "세리에A", short: "세리에A" },
+  { key: "bundesliga", name: "분데스리가", short: "분데스" },
+  { key: "ligue1", name: "리그1", short: "리그1" },
+  { key: "ucl", name: "챔피언스리그", short: "UCL" },
+];
+
+// ── Match Card Component ──
+
+function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked: boolean; isPro: boolean; showDate?: boolean }) {
+  const [home, away] = splitTeams(m.match);
+  const best = getBestEnsemble(m);
+  const leagueColor = LEAGUE_CONFIG[m.league]?.color ?? "#334155";
+  const hasResult = m.result && m.result !== "";
+  const isJudged = m.isCorrect === "적중" || m.isCorrect === "미적중";
+
+  const cardStyle = {
+    borderLeftColor: leagueColor,
+    backgroundImage: `linear-gradient(to bottom, ${leagueColor}18, transparent 6px)`,
+  };
+
+  const inner = (
+    <div
+      className="rounded-xl border border-[#334155] border-l-4 p-5 transition hover:border-emerald-500/40"
+      style={{ background: "#1E293B", ...cardStyle }}
+    >
+      {/* Row 1: League + confidence */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+        <LeagueBadge league={m.league} />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {showDate && <span style={{ fontSize: "11px", color: "#566378" }}>{m.date}</span>}
+          <span style={{ fontSize: "12px", color: "#8494A7" }}>{m.confidenceLabel}</span>
+        </div>
+      </div>
+
+      {/* Row 2: Teams + Score/VS */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{home}</span>
+          <TeamLogo teamId={m.homeTeamId} teamName={home} size={36} />
+        </div>
+        {hasResult ? (
+          <span style={{ fontSize: "20px", fontWeight: 700, color: "#E1E7EF", padding: "0 8px", fontFamily: "'JetBrains Mono',monospace" }}>
+            {m.result}
+          </span>
+        ) : (
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#10B981", padding: "0 8px" }}>VS</span>
+        )}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
+          <TeamLogo teamId={m.awayTeamId} teamName={away} size={36} />
+          <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+        </div>
+      </div>
+
+      {/* Row 3: Prediction + Result badge */}
+      {locked ? (
+        <div className="relative" style={{ minHeight: "40px" }}>
+          <div className="pointer-events-none select-none" style={{ filter: "blur(8px)", textAlign: "center" }}>
+            <span style={{ fontSize: "13px", color: "#10B981" }}>{best.label} {best.pct}</span>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); alert("결제 기능 준비 중입니다. 곧 오픈 예정!"); }}
+              className="cursor-pointer"
+              style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "white", fontWeight: 700, fontSize: "12px", padding: "4px 12px", borderRadius: "8px", border: "none" }}
+            >
+              🔒 Pro 전용
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <span style={{ fontSize: "13px", fontWeight: 600, color: "#10B981" }}>
+            AI: {best.label} {best.pct}
+          </span>
+          {isJudged && <ResultBadge isCorrect={m.isCorrect} />}
+        </div>
+      )}
+    </div>
+  );
+
+  if (locked) return <div>{inner}</div>;
+  return <Link href={`/report/${m.id}`}>{inner}</Link>;
+}
+
+// ── Skeleton ──
 
 function SkeletonCard() {
   return (
     <div className="animate-pulse rounded-xl border border-[#334155] bg-[#1E293B] p-5">
       <div className="mb-3 h-5 w-24 rounded-full bg-slate-700" />
       <div className="mb-3 flex items-center justify-center gap-4">
-        <div className="h-8 w-8 rounded-full bg-slate-700" />
+        <div className="h-9 w-9 rounded-full bg-slate-700" />
         <div className="h-5 w-32 rounded bg-slate-700" />
-        <div className="h-8 w-8 rounded-full bg-slate-700" />
+        <div className="h-9 w-9 rounded-full bg-slate-700" />
       </div>
-      <div className="flex justify-center">
-        <div className="h-4 w-20 rounded bg-slate-700" />
-      </div>
+      <div className="flex justify-center"><div className="h-4 w-24 rounded bg-slate-700" /></div>
     </div>
   );
 }
 
-// =============== main page ===============
+// =============== Main Page ===============
 
 export default function MatchesDatePage() {
   const params = useParams<{ date: string }>();
@@ -70,6 +153,7 @@ export default function MatchesDatePage() {
   const dateStr = resolveDate(params.date);
   const isToday = dateStr === getKSTToday();
 
+  const [viewTab, setViewTab] = useState<"date" | "league">("date");
   const [matches, setMatches] = useState<MatchPrediction[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [proCount, setProCount] = useState(0);
@@ -79,33 +163,31 @@ export default function MatchesDatePage() {
   const [selectedLeague, setSelectedLeague] = useState<string>("전체");
   const dateInputRef = useRef<HTMLInputElement>(null);
 
-  // auth check
+  // League tab state
+  const [leagueTab, setLeagueTab] = useState("epl");
+  const [leagueMatches, setLeagueMatches] = useState<MatchPrediction[]>([]);
+  const [leagueLoading, setLeagueLoading] = useState(false);
+  const [leagueShowCount, setLeagueShowCount] = useState(20);
+
+  // Auth
   useEffect(() => {
     async function checkAuth() {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("plan")
-        .eq("id", user.id)
-        .single();
-
+      const { data } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
       if (data?.plan) setUserPlan(data.plan);
     }
     checkAuth();
   }, []);
 
-  // fetch predictions
+  // Fetch date predictions
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch(`/api/predictions/${dateStr}`);
-      if (!res.ok) throw new Error("Failed to fetch");
+      if (!res.ok) throw new Error("Failed");
       const json = await res.json();
       setMatches(json.matches ?? []);
       setTotalCount(json.totalCount ?? 0);
@@ -117,296 +199,191 @@ export default function MatchesDatePage() {
     }
   }, [dateStr]);
 
+  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { setSelectedLeague("전체"); }, [dateStr]);
+
+  // Fetch league predictions
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (viewTab !== "league") return;
+    setLeagueLoading(true);
+    fetch(`/api/predictions/league/${leagueTab}`)
+      .then(r => r.json())
+      .then(d => setLeagueMatches(d.matches ?? []))
+      .catch(() => setLeagueMatches([]))
+      .finally(() => setLeagueLoading(false));
+  }, [viewTab, leagueTab]);
 
   const isPro = userPlan === "pro";
 
-  // reset league filter when date changes
-  useEffect(() => {
-    setSelectedLeague("전체");
-  }, [dateStr]);
-
-  // unique leagues for filter
-  const leagues = useMemo(() => {
-    const set = new Set(matches.map((m) => m.league).filter(Boolean));
-    return Array.from(set);
-  }, [matches]);
-
-  // filtered matches
-  const filteredMatches = useMemo(() => {
-    if (selectedLeague === "전체") return matches;
-    return matches.filter((m) => m.league === selectedLeague);
-  }, [matches, selectedLeague]);
-
-  // nav
+  // Date tab helpers
+  const leagues = useMemo(() => Array.from(new Set(matches.map(m => m.league).filter(Boolean))), [matches]);
+  const filteredMatches = useMemo(() => selectedLeague === "전체" ? matches : matches.filter(m => m.league === selectedLeague), [matches, selectedLeague]);
   const goDate = (d: string) => router.push(`/matches/${d}`);
+  const grouped = CONF_SECTIONS.map(sec => ({ ...sec, matches: filteredMatches.filter(m => m.confidence === sec.stars) })).filter(g => g.matches.length > 0);
 
-  // group by confidence
-  const grouped = CONF_SECTIONS.map((sec) => ({
-    ...sec,
-    matches: filteredMatches.filter((m) => m.confidence === sec.stars),
-  })).filter((g) => g.matches.length > 0);
+  // Date tab accuracy summary
+  const judged = filteredMatches.filter(m => m.isCorrect === "적중" || m.isCorrect === "미적중");
+  const correct = judged.filter(m => m.isCorrect === "적중").length;
 
   return (
     <main className="min-h-screen bg-[#0F172A] text-white">
       <Navbar />
       <AuthTabBar />
       <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 pb-24 md:pb-8">
-        {/* ---- header ---- */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
+
+        {/* ── View tabs ── */}
+        <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+          {([
+            { key: "date" as const, label: "📅 날짜별" },
+            { key: "league" as const, label: "🏆 리그별" },
+          ]).map(t => (
             <button
-              onClick={() => goDate(shiftDate(dateStr, -1))}
-              className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white"
+              key={t.key}
+              onClick={() => setViewTab(t.key)}
+              className="cursor-pointer"
+              style={{
+                padding: "8px 16px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, border: "none",
+                background: viewTab === t.key ? "#10B981" : "#1E293B",
+                color: viewTab === t.key ? "white" : "#8494A7",
+              }}
             >
-              ← 이전
+              {t.label}
             </button>
-
-            <div className="text-center">
-              <h1 className="text-lg font-bold sm:text-xl inline-flex items-center gap-1.5 relative">
-                <span
-                  className="cursor-pointer hover:text-emerald-400 transition-colors"
-                  onClick={() => dateInputRef.current?.showPicker()}
-                >
-                  {formatKoreanDate(dateStr)}
-                </span>
-                <input
-                  ref={dateInputRef}
-                  type="date"
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  value={dateStr}
-                  onChange={(e) => {
-                    if (e.target.value) goDate(e.target.value);
-                  }}
-                />
-              </h1>
-              {!isToday && (
-                <button
-                  onClick={() => goDate(getKSTToday())}
-                  className="mt-1 block mx-auto text-xs text-emerald-400 hover:underline"
-                >
-                  오늘로 이동
-                </button>
-              )}
-            </div>
-
-            <button
-              onClick={() => goDate(shiftDate(dateStr, 1))}
-              className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white"
-            >
-              다음 →
-            </button>
-          </div>
-
-          {!loading && !error && (
-            <p className="mt-3 text-center text-sm text-slate-400">
-              총 <span className="text-white font-semibold">{totalCount}</span>경기
-              {proCount > 0 && (
-                <>
-                  {" · "}
-                  <span className="text-amber-400 font-semibold">Pro 전용 {proCount}</span>경기
-                </>
-              )}
-            </p>
-          )}
+          ))}
         </div>
 
-        {/* ---- league filter ---- */}
-        {!loading && !error && leagues.length > 1 && (
-          <div className="mb-6 -mx-4 px-4 overflow-x-auto">
-            <div className="flex gap-2 flex-nowrap pb-1">
-              <button
-                onClick={() => setSelectedLeague("전체")}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                  selectedLeague === "전체"
-                    ? "bg-emerald-600 text-white"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                }`}
-              >
-                전체
-              </button>
-              {leagues.map((league) => {
-                const config = LEAGUE_CONFIG[league];
-                return (
-                  <button
-                    key={league}
-                    onClick={() => setSelectedLeague(league)}
-                    className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                      selectedLeague === league
-                        ? "bg-emerald-600 text-white"
-                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                    }`}
-                  >
-                    {config && (
-                      <img
-                        src={config.logo}
-                        alt={league}
-                        width={16}
-                        height={16}
-                        className="rounded-full bg-white p-0.5 object-contain"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                      />
-                    )}
-                    {league}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ---- loading ---- */}
-        {loading && (
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        )}
-
-        {/* ---- error ---- */}
-        {error && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
-            <p className="text-red-400">{error}</p>
-            <button
-              onClick={fetchData}
-              className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-            >
-              다시 시도
-            </button>
-          </div>
-        )}
-
-        {/* ---- empty ---- */}
-        {!loading && !error && matches.length === 0 && (
-          <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
-            <p className="mb-2 text-3xl">⚽</p>
-            <p className="text-lg text-slate-300">이 날짜에 분석된 경기가 없습니다</p>
-            <button
-              onClick={() => goDate(getKSTToday())}
-              className="mt-4 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-500"
-            >
-              다른 날짜 보기
-            </button>
-          </div>
-        )}
-
-        {/* ---- match groups ---- */}
-        {!loading &&
-          !error &&
-          grouped.map((group) => {
-            const isProSection = group.stars >= 4;
-
-            return (
-              <section key={group.stars} className="mb-8">
-                {/* section header */}
-                <div className="mb-3 flex items-center gap-2">
-                  <h2 className="text-base font-bold">
-                    {group.label}{" "}
-                    <span className="text-sm font-normal text-slate-400">{group.sub}</span>
-                  </h2>
-                  {isProSection && (
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold tracking-wide text-amber-400">
-                      PRO
+        {/* ════════ TAB 1: 날짜별 ════════ */}
+        {viewTab === "date" && (
+          <>
+            {/* Date nav */}
+            <div className="mb-6">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">← 이전</button>
+                <div className="text-center">
+                  <h1 className="text-lg font-bold sm:text-xl inline-flex items-center gap-1.5 relative">
+                    <span className="cursor-pointer hover:text-emerald-400 transition-colors" onClick={() => dateInputRef.current?.showPicker()}>
+                      {formatKoreanDate(dateStr)}
                     </span>
+                    <input ref={dateInputRef} type="date" className="absolute inset-0 opacity-0 cursor-pointer" value={dateStr} onChange={(e) => { if (e.target.value) goDate(e.target.value); }} />
+                  </h1>
+                  {!isToday && (
+                    <button onClick={() => goDate(getKSTToday())} className="mt-1 block mx-auto text-xs text-emerald-400 hover:underline">오늘로 이동</button>
                   )}
                 </div>
+                <button onClick={() => goDate(shiftDate(dateStr, 1))} className="rounded-lg border border-[#334155] bg-[#1E293B] px-3 py-2 text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white">다음 →</button>
+              </div>
 
-                {/* cards */}
-                <div className="space-y-3">
-                  {group.matches.map((m) => {
-                    const locked = m.isProOnly && !isPro;
-                    const [home, away] = splitTeams(m.match);
-                    const best = getBestEnsemble(m);
-                    const leagueColor = LEAGUE_CONFIG[m.league]?.color ?? "#334155";
+              {!loading && !error && (
+                <p className="mt-3 text-center text-sm text-slate-400">
+                  총 <span className="text-white font-semibold">{totalCount}</span>경기
+                  {proCount > 0 && <> · <span className="text-amber-400 font-semibold">Pro {proCount}</span>경기</>}
+                  {judged.length > 0 && (
+                    <> · 적중률 <span className="text-emerald-400 font-semibold">{correct}/{judged.length} ({Math.round((correct / judged.length) * 100)}%)</span></>
+                  )}
+                </p>
+              )}
+            </div>
 
-                    // public header: league badge + teams (always visible)
-                    const cardHeader = (
-                      <>
-                        {/* league badge */}
-                        <div className="mb-3 flex items-center justify-between">
-                          <LeagueBadge league={m.league} />
-                          <span className="text-xs text-slate-500">{m.confidenceLabel}</span>
-                        </div>
-
-                        {/* teams */}
-                        <div className="mb-3 flex items-center justify-center gap-3">
-                          <TeamLogo teamId={m.homeTeamId} teamName={home} size={32} />
-                          <span className="text-base font-semibold text-white sm:text-lg">{home}</span>
-                          <span className="text-sm text-slate-500">vs</span>
-                          <span className="text-base font-semibold text-white sm:text-lg">{away}</span>
-                          <TeamLogo teamId={m.awayTeamId} teamName={away} size={32} />
-                        </div>
-                      </>
-                    );
-
-                    // prediction + result (blurred for locked cards)
-                    const cardDetails = (
-                      <>
-                        <div className="mb-2 text-center">
-                          <span className="text-sm font-medium text-emerald-400">
-                            {best.label}
-                            {best.pct && ` ${best.pct}`}
-                          </span>
-                        </div>
-                        <div className="text-center">
-                          <ResultBadge isCorrect={m.isCorrect} />
-                        </div>
-                      </>
-                    );
-
-                    const cardStyle = {
-                      borderLeftColor: leagueColor,
-                      backgroundImage: `linear-gradient(to bottom, ${leagueColor}18, transparent 6px)`,
-                    };
-
-                    if (locked) {
-                      return (
-                        <a
-                          key={m.id}
-                          href="/#pricing"
-                          className="block"
-                        >
-                          <div
-                            className="overflow-hidden rounded-xl border border-[#334155] border-l-4 bg-[#1E293B] p-5"
-                            style={cardStyle}
-                          >
-                            {cardHeader}
-                            <div className="relative">
-                              <div className="pointer-events-none select-none" style={{ filter: "blur(12px)" }}>
-                                {cardDetails}
-                              </div>
-                              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
-                                <span className="text-2xl">🔒</span>
-                                <p className="mt-1 text-xs font-semibold text-white">Pro 전용 분석</p>
-                                <span className="mt-1.5 inline-block rounded-lg bg-emerald-600 px-3 py-1 text-[11px] font-medium text-white hover:bg-emerald-500 transition">
-                                  Pro 시작하기 — 월 9,900원
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </a>
-                      );
-                    }
-
+            {/* League filter */}
+            {!loading && !error && leagues.length > 1 && (
+              <div style={{ overflowX: "auto", marginBottom: "20px" }} className="scrollbar-hide">
+                <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap" }}>
+                  <button onClick={() => setSelectedLeague("전체")} className="cursor-pointer" style={{ flexShrink: 0, borderRadius: "9999px", padding: "6px 12px", fontSize: "12px", fontWeight: 500, background: selectedLeague === "전체" ? "#059669" : "#1E293B", color: selectedLeague === "전체" ? "white" : "#8494A7", border: "none" }}>전체</button>
+                  {leagues.map(league => {
+                    const config = LEAGUE_CONFIG[league];
                     return (
-                      <Link key={m.id} href={`/report/${m.id}`}>
-                        <div
-                          className="rounded-xl border border-[#334155] border-l-4 bg-[#1E293B] p-5 transition hover:border-emerald-500/60 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
-                          style={cardStyle}
-                        >
-                          {cardHeader}
-                          {cardDetails}
-                        </div>
-                      </Link>
+                      <button key={league} onClick={() => setSelectedLeague(league)} className="cursor-pointer" style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "6px", borderRadius: "9999px", padding: "6px 12px", fontSize: "12px", fontWeight: 500, background: selectedLeague === league ? "#059669" : "#1E293B", color: selectedLeague === league ? "white" : "#8494A7", border: "none" }}>
+                        {config && <img src={config.logo} alt={league} width={16} height={16} className="rounded-full bg-white p-0.5 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                        {league}
+                      </button>
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* States */}
+            {loading && <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>}
+            {error && (
+              <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
+                <p className="text-red-400">{error}</p>
+                <button onClick={fetchData} className="mt-3 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500">다시 시도</button>
+              </div>
+            )}
+            {!loading && !error && matches.length === 0 && (
+              <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
+                <p className="mb-2 text-3xl">⚽</p>
+                <p className="text-lg text-slate-300">이 날짜에 분석된 경기가 없습니다</p>
+              </div>
+            )}
+
+            {/* Match groups */}
+            {!loading && !error && grouped.map(group => (
+              <section key={group.stars} style={{ marginBottom: "32px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                  <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>
+                    {group.label} <span style={{ fontSize: "14px", fontWeight: 400, color: "#8494A7" }}>{group.sub}</span>
+                  </h2>
+                  {group.stars >= 4 && (
+                    <span style={{ background: "#F59E0B25", color: "#FBBF24", borderRadius: "9999px", padding: "2px 8px", fontSize: "10px", fontWeight: 700 }}>PRO</span>
+                  )}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {group.matches.map(m => (
+                    <MatchCard key={m.id} m={m} locked={m.isProOnly && !isPro} isPro={isPro} />
+                  ))}
+                </div>
               </section>
-            );
-          })}
+            ))}
+          </>
+        )}
+
+        {/* ════════ TAB 2: 리그별 ════════ */}
+        {viewTab === "league" && (
+          <>
+            {/* League selector */}
+            <div style={{ overflowX: "auto", marginBottom: "20px" }} className="scrollbar-hide">
+              <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap" }}>
+                {LEAGUE_TABS.map(l => {
+                  const config = LEAGUE_CONFIG[l.name];
+                  return (
+                    <button key={l.key} onClick={() => { setLeagueTab(l.key); setLeagueShowCount(20); }} className="cursor-pointer" style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "6px", borderRadius: "12px", padding: "8px 14px", fontSize: "13px", fontWeight: 600, background: leagueTab === l.key ? "rgba(16,185,129,0.15)" : "#1E293B", color: leagueTab === l.key ? "#34D399" : "#8494A7", border: leagueTab === l.key ? "1px solid rgba(16,185,129,0.4)" : "1px solid #334155" }}>
+                      {config && <img src={config.logo} alt={l.name} width={18} height={18} className="rounded-full bg-white p-0.5 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                      {l.short}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* League matches */}
+            {leagueLoading ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>
+            ) : leagueMatches.length === 0 ? (
+              <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-10 text-center">
+                <p className="mb-2 text-3xl">⚽</p>
+                <p className="text-lg text-slate-300">이 리그의 최근 경기가 없습니다</p>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {leagueMatches.slice(0, leagueShowCount).map(m => (
+                    <MatchCard key={m.id} m={m} locked={m.isProOnly && !isPro} isPro={isPro} showDate />
+                  ))}
+                </div>
+                {leagueMatches.length > leagueShowCount && (
+                  <button
+                    onClick={() => setLeagueShowCount(c => c + 20)}
+                    className="cursor-pointer"
+                    style={{ display: "block", width: "100%", marginTop: "16px", padding: "12px", borderRadius: "12px", background: "#1E293B", border: "1px solid #334155", color: "#10B981", fontSize: "14px", fontWeight: 600 }}
+                  >
+                    더보기 ({leagueMatches.length - leagueShowCount}경기 더)
+                  </button>
+                )}
+              </>
+            )}
+          </>
+        )}
       </div>
     </main>
   );

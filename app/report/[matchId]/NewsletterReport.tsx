@@ -227,7 +227,7 @@ export default function NewsletterReport({
     <main className="min-h-screen" style={{ background: "#0F172A", color: "#E1E7EF" }}>
       <Navbar />
       <AuthTabBar />
-      <div className="mx-auto max-w-2xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
+      <div className="mx-auto max-w-3xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
         {/* Back + date */}
         <div className="flex items-center justify-between">
           <Link

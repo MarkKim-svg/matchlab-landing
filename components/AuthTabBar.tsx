@@ -19,7 +19,7 @@ const tabs = [
 export default function AuthTabBar() {
   const pathname = usePathname();
 
-  const showPaths = ["/home", "/matches/", "/dashboard", "/mypage", "/standings"];
+  const showPaths = ["/home", "/matches/", "/dashboard", "/mypage", "/standings", "/report/"];
   const shouldShow = showPaths.some((p) => pathname.startsWith(p));
   if (!shouldShow) return null;
 

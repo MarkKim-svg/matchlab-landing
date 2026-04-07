@@ -94,69 +94,85 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
             </div>
           </div>
 
-          {isPro ? (
-            <>
-              {/* AI Prediction pill */}
-              <div className="flex justify-center mb-4">
-                <span className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-bold text-white"
-                  style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>
-                  AI 예측: {topMatch.prediction}
-                </span>
-              </div>
+          {(() => {
+            // Free 유저도 ⭐~⭐⭐⭐ 경기는 예측 결과 오픈
+            const isTopPickLocked = !isPro && topMatch.confidence >= 4;
+            const showPrediction = isPro || topMatch.confidence <= 3;
 
-              {/* Model data sub-card */}
-              <div className="rounded-lg p-3 space-y-1.5" style={{ background: "#0F172A" }}>
-                <div className="text-[11px] font-semibold text-text-secondary mb-1.5">모델 분석 수치</div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  {[
-                    { label: "푸아송", home: topMatch.poisson.home, away: topMatch.poisson.away },
-                    { label: "ELO", home: topMatch.elo.home, away: topMatch.elo.away },
-                    { label: "xG", home: topMatch.xg.home, away: topMatch.xg.away },
-                  ].map(m => (
-                    <div key={m.label} className="rounded-md py-1.5 px-1" style={{ background: "#1A2332" }}>
-                      <div className="text-[10px] text-text-muted mb-0.5">{m.label}</div>
-                      <div className="font-mono-data text-[12px] text-bg-200">{m.home} : {m.away}</div>
-                    </div>
-                  ))}
-                </div>
-                {topMatch.aiAdjustment && topMatch.aiAdjustment !== "-" && (
-                  <div className="text-[11px] text-text-muted pt-1">Claude 조정: {topMatch.aiAdjustment}</div>
-                )}
-              </div>
-
-              <Link href={`/report/${topMatch.id}`} className="inline-block mt-3 text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
-                상세 리포트 →
-              </Link>
-            </>
-          ) : (
-            <div className="relative">
-              <div className="select-none" style={{ filter: "blur(6px)" }}>
+            return showPrediction ? (
+              <>
+                {/* AI Prediction pill */}
                 <div className="flex justify-center mb-4">
                   <span className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-bold text-white"
-                    style={{ background: "#059669" }}>
+                    style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>
                     AI 예측: {topMatch.prediction}
                   </span>
                 </div>
-                <div className="rounded-lg p-3" style={{ background: "#0F172A" }}>
-                  <div className="text-[11px] text-text-muted">
-                    푸아송 {topMatch.poisson.home} vs {topMatch.poisson.away} · ELO {topMatch.elo.home} vs {topMatch.elo.away}
+
+                {/* Model data — Pro only */}
+                {isPro ? (
+                  <div className="rounded-lg p-3 space-y-1.5" style={{ background: "#0F172A" }}>
+                    <div className="text-[11px] font-semibold text-text-secondary mb-1.5">모델 분석 수치</div>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      {[
+                        { label: "푸아송", home: topMatch.poisson.home, away: topMatch.poisson.away },
+                        { label: "ELO", home: topMatch.elo.home, away: topMatch.elo.away },
+                        { label: "xG", home: topMatch.xg.home, away: topMatch.xg.away },
+                      ].map(m => (
+                        <div key={m.label} className="rounded-md py-1.5 px-1" style={{ background: "#1A2332" }}>
+                          <div className="text-[10px] text-text-muted mb-0.5">{m.label}</div>
+                          <div className="font-mono-data text-[12px] text-bg-200">{m.home} : {m.away}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {topMatch.aiAdjustment && topMatch.aiAdjustment !== "-" && (
+                      <div className="text-[11px] text-text-muted pt-1">Claude 조정: {topMatch.aiAdjustment}</div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center mt-2">
+                    <Link href={`/report/${topMatch.id}`} className="text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
+                      상세 리포트 보기 →
+                    </Link>
+                  </div>
+                )}
+
+                {isPro && (
+                  <Link href={`/report/${topMatch.id}`} className="inline-block mt-3 text-[12px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
+                    상세 리포트 →
+                  </Link>
+                )}
+              </>
+            ) : (
+              <div className="relative">
+                <div className="select-none" style={{ filter: "blur(6px)" }}>
+                  <div className="flex justify-center mb-4">
+                    <span className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-bold text-white"
+                      style={{ background: "#059669" }}>
+                      AI 예측: {topMatch.prediction}
+                    </span>
+                  </div>
+                  <div className="rounded-lg p-3" style={{ background: "#0F172A" }}>
+                    <div className="text-[11px] text-text-muted">
+                      푸아송 {topMatch.poisson.home} vs {topMatch.poisson.away} · ELO {topMatch.elo.home} vs {topMatch.elo.away}
+                    </div>
                   </div>
                 </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <button
+                    onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+                    className="inline-flex items-center gap-1.5 text-white font-bold rounded-lg px-4 py-2 text-sm cursor-pointer"
+                    style={{
+                      background: "linear-gradient(135deg, #d97706, #b45309)",
+                      boxShadow: "0 4px 12px rgba(217,119,6,0.3)",
+                    }}
+                  >
+                    🔒 Pro에서 보기
+                  </button>
+                </div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button
-                  onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
-                  className="inline-flex items-center gap-1.5 text-white font-bold rounded-lg px-4 py-2 text-sm cursor-pointer"
-                  style={{
-                    background: "linear-gradient(135deg, #d97706, #b45309)",
-                    boxShadow: "0 4px 12px rgba(217,119,6,0.3)",
-                  }}
-                >
-                  🔒 Pro에서 보기
-                </button>
-              </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </div>
     </section>

@@ -290,7 +290,7 @@ export default function NewsletterReport({
     <main className="min-h-screen" style={{ background: "#0F172A", color: "#E1E7EF" }}>
       <Navbar />
       <AuthTabBar />
-      <div className="mx-auto max-w-3xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
+      <div className="mx-auto max-w-5xl px-4 py-6 pb-24 md:pb-8 sm:px-6 space-y-5">
         {/* Back + date */}
         <div className="flex items-center justify-between">
           <Link
@@ -307,21 +307,21 @@ export default function NewsletterReport({
 
         {/* Header card — league + teams + confidence */}
         <header
-          className="rounded-xl p-6 text-center"
+          className="rounded-xl py-8 px-6 text-center"
           style={{ background: "#1E293B", border: "1px solid #334155" }}
         >
-          <div className="mb-4 flex justify-center">
+          <div className="mb-5 flex justify-center">
             <LeagueBadge league={match.league} />
           </div>
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="flex flex-col items-center gap-1.5">
-              <TeamLogo teamId={match.homeTeamId} teamName={home} size={56} />
-              <span className="text-[14px] font-semibold sm:text-[15px]">{home}</span>
+          <div className="flex items-center justify-center gap-6 mb-5">
+            <div className="flex flex-col items-center gap-2">
+              <TeamLogo teamId={match.homeTeamId} teamName={home} size={64} />
+              <span className="text-xl md:text-2xl font-bold" style={{ color: "#E1E7EF" }}>{home}</span>
             </div>
-            <span className="text-[18px] font-bold" style={{ color: "#566378" }}>vs</span>
-            <div className="flex flex-col items-center gap-1.5">
-              <TeamLogo teamId={match.awayTeamId} teamName={away} size={56} />
-              <span className="text-[14px] font-semibold sm:text-[15px]">{away}</span>
+            <span className="text-lg font-bold" style={{ color: "#10B981" }}>VS</span>
+            <div className="flex flex-col items-center gap-2">
+              <TeamLogo teamId={match.awayTeamId} teamName={away} size={64} />
+              <span className="text-xl md:text-2xl font-bold" style={{ color: "#E1E7EF" }}>{away}</span>
             </div>
           </div>
 

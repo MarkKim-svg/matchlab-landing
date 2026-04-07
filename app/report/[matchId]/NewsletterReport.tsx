@@ -366,8 +366,8 @@ export default function NewsletterReport({
           </section>
         )}
 
-        {/* Public sections */}
-        {report.sections.slice(0, locked ? publicSectionCount : report.sections.length).map((section, idx) => (
+        {/* Public sections (핵심 근거 등 상위 3개) */}
+        {report.sections.slice(0, Math.min(publicSectionCount, report.sections.length)).map((section, idx) => (
           <div key={idx}>
             <SectionCard section={section}>
               {idx === rationaleIdx && <EnsembleCard match={match} />}
@@ -375,7 +375,7 @@ export default function NewsletterReport({
           </div>
         ))}
 
-        {/* Structured data from API-Football (Free/Pro 공통) */}
+        {/* Structured data from API-Football (Free/Pro 공통) — 줄글 위에 배치 */}
         {detailLoading ? (
           <MatchDetailSkeleton />
         ) : matchDetail && (
@@ -387,7 +387,16 @@ export default function NewsletterReport({
           </div>
         )}
 
-        {/* Locked sections — single overlay */}
+        {/* Remaining sections — Pro: 전체 오픈 / Free: 블러 */}
+        {!locked && report.sections.length > publicSectionCount && (
+          report.sections.slice(publicSectionCount).map((section, idx) => (
+            <div key={`rest-${idx}`}>
+              <SectionCard section={section} />
+            </div>
+          ))
+        )}
+
+        {/* Locked sections — Free 블러 */}
         {locked && report.sections.length > publicSectionCount && (
           <div className="relative">
             <div className="space-y-5 pointer-events-none select-none" style={{ filter: "blur(10px)" }}>

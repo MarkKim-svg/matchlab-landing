@@ -208,9 +208,20 @@ export async function GET(
       if (!lineups) {
         const injuredNames = new Set(injuriesData.map((inj: any) => (inj.player?.name ?? "").toLowerCase()));
 
+        console.log("[lineup-debug] homeRecent:", Array.isArray(homeRecentLineups) ? homeRecentLineups.length : "not array", "awayRecent:", Array.isArray(awayRecentLineups) ? awayRecentLineups.length : "not array");
+        if (Array.isArray(homeRecentLineups) && homeRecentLineups.length > 0) {
+          console.log("[lineup-debug] homeRecent[0] keys:", Object.keys(homeRecentLineups[0]));
+          console.log("[lineup-debug] homeRecent[0].team:", JSON.stringify(homeRecentLineups[0].team ?? {}).slice(0, 100));
+          console.log("[lineup-debug] homeTeamId:", homeTeamId, typeof homeTeamId);
+        }
+
         function buildEstimated(recentLineups: any[], teamId: number) {
-          const entries = (Array.isArray(recentLineups) ? recentLineups : [])
-            .filter((e: any) => e.team?.id === teamId);
+          const allEntries = Array.isArray(recentLineups) ? recentLineups : [];
+          // Use loose comparison (== not ===) for number/string mismatch
+          let entries = allEntries.filter((e: any) => e.team?.id == teamId);
+          console.log("[lineup-debug] buildEstimated teamId:", teamId, "allEntries:", allEntries.length, "filtered:", entries.length);
+          // If filter found nothing, use all entries (the API already filtered by team)
+          if (entries.length === 0) entries = allEntries;
           if (entries.length === 0) return null;
 
           // Use most recent formation

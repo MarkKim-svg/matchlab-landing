@@ -654,7 +654,11 @@ export default function Home() {
                   </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
-                    예측 결과만 표시
+                    예측 결과 + 확률
+                  </li>
+                  <li className="flex items-start gap-2 text-text-secondary">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    핵심 근거 3줄
                   </li>
                 </ul>
                 {/* Mini report — blurred/locked */}
@@ -708,7 +712,7 @@ export default function Home() {
                   </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
-                    4개 모델 상세 근거 · 확률
+                    상세 분석 리포트 전체 열람
                   </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
@@ -716,7 +720,7 @@ export default function Home() {
                   </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
-                    전경기 상세 리포트
+                    전술 분석 · 핵심 변수
                   </li>
                 </ul>
                 {/* Mini report — fully open */}

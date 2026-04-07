@@ -2,20 +2,21 @@ import FadeSection from "@/lib/FadeSection";
 import { KAKAO_CHANNEL_URL } from "@/lib/constants";
 
 const FREE_ITEMS = [
-  { ok: true, text: "매일 오전 카톡 알림" },
-  { ok: true, text: "무료 프리뷰 2경기" },
+  { ok: true, text: "전경기 AI 예측 열람" },
+  { ok: true, text: "확신도 ⭐~⭐⭐⭐ 경기" },
+  { ok: true, text: "예측 결과 + 확률바" },
   { ok: true, text: "적중률 리포트 (전체 공개)" },
   { ok: false, text: "고확신 ⭐4+ 경기" },
-  { ok: false, text: "전경기 상세 분석" },
+  { ok: false, text: "상세 분석 리포트 (전술·핵심변수)" },
   { ok: false, text: "배당 이동 분석" },
 ];
 
 const PRO_ITEMS = [
   { text: "Free의 모든 것 +" },
   { text: "고확신 ⭐4+⭐5 경기", highlight: true },
-  { text: "전경기 상세 분석 (매일 10~30경기)" },
+  { text: "상세 분석 리포트 전체 열람" },
   { text: "배당 이동 분석" },
-  { text: "웹 대시보드 열람" },
+  { text: "전술 분석 · 핵심 변수" },
 ];
 
 export default function PlansSection() {

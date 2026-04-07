@@ -73,15 +73,26 @@ function ModelRow({ name, home, away }: { name: string; home: string; away: stri
 
 function ProOverlay() {
   return (
-    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl"
+         style={{ background: "rgba(15, 23, 42, 0.6)", backdropFilter: "blur(2px)" }}>
       <span className="text-3xl">🔒</span>
-      <p className="mt-2 text-sm font-semibold text-white">Pro 전용 분석</p>
-      <a
-        href="/#pricing"
-        className="mt-2 inline-block rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-500 transition"
-      >
-        Pro 시작하기
-      </a>
+      <p className="mt-2 text-sm font-bold text-white">프리미엄 전용 분석</p>
+      <p className="mt-1 text-xs text-slate-400 text-center px-4">전술 분석 · 핵심 변수 · 상세 예측 데이터</p>
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+          className="rounded-lg px-4 py-1.5 text-xs font-bold text-white cursor-pointer"
+          style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
+        >
+          Pro 시작하기
+        </button>
+        <a
+          href="/?landing=true#pricing"
+          className="rounded-lg border border-slate-500 px-4 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700 transition"
+        >
+          요금제 보기
+        </a>
+      </div>
     </div>
   );
 }
@@ -201,7 +212,8 @@ export default function ReportPage() {
   }, [fetchData]);
 
   const isPro = userPlan === "pro";
-  const locked = match?.isProOnly === true && !isPro;
+  // 상세 분석 섹션은 모든 Free 유저에게 잠금 (확신도 무관)
+  const locked = !isPro;
 
   // loading
   if (loading) {

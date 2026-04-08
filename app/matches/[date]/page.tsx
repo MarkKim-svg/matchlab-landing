@@ -34,6 +34,30 @@ function getBestEnsemble(p: MatchPrediction): { label: string; pct: string } {
   return { label: "무승부", pct: draw.display };
 }
 
+function EnsembleProbs({ ensemble }: { ensemble: { home: string; away: string; draw: string } }) {
+  const h = fmtPct(ensemble.home);
+  const d = fmtPct(ensemble.draw);
+  const a = fmtPct(ensemble.away);
+  const max = Math.max(h.num, d.num, a.num);
+  if (max === 0) return null;
+
+  const items = [
+    { label: "홈", num: h.num, pct: Math.round(h.num) },
+    { label: "무", num: d.num, pct: Math.round(d.num) },
+    { label: "원정", num: a.num, pct: Math.round(a.num) },
+  ];
+
+  return (
+    <span style={{ fontSize: "12px", display: "inline-flex", gap: "6px" }}>
+      {items.map((item) => (
+        <span key={item.label} style={{ fontWeight: item.num === max ? 700 : 400, color: item.num === max ? "#10B981" : "#566378" }}>
+          {item.label} {item.pct}%
+        </span>
+      ))}
+    </span>
+  );
+}
+
 const CONF_SECTIONS = [
   { stars: 5, label: "⭐⭐⭐⭐⭐", sub: "최고 확신" },
   { stars: 4, label: "⭐⭐⭐⭐", sub: "높은 확신" },
@@ -194,10 +218,8 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
           </div>
         </div>
       ) : (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
-          <span style={{ fontSize: "13px", fontWeight: 600, color: "#10B981" }}>
-            AI: {best.label} {best.pct}
-          </span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", flexWrap: "wrap" }}>
+          <EnsembleProbs ensemble={m.ensemble} />
           {isJudged && <ResultBadge isCorrect={m.isCorrect} />}
         </div>
       )}

@@ -321,65 +321,57 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="w-full text-[13px]">
+      <div className="overflow-x-auto scrollbar-hide">
+        <table style={{ width: "100%", minWidth: "600px", borderCollapse: "collapse", fontSize: "13px" }}>
           <thead>
             <tr className="border-b border-bg-border text-text-muted text-[11px] uppercase tracking-wider">
-              <th className="text-left pl-4 pr-2 py-3 w-12">#</th>
-              <th className="text-left py-3">팀</th>
-              <th className="text-center py-3 hidden sm:table-cell w-12">경기</th>
-              <th className="text-center py-3 hidden sm:table-cell w-10">승</th>
-              <th className="text-center py-3 hidden sm:table-cell w-10">무</th>
-              <th className="text-center py-3 hidden sm:table-cell w-10">패</th>
-              <th className="text-center py-3 w-14">득실</th>
-              <th className="text-center py-3 w-14">승점</th>
-              <th className="text-center py-3 hidden sm:table-cell">폼</th>
-              <th className="text-center py-3 pr-4 hidden md:table-cell">다음</th>
+              <th style={{ position: "sticky", left: 0, zIndex: 2, background: "#111827", textAlign: "left", paddingLeft: "16px", paddingRight: "8px", paddingTop: "12px", paddingBottom: "12px", width: "40px" }}>#</th>
+              <th style={{ position: "sticky", left: "40px", zIndex: 2, background: "#111827", textAlign: "left", paddingTop: "12px", paddingBottom: "12px", minWidth: "120px" }}>팀</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "40px" }}>경기</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "36px" }}>승</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "36px" }}>무</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "36px" }}>패</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "50px" }}>득실</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "50px" }}>승점</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", width: "100px" }}>폼</th>
+              <th style={{ textAlign: "center", padding: "12px 6px", paddingRight: "16px", width: "60px" }}>다음</th>
             </tr>
           </thead>
           <tbody>
-            {standings.map((team) => {
+            {standings.map((team, idx) => {
               const zoneColor = getZoneColor(team.description, team.rank, total);
+              const rowBgColor = "#111827";
               return (
                 <tr
                   key={team.rank}
-                  className="border-b border-bg-border/50 hover:bg-white/[0.02] transition-colors"
+                  style={{ borderBottom: "1px solid rgba(30,45,71,0.5)" }}
+                  className="hover:bg-white/[0.02] transition-colors"
                 >
-                  <td className="pl-1 pr-2 py-2.5">
-                    <div className="flex items-center">
-                      <span
-                        className="w-[3px] h-6 rounded-full mr-2 shrink-0"
-                        style={{ background: zoneColor ?? "transparent" }}
-                      />
-                      <span className="text-text-secondary font-mono-data text-[12px] w-5 text-center">
-                        {team.rank}
-                      </span>
+                  <td style={{ position: "sticky", left: 0, zIndex: 1, background: rowBgColor, paddingLeft: "4px", paddingRight: "8px", paddingTop: "10px", paddingBottom: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span style={{ width: "3px", height: "24px", borderRadius: "2px", marginRight: "8px", flexShrink: 0, background: zoneColor ?? "transparent" }} />
+                      <span style={{ color: "#8494A7", fontFamily: "'JetBrains Mono',monospace", fontSize: "12px", width: "20px", textAlign: "center" }}>{team.rank}</span>
                     </div>
                   </td>
-                  <td className="py-2.5">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={team.teamLogo}
-                        alt={team.teamName}
-                        className="w-6 h-6 object-contain shrink-0"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                      />
-                      <span className="text-bg-100 font-medium truncate">{team.teamName}</span>
+                  <td style={{ position: "sticky", left: "40px", zIndex: 1, background: rowBgColor, paddingTop: "10px", paddingBottom: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <img src={team.teamLogo} alt={team.teamName} style={{ width: "24px", height: "24px", objectFit: "contain", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <span style={{ color: "#E1E7EF", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{team.teamName}</span>
                     </div>
                   </td>
-                  <td className="text-center text-text-secondary hidden sm:table-cell">{team.played}</td>
-                  <td className="text-center text-text-secondary hidden sm:table-cell">{team.win}</td>
-                  <td className="text-center text-text-secondary hidden sm:table-cell">{team.draw}</td>
-                  <td className="text-center text-text-secondary hidden sm:table-cell">{team.lose}</td>
-                  <td className="text-center">
+                  <td style={{ textAlign: "center", color: "#8494A7" }}>{team.played}</td>
+                  <td style={{ textAlign: "center", color: "#8494A7" }}>{team.win}</td>
+                  <td style={{ textAlign: "center", color: "#8494A7" }}>{team.draw}</td>
+                  <td style={{ textAlign: "center", color: "#8494A7" }}>{team.lose}</td>
+                  <td style={{ textAlign: "center" }}>
                     <span className={team.goalsDiff > 0 ? "text-emerald-400" : team.goalsDiff < 0 ? "text-red-400" : "text-text-secondary"}>
                       {team.goalsDiff > 0 ? `+${team.goalsDiff}` : team.goalsDiff}
                     </span>
                   </td>
-                  <td className="text-center">
-                    <span className="font-bold text-emerald-400 font-mono-data">{team.points}</span>
+                  <td style={{ textAlign: "center" }}>
+                    <span style={{ fontWeight: 700, color: "#10B981", fontFamily: "'JetBrains Mono',monospace" }}>{team.points}</span>
                   </td>
-                  <td className="text-center hidden sm:table-cell">
+                  <td style={{ textAlign: "center" }}>
                     {team.form && (
                       <div style={{ display: "flex", gap: "2px", justifyContent: "center" }}>
                         {team.form.split("").slice(-5).map((ch, i) => {
@@ -393,7 +385,7 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
                       </div>
                     )}
                   </td>
-                  <td className="text-center pr-4 hidden md:table-cell">
+                  <td style={{ textAlign: "center", paddingRight: "16px" }}>
                     {team.nextMatch ? (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
                         <span style={{ fontSize: "10px", color: team.nextMatch.isHome ? "#10B981" : "#8494A7" }}>

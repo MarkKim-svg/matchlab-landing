@@ -24,6 +24,8 @@ interface H2HMatch {
   date: string;
   homeTeam: string;
   awayTeam: string;
+  homeTeamId?: string;
+  awayTeamId?: string;
   homeGoals: number;
   awayGoals: number;
   league?: string;
@@ -50,6 +52,7 @@ interface StandingData {
 interface InjuryData {
   player: string;
   team: string;
+  teamLogo?: string;
   type: string;
   reason: string;
 }
@@ -216,9 +219,15 @@ export function H2HTable({ h2h, homeName, awayName }: { h2h: H2HData; homeName: 
               <div key={i} style={{ background: rowBg(i), borderRadius: "8px", padding: "8px 10px", display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
                 <span style={{ fontSize: "10px", color: "#566378", flexShrink: 0, whiteSpace: "nowrap" }}>{shortDate}</span>
                 {m.league && <span style={{ fontSize: "8px", color: "#475569", flexShrink: 0, whiteSpace: "nowrap", background: "#0F172A", borderRadius: "3px", padding: "1px 4px" }}>{m.league}</span>}
-                <span style={{ fontSize: "11px", color: "#d4d4d4", flex: 1, textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{m.homeTeam}</span>
+                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", minWidth: 0 }}>
+                  <span style={{ fontSize: "11px", color: "#d4d4d4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.homeTeam}</span>
+                  {m.homeTeamId && <img src={`https://media.api-sports.io/football/teams/${m.homeTeamId}.png`} alt="" style={{ width: "16px", height: "16px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                </div>
                 <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0, whiteSpace: "nowrap" }}>{m.homeGoals}-{m.awayGoals}</span>
-                <span style={{ fontSize: "11px", color: "#d4d4d4", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{m.awayTeam}</span>
+                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "4px", minWidth: 0 }}>
+                  {m.awayTeamId && <img src={`https://media.api-sports.io/football/teams/${m.awayTeamId}.png`} alt="" style={{ width: "16px", height: "16px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                  <span style={{ fontSize: "11px", color: "#d4d4d4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.awayTeam}</span>
+                </div>
               </div>
             );
           })}
@@ -267,7 +276,13 @@ export function InjuriesList({ injuries }: { injuries: InjuryData[] }) {
               return (
                 <tr key={i} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
                   <td style={{ ...TD, fontWeight: 600, borderLeft: `3px solid ${sev.color}`, paddingLeft: "12px" }}>{inj.player}</td>
-                  <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.team}</td>
+                  <td style={TD}>
+                    {inj.teamLogo ? (
+                      <img src={inj.teamLogo} alt={inj.team} style={{ width: "18px", height: "18px", objectFit: "contain", filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    ) : (
+                      <span style={{ fontSize: "12px", color: "#8494A7" }}>{inj.team}</span>
+                    )}
+                  </td>
                   <td style={TD}>{inj.type}</td>
                   <td style={{ ...TD, fontSize: "12px", color: "#8494A7" }}>{inj.reason}</td>
                 </tr>

@@ -136,6 +136,8 @@ export async function GET(
         date: m.fixture?.date?.split("T")[0] ?? "",
         homeTeam: m.teams?.home?.name ?? "",
         awayTeam: m.teams?.away?.name ?? "",
+        homeTeamId: String(m.teams?.home?.id ?? ""),
+        awayTeamId: String(m.teams?.away?.id ?? ""),
         homeGoals: m.goals?.home ?? 0,
         awayGoals: m.goals?.away ?? 0,
         league: m.league?.name ?? "",
@@ -171,13 +173,23 @@ export async function GET(
       away: findTeamStanding(awayTeamId),
     };
 
-    // 7. Parse injuries
-    const injuries = injuriesData.map((inj: any) => ({
-      player: inj.player?.name ?? "",
-      team: inj.team?.name ?? "",
-      type: inj.player?.type ?? "",
-      reason: inj.player?.reason ?? "",
-    }));
+    // 7. Parse injuries (deduplicate by player name)
+    const seenPlayers = new Set<string>();
+    const injuries = injuriesData
+      .map((inj: any) => ({
+        player: inj.player?.name ?? "",
+        team: inj.team?.name ?? "",
+        teamId: inj.team?.id ?? 0,
+        teamLogo: inj.team?.logo ?? "",
+        type: inj.player?.type ?? "",
+        reason: inj.player?.reason ?? "",
+      }))
+      .filter((inj: any) => {
+        const key = inj.player.toLowerCase();
+        if (seenPlayers.has(key)) return false;
+        seenPlayers.add(key);
+        return true;
+      });
 
     // 8. Fixture info (kickoff time, round)
     const fixtureDate = fixture.fixture?.date ?? "";

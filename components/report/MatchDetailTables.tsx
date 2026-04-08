@@ -210,24 +210,18 @@ export function H2HTable({ h2h, homeName, awayName }: { h2h: H2HData; homeName: 
         ))}
       </div>
 
-      {/* Recent matches — compact card list */}
+      {/* Recent matches — logo only, sorted by date desc */}
       {h2h.recentMatches.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          {h2h.recentMatches.map((m, i) => {
+          {[...h2h.recentMatches].sort((a, b) => b.date.localeCompare(a.date)).map((m, i) => {
             const shortDate = m.date ? m.date.slice(2).replace(/-/g, ".") : "";
             return (
-              <div key={i} style={{ background: rowBg(i), borderRadius: "8px", padding: "8px 10px", display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
+              <div key={i} style={{ background: rowBg(i), borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", overflow: "hidden" }}>
                 <span style={{ fontSize: "10px", color: "#566378", flexShrink: 0, whiteSpace: "nowrap" }}>{shortDate}</span>
                 {m.league && <span style={{ fontSize: "8px", color: "#475569", flexShrink: 0, whiteSpace: "nowrap", background: "#0F172A", borderRadius: "3px", padding: "1px 4px" }}>{m.league}</span>}
-                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", minWidth: 0 }}>
-                  <span style={{ fontSize: "11px", color: "#d4d4d4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.homeTeam}</span>
-                  {m.homeTeamId && <img src={`https://media.api-sports.io/football/teams/${m.homeTeamId}.png`} alt="" style={{ width: "16px", height: "16px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                </div>
-                <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0, whiteSpace: "nowrap" }}>{m.homeGoals}-{m.awayGoals}</span>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "4px", minWidth: 0 }}>
-                  {m.awayTeamId && <img src={`https://media.api-sports.io/football/teams/${m.awayTeamId}.png`} alt="" style={{ width: "16px", height: "16px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                  <span style={{ fontSize: "11px", color: "#d4d4d4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.awayTeam}</span>
-                </div>
+                {m.homeTeamId && <img src={`https://media.api-sports.io/football/teams/${m.homeTeamId}.png`} alt={m.homeTeam} title={m.homeTeam} style={{ width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                <span style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{m.homeGoals}-{m.awayGoals}</span>
+                {m.awayTeamId && <img src={`https://media.api-sports.io/football/teams/${m.awayTeamId}.png`} alt={m.awayTeam} title={m.awayTeam} style={{ width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
               </div>
             );
           })}

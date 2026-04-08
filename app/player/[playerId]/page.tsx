@@ -12,6 +12,8 @@ interface PlayerData {
   teamName: string; teamLogo: string; teamId: number; number: number;
   totals: { appearances: number; goals: number; assists: number; minutes: number; yellow: number; red: number; shots: number; shotsOn: number; passes: number; passKey: number; tackles: number; interceptions: number; dribbles: number; dribblesSuccess: number; saves: number };
   perCompetition: { league: string; leagueLogo: string; teamName: string; teamLogo: string; teamId: number; appearances: number; starts: number; minutes: number; goals: number; assists: number }[];
+  trophies: { league: string; country: string; season: string; place: string }[];
+  transfers: { date: string; type: string; teamIn: string; teamInLogo: string; teamInId: number; teamOut: string; teamOutLogo: string; teamOutId: number }[];
 }
 
 const POS_LABELS: Record<string, string> = { Goalkeeper: "골키퍼", Defender: "수비수", Midfielder: "미드필더", Attacker: "공격수" };
@@ -108,6 +110,48 @@ export default function PlayerPage() {
                       <span style={{ fontSize: "11px", color: "#566378", flexShrink: 0 }}>{c.appearances}경기</span>
                       <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{c.goals}G</span>
                       <span style={{ fontSize: "13px", fontWeight: 700, color: "#8494A7", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{c.assists}A</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Trophies */}
+            {data.trophies.length > 0 && (
+              <div>
+                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🏆 수상 경력</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  {data.trophies.map((t, i) => {
+                    const isWinner = t.place === "Winner";
+                    const isRunner = t.place === "2nd Place" || t.place?.includes("Runner");
+                    return (
+                      <div key={i} style={{ background: isWinner ? "#FBBF2408" : "#111827", border: isWinner ? "1px solid #FBBF2425" : "1px solid #1E2D47", borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontSize: "14px", flexShrink: 0 }}>{isWinner ? "🏆" : isRunner ? "🥈" : "🏅"}</span>
+                        <span style={{ fontSize: "12px", color: isWinner ? "#FBBF24" : "#E1E7EF", fontWeight: isWinner ? 700 : 500, flex: 1 }}>{t.league}</span>
+                        <span style={{ fontSize: "11px", color: "#566378", flexShrink: 0 }}>{t.season}</span>
+                        <span style={{ fontSize: "10px", color: "#8494A7", flexShrink: 0 }}>{t.country}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Transfers */}
+            {data.transfers.length > 0 && (
+              <div>
+                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🔄 이적 히스토리</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  {data.transfers.map((t, i) => (
+                    <div key={i} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "8px", padding: "10px 12px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "10px", color: "#566378", width: "60px", flexShrink: 0 }}>{t.date.slice(0, 7)}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "4px", flex: 1, minWidth: 0 }}>
+                        {t.teamOutLogo && <img src={t.teamOutLogo} alt="" style={{ width: "18px", height: "18px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                        <span style={{ fontSize: "11px", color: "#8494A7", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.teamOut}</span>
+                        <span style={{ fontSize: "12px", color: "#10B981", flexShrink: 0 }}>→</span>
+                        {t.teamInLogo && <img src={t.teamInLogo} alt="" style={{ width: "18px", height: "18px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                        <span style={{ fontSize: "11px", color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.teamIn}</span>
+                      </div>
+                      <span style={{ fontSize: "9px", color: "#475569", background: "#0F172A", borderRadius: "4px", padding: "2px 6px", flexShrink: 0 }}>{t.type}</span>
                     </div>
                   ))}
                 </div>

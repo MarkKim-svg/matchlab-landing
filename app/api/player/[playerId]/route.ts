@@ -13,13 +13,18 @@ export async function GET(
     const apiKey = process.env.FOOTBALL_API_KEY;
     if (!apiKey) return NextResponse.json({ error: "API key not configured" }, { status: 500 });
 
-    const res = await fetch(`${API_BASE}/players?id=${playerId}&season=2025`, {
-      headers: { "x-apisports-key": apiKey },
-      next: { revalidate: 3600 },
-    });
-    const data = await res.json();
-    const p = data?.response?.[0];
+    const apiFetch = async (path: string) => {
+      const r = await fetch(`${API_BASE}${path}`, { headers: { "x-apisports-key": apiKey }, next: { revalidate: 3600 } });
+      return (await r.json()).response ?? [];
+    };
 
+    const [playerData, trophiesData, transfersData] = await Promise.all([
+      apiFetch(`/players?id=${playerId}&season=2025`),
+      apiFetch(`/trophies?player=${playerId}`),
+      apiFetch(`/transfers?player=${playerId}`),
+    ]);
+
+    const p = playerData[0];
     if (!p) return NextResponse.json({ error: "Player not found" }, { status: 404 });
 
     const player = p.player;
@@ -71,6 +76,28 @@ export async function GET(
       };
     });
 
+    // Trophies
+    const trophies = (Array.isArray(trophiesData) ? trophiesData : []).map((t: any) => ({
+      league: t.league ?? "",
+      country: t.country ?? "",
+      season: t.season ?? "",
+      place: t.place ?? "",
+    }));
+
+    // Transfers
+    const transfers = (Array.isArray(transfersData) ? transfersData : [])
+      .flatMap((t: any) => (t.transfers ?? []).map((tr: any) => ({
+        date: tr.date ?? "",
+        type: tr.type ?? "",
+        teamIn: tr.teams?.in?.name ?? "",
+        teamInLogo: tr.teams?.in?.logo ?? "",
+        teamInId: tr.teams?.in?.id ?? 0,
+        teamOut: tr.teams?.out?.name ?? "",
+        teamOutLogo: tr.teams?.out?.logo ?? "",
+        teamOutId: tr.teams?.out?.id ?? 0,
+      })))
+      .sort((a: any, b: any) => b.date.localeCompare(a.date));
+
     return NextResponse.json({
       player: {
         id: player.id,
@@ -95,6 +122,8 @@ export async function GET(
         dribbles: totalDribbles, dribblesSuccess: totalDribblesSuccess, saves: totalSaves,
       },
       perCompetition: perComp,
+      trophies,
+      transfers,
     });
   } catch (err) {
     console.error("Player API error:", err);

@@ -27,7 +27,7 @@ function TeamDetailContent() {
   const teamId = params.teamId;
   const leagueId = searchParams.get("league") || "";
 
-  const [data, setData] = useState<{ recent: RecentMatch[]; next: NextMatch[]; squad: SquadPlayer[]; topPlayers: TopPlayer[]; seasonStats: SeasonStats | null; allCompStats?: { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number; cleanSheets: number } | null } | null>(null);
+  const [data, setData] = useState<{ recent: RecentMatch[]; next: NextMatch[]; squad: SquadPlayer[]; topPlayers: TopPlayer[]; seasonStats: SeasonStats | null; allCompStats?: { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number; cleanSheets: number } | null; competitions?: { name: string; logo: string }[] } | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Get team info from first fixture
@@ -70,6 +70,17 @@ function TeamDetailContent() {
             {ss?.form && (
               <div style={{ display: "flex", gap: "3px", marginTop: "8px" }}>
                 {ss.form.split("").slice(-5).map((ch, i) => <FormBadge key={i} ch={ch} />)}
+              </div>
+            )}
+            {/* Competitions */}
+            {data.competitions && data.competitions.length > 0 && (
+              <div style={{ display: "flex", gap: "6px", marginTop: "10px", flexWrap: "wrap" }}>
+                {data.competitions.map((c, i) => (
+                  <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#0F172A", border: "1px solid #1E2D47", borderRadius: "8px", padding: "3px 8px", fontSize: "11px", color: "#8494A7" }}>
+                    {c.logo && <img src={c.logo} alt="" style={{ width: "14px", height: "14px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                    {c.name}
+                  </span>
+                ))}
               </div>
             )}
           </div>

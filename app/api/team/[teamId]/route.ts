@@ -128,7 +128,17 @@ export async function GET(
       }
     } catch { /* skip */ }
 
-    return NextResponse.json({ recent, next, squad, topPlayers, seasonStats, allCompStats });
+    // Competitions this season (from seasonFixtures)
+    const compMap = new Map<number, { name: string; logo: string }>();
+    for (const f of (Array.isArray(seasonFixtures) ? seasonFixtures : [])) {
+      const lid = f.league?.id;
+      if (lid && !compMap.has(lid)) {
+        compMap.set(lid, { name: f.league.name ?? "", logo: f.league.logo ?? "" });
+      }
+    }
+    const competitions = Array.from(compMap.values());
+
+    return NextResponse.json({ recent, next, squad, topPlayers, seasonStats, allCompStats, competitions });
   } catch (err) {
     console.error("Team API error:", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

@@ -163,45 +163,7 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return <div style={{ textAlign: "center", padding: "40px 0", color: "#566378", fontSize: "14px" }}>토너먼트 데이터가 아직 없습니다</div>;
   }
 
-  // Split into left/right halves with winner tracking
-  const splitHalf = (arr: TieData[]): [TieData[], TieData[]] => {
-    const mid = Math.ceil(arr.length / 2);
-    return [arr.slice(0, mid), arr.slice(mid)];
-  };
-
-  const [r16L, r16R] = splitHalf(r16);
-
-  // Track which teams belong to left bracket
-  const leftTeams = new Set<string>();
-  for (const t of r16L) {
-    leftTeams.add(t.team1.toLowerCase());
-    leftTeams.add(t.team2.toLowerCase());
-    if (t.winner) leftTeams.add(t.winner.toLowerCase());
-  }
-
-  // Assign QF ties to left/right based on team membership
-  function assignSide(ties: TieData[]): [TieData[], TieData[]] {
-    const left: TieData[] = [];
-    const right: TieData[] = [];
-    for (const t of ties) {
-      const t1Left = leftTeams.has(t.team1.toLowerCase());
-      const t2Left = leftTeams.has(t.team2.toLowerCase());
-      if (t1Left || t2Left) {
-        left.push(t);
-        // Add winner to left set for next round
-        if (t.winner) leftTeams.add(t.winner.toLowerCase());
-        leftTeams.add(t.team1.toLowerCase());
-        leftTeams.add(t.team2.toLowerCase());
-      } else {
-        right.push(t);
-      }
-    }
-    // If assignment failed (no matches), fall back to split
-    if (left.length === 0 && right.length === 0) return splitHalf(ties);
-    return [left, right];
-  }
-
-  // Assign then balance with TBD fills
+  // ── Reverse assignment: QF defines sides, then R16 follows ──
   const TBD: TieData = { team1: "미정", team2: "미정", team1Logo: "", team2Logo: "", leg1: null, leg2: null, aggTeam1: 0, aggTeam2: 0, winner: null, finished: false };
 
   function fillTo(arr: TieData[], n: number): TieData[] {
@@ -210,24 +172,62 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return result;
   }
 
-  // QF: assign by team tracking, then balance to 2 per side
-  let [qfL, qfR] = qf.length > 0 ? assignSide(qf) : [[], []] as [TieData[], TieData[]];
-  // Rebalance if lopsided (e.g., 3-1 → move extras)
-  while (qfL.length > 2 && qfR.length < 2) { qfR.push(qfL.pop()!); }
-  while (qfR.length > 2 && qfL.length < 2) { qfL.push(qfR.pop()!); }
+  function splitHalf(arr: TieData[]): [TieData[], TieData[]] {
+    const mid = Math.ceil(arr.length / 2);
+    return [arr.slice(0, mid), arr.slice(mid)];
+  }
 
-  // SF: assign then balance to 1 per side
-  let [sfL, sfR] = sf.length > 0 ? assignSide(sf) : [[], []] as [TieData[], TieData[]];
-  while (sfL.length > 1 && sfR.length < 1) { sfR.push(sfL.pop()!); }
-  while (sfR.length > 1 && sfL.length < 1) { sfL.push(sfR.pop()!); }
+  function getTeams(tie: TieData): string[] {
+    return [tie.team1, tie.team2, tie.winner ?? ""].filter(Boolean).map(t => t.toLowerCase());
+  }
 
-  // Always show all rounds if R16 exists: fill with TBD
+  // Step 1: Split QF into left/right (2 per side)
+  const [qfL, qfR] = splitHalf(qf);
+
+  // Step 2: Collect all teams in left QF
+  const leftTeams = new Set<string>();
+  for (const t of qfL) getTeams(t).forEach(n => leftTeams.add(n));
+
+  // Step 3: Assign R16 to left/right based on QF team membership
+  const r16L: TieData[] = [];
+  const r16R: TieData[] = [];
+  for (const t of r16) {
+    const teams = getTeams(t);
+    if (teams.some(n => leftTeams.has(n))) {
+      r16L.push(t);
+    } else {
+      r16R.push(t);
+    }
+  }
+  // Fallback if QF is empty: simple split
+  if (qf.length === 0 && r16.length > 0) {
+    const [a, b] = splitHalf(r16);
+    r16L.length = 0; r16R.length = 0;
+    r16L.push(...a); r16R.push(...b);
+  }
+
+  // Step 4: SF — assign based on left QF teams
+  const sfL: TieData[] = [];
+  const sfR: TieData[] = [];
+  // Add QF left winners to leftTeams for SF tracking
+  for (const t of qfL) getTeams(t).forEach(n => leftTeams.add(n));
+  for (const t of sf) {
+    const teams = getTeams(t);
+    if (teams.some(n => leftTeams.has(n))) {
+      sfL.push(t);
+    } else {
+      sfR.push(t);
+    }
+  }
+
+  // Fill with TBD for display
   const hasR16 = r16.length > 0;
-  const finalQfL = hasR16 ? fillTo(qfL, 2) : qfL;
-  const finalQfR = hasR16 ? fillTo(qfR, 2) : qfR;
-  const finalSfL = hasR16 ? fillTo(sfL, 1) : sfL;
-  const finalSfR = hasR16 ? fillTo(sfR, 1) : sfR;
-  const finalF = f.length > 0 ? f : (hasR16 ? [{ ...TBD }] : []);
+  const hasQF = qf.length > 0;
+  const finalQfL = (hasR16 || hasQF) ? fillTo(qfL, 2) : qfL;
+  const finalQfR = (hasR16 || hasQF) ? fillTo(qfR, 2) : qfR;
+  const finalSfL = (hasR16 || hasQF) ? fillTo(sfL, 1) : sfL;
+  const finalSfR = (hasR16 || hasQF) ? fillTo(sfR, 1) : sfR;
+  const finalF = f.length > 0 ? f : ((hasR16 || hasQF) ? [{ ...TBD }] : []);
 
   return (
     <div style={{ position: "relative", overflow: "hidden" }}>

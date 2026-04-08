@@ -111,21 +111,48 @@ export default function TeamsPage() {
             onBlur={() => setTimeout(() => setShowResults(false), 200)}
             style={{ width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid #334155", background: "#111827", color: "#E1E7EF", fontSize: "13px", outline: "none" }}
           />
-          {showResults && searchResults.length > 0 && (
-            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "4px", zIndex: 50, background: "#1E293B", border: "1px solid #334155", borderRadius: "10px", overflow: "hidden", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-              {searchResults.map((r) => (
-                <Link key={`${r.type}-${r.id}`} href={r.type === "team" ? `/team/${r.id}` : `/player/${r.id}`} style={{ textDecoration: "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", borderBottom: "1px solid #334155" }} className="hover:bg-white/[0.03] transition-colors">
-                    <img src={r.photo} alt="" style={{ width: "24px", height: "24px", borderRadius: r.type === "player" ? "50%" : "0", objectFit: "contain", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: "13px", fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
-                      <div style={{ fontSize: "10px", color: "#566378" }}>{r.extra}</div>
-                    </div>
-                    <span style={{ fontSize: "10px", color: "#475569", flexShrink: 0 }}>{r.type === "team" ? "팀" : "선수"}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          {showResults && !searching && searchResults.length > 0 && (() => {
+            const teamResults = searchResults.filter(r => r.type === "team");
+            const playerResults = searchResults.filter(r => r.type === "player");
+            return (
+              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "4px", zIndex: 50, background: "#1E293B", border: "1px solid #334155", borderRadius: "10px", overflow: "hidden", boxShadow: "0 8px 24px rgba(0,0,0,0.4)", maxHeight: "384px", overflowY: "auto" }} className="scrollbar-hide">
+                {teamResults.length > 0 && (
+                  <>
+                    <div style={{ padding: "6px 14px", fontSize: "10px", fontWeight: 700, color: "#10B981", background: "#0F172A" }}>⚽ 팀</div>
+                    {teamResults.map((r) => (
+                      <Link key={`t-${r.id}`} href={`/team/${r.id}`} style={{ textDecoration: "none" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", borderBottom: "1px solid #263344" }} className="hover:bg-white/[0.03] transition-colors">
+                          <img src={r.photo} alt="" style={{ width: "24px", height: "24px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: "13px", fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
+                            <div style={{ fontSize: "10px", color: "#566378" }}>{r.extra}</div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </>
+                )}
+                {playerResults.length > 0 && (
+                  <>
+                    <div style={{ padding: "6px 14px", fontSize: "10px", fontWeight: 700, color: "#F59E0B", background: "#0F172A" }}>👤 선수</div>
+                    {playerResults.map((r) => (
+                      <Link key={`p-${r.id}`} href={`/player/${r.id}`} style={{ textDecoration: "none" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", borderBottom: "1px solid #263344" }} className="hover:bg-white/[0.03] transition-colors">
+                          <img src={r.photo} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, background: "#1E293B" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: "13px", fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
+                            <div style={{ fontSize: "10px", color: "#566378" }}>{r.extra}</div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </>
+                )}
+              </div>
+            );
+          })()}
+          {showResults && !searching && query.length >= 2 && searchResults.length === 0 && (
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "4px", padding: "12px", background: "#1E293B", border: "1px solid #334155", borderRadius: "10px", textAlign: "center", color: "#566378", fontSize: "12px" }}>검색 결과가 없습니다</div>
           )}
           {showResults && searching && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "4px", padding: "12px", background: "#1E293B", border: "1px solid #334155", borderRadius: "10px", textAlign: "center", color: "#566378", fontSize: "12px" }}>검색 중...</div>}
         </div>

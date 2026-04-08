@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useRef } from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import TournamentBracket from "@/components/TournamentBracket";
@@ -205,7 +206,7 @@ export default function StandingsPage() {
                 ) : standings.length === 0 ? (
                   <div className="p-12 text-center text-text-muted text-[14px]">시즌 준비 중입니다</div>
                 ) : (
-                  <StandingsTable standings={standings} />
+                  <StandingsTable standings={standings} leagueId={leagueId} />
                 )}
               </div>
             </details>
@@ -228,7 +229,7 @@ export default function StandingsPage() {
           ) : standings.length === 0 ? (
             <div className="p-12 text-center text-text-muted text-[14px]">시즌 준비 중입니다</div>
           ) : (
-            <StandingsTable standings={standings} />
+            <StandingsTable standings={standings} leagueId={leagueId} />
           )}
         </div>
         </>
@@ -302,7 +303,7 @@ export default function StandingsPage() {
 }
 
 // ── Standings Table ──
-function StandingsTable({ standings }: { standings: Standing[] }) {
+function StandingsTable({ standings, leagueId }: { standings: Standing[]; leagueId: string }) {
   const total = standings.length;
 
   // Collect unique zones for legend
@@ -354,10 +355,10 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
                     </div>
                   </td>
                   <td style={{ position: "sticky", left: "40px", zIndex: 1, background: rowBgColor, paddingTop: "10px", paddingBottom: "10px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Link href={`/team/${team.teamId}?league=${leagueId}`} style={{ display: "flex", alignItems: "center", gap: "6px", textDecoration: "none" }}>
                       <img src={team.teamLogo} alt={team.teamName} style={{ width: "24px", height: "24px", objectFit: "contain", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                      <span style={{ color: "#E1E7EF", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{team.teamName}</span>
-                    </div>
+                      <span style={{ color: "#E1E7EF", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} className="hover:text-emerald-400 transition-colors">{team.teamName}</span>
+                    </Link>
                   </td>
                   <td style={{ textAlign: "center", color: "#8494A7" }}>{team.played}</td>
                   <td style={{ textAlign: "center", color: "#8494A7" }}>{team.win}</td>

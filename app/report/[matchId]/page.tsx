@@ -364,10 +364,10 @@ export default function ReportPage() {
 
           {/* Teams */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "24px", marginBottom: "28px" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+            <Link href={`/team/${match.homeTeamId}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textDecoration: "none" }}>
               <TeamLogo teamId={match.homeTeamId} teamName={home} size={88} />
-              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
-            </div>
+              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }} className="hover:text-emerald-400 transition-colors">{home}</span>
+            </Link>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               {match.result ? (
                 <span style={{ fontSize: "36px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
@@ -375,10 +375,10 @@ export default function ReportPage() {
                 <span style={{ fontSize: "22px", fontWeight: 700, color: "#10B981" }}>VS</span>
               )}
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+            <Link href={`/team/${match.awayTeamId}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textDecoration: "none" }}>
               <TeamLogo teamId={match.awayTeamId} teamName={away} size={88} />
-              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
-            </div>
+              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }} className="hover:text-emerald-400 transition-colors">{away}</span>
+            </Link>
           </div>
 
           {/* Confidence + prediction */}

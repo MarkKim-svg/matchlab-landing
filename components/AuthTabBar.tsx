@@ -13,7 +13,7 @@ const tabs = [
     icon: TrendingUp,
   },
   { label: "순위", href: "/standings", icon: Trophy },
-  { label: "팀", href: "/teams", icon: Shield },
+  { label: "팀/선수", href: "/teams", icon: Shield },
   { label: "대시보드", href: "/dashboard", icon: BarChart3 },
 ];
 

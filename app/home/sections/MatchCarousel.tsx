@@ -17,6 +17,7 @@ interface Match {
 interface Props {
   predictions: { matches: Match[] } | null;
   loading: boolean;
+  isPro?: boolean;
 }
 
 function GoldStars({ count }: { count: number }) {
@@ -31,7 +32,7 @@ function GoldStars({ count }: { count: number }) {
   );
 }
 
-export default function MatchCarousel({ predictions, loading }: Props) {
+export default function MatchCarousel({ predictions, loading, isPro }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
@@ -111,11 +112,12 @@ export default function MatchCarousel({ predictions, loading }: Props) {
       >
         {matches.map((m) => {
           const [home, away] = splitTeams(m.match);
+          const locked = m.isProOnly && !isPro;
           return (
-            <Link
+            <div
               key={m.id}
-              href={`/report/${m.id}`}
-              className="snap-start shrink-0 w-[240px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200 flex flex-col items-center gap-2 overflow-hidden"
+              onClick={() => { if (locked) { alert("Pro 구독 후 열람 가능합니다"); } else { window.location.href = `/report/${m.id}`; } }}
+              className="snap-start shrink-0 w-[240px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200 flex flex-col items-center gap-2 overflow-hidden cursor-pointer"
             >
               {/* League badge */}
               <LeagueBadge league={m.league} />
@@ -131,7 +133,8 @@ export default function MatchCarousel({ predictions, loading }: Props) {
 
               {/* Stars */}
               <GoldStars count={m.confidence} />
-            </Link>
+              {locked && <span style={{ fontSize: "9px", color: "#F87171", fontWeight: 700 }}>🔒 Pro</span>}
+            </div>
           );
         })}
       </div>

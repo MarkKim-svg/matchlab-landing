@@ -104,7 +104,7 @@ export default function HomeClient({ userName, plan }: { userName: string; plan:
       <div className="home-main">
         {/* 캐러셀 */}
         <Card>
-          <MatchCarousel predictions={predictions} loading={predLoading} />
+          <MatchCarousel predictions={predictions} loading={predLoading} isPro={isPro} />
         </Card>
 
         {/* TopPick + 적중률 (2열) */}

@@ -128,12 +128,14 @@ export async function GET(
       }
     } catch { /* skip */ }
 
-    // Competitions this season (from seasonFixtures)
+    // Competitions this season (from seasonFixtures, official only)
+    const FRIENDLY_EXCLUDE = /friend|pre.?season|international champions|club.?friendly|warm.?up|invitational/i;
     const compMap = new Map<number, { name: string; logo: string }>();
     for (const f of (Array.isArray(seasonFixtures) ? seasonFixtures : [])) {
       const lid = f.league?.id;
-      if (lid && !compMap.has(lid)) {
-        compMap.set(lid, { name: f.league.name ?? "", logo: f.league.logo ?? "" });
+      const name = f.league?.name ?? "";
+      if (lid && !compMap.has(lid) && !FRIENDLY_EXCLUDE.test(name)) {
+        compMap.set(lid, { name, logo: f.league.logo ?? "" });
       }
     }
     const competitions = Array.from(compMap.values());

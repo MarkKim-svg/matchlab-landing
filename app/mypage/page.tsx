@@ -135,7 +135,7 @@ export default function MyPage() {
               </ul>
 
               <a
-                href="/#pricing"
+                href="/pricing"
                 className="block w-full text-center py-3 rounded-xl font-medium text-white bg-emerald-500 hover:bg-emerald-400 transition-colors"
               >
                 Pro 업그레이드 — 월 9,900원

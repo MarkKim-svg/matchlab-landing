@@ -25,12 +25,13 @@ export async function GET(
     const season = request.nextUrl.searchParams.get("season") || "2025";
 
     // Parallel fetch
-    const [recentFixtures, nextFixtures, squadData, playersData, statsData] = await Promise.all([
+    const [recentFixtures, nextFixtures, squadData, playersData, statsData, seasonFixtures] = await Promise.all([
       apiFetch(`/fixtures?team=${teamId}&last=10`, apiKey),
       apiFetch(`/fixtures?team=${teamId}&next=3`, apiKey),
       apiFetch(`/players/squads?team=${teamId}`, apiKey),
       leagueId ? apiFetch(`/players?team=${teamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       leagueId ? apiFetch(`/teams/statistics?team=${teamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve(null),
+      apiFetch(`/fixtures?team=${teamId}&season=${season}`, apiKey),
     ]);
 
     // Recent matches
@@ -103,7 +104,30 @@ export async function GET(
       };
     }
 
-    return NextResponse.json({ recent, next, squad, topPlayers, seasonStats });
+    // All-competition season stats
+    let allCompStats = null;
+    try {
+      const allFix = Array.isArray(seasonFixtures) ? seasonFixtures : [];
+      let aw = 0, ad = 0, al = 0, agf = 0, aga = 0, acs = 0;
+      for (const f of allFix) {
+        const st = f.fixture?.status?.short;
+        if (st !== "FT" && st !== "AET" && st !== "PEN") continue;
+        const hg = f.goals?.home ?? 0;
+        const ag = f.goals?.away ?? 0;
+        const isHome = f.teams?.home?.id === Number(teamId);
+        const my = isHome ? hg : ag;
+        const their = isHome ? ag : hg;
+        agf += my; aga += their;
+        if (my > their) aw++; else if (my === their) ad++; else al++;
+        if (their === 0) acs++;
+      }
+      const total = aw + ad + al;
+      if (total > 0) {
+        allCompStats = { played: total, wins: aw, draws: ad, losses: al, goalsFor: agf, goalsAgainst: aga, cleanSheets: acs };
+      }
+    } catch { /* skip */ }
+
+    return NextResponse.json({ recent, next, squad, topPlayers, seasonStats, allCompStats });
   } catch (err) {
     console.error("Team API error:", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

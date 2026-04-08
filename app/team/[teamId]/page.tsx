@@ -26,7 +26,7 @@ function TeamDetailContent() {
   const teamId = params.teamId;
   const leagueId = searchParams.get("league") || "";
 
-  const [data, setData] = useState<{ recent: RecentMatch[]; next: NextMatch[]; squad: SquadPlayer[]; topPlayers: TopPlayer[]; seasonStats: SeasonStats | null } | null>(null);
+  const [data, setData] = useState<{ recent: RecentMatch[]; next: NextMatch[]; squad: SquadPlayer[]; topPlayers: TopPlayer[]; seasonStats: SeasonStats | null; allCompStats?: { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number; cleanSheets: number } | null } | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Get team info from first fixture
@@ -74,28 +74,16 @@ function TeamDetailContent() {
           </div>
         </div>
 
-        {/* All-comp stats inside header */}
-        {data.recent.length > 0 && (() => {
-          let w = 0, d2 = 0, l = 0, gf = 0, ga = 0, cs = 0;
-          for (const m of data.recent) {
-            const fin = m.status === "FT" || m.status === "AET" || m.status === "PEN";
-            if (!fin || m.homeGoals === null || m.awayGoals === null) continue;
-            const isHome = m.homeTeamId === teamId;
-            const my = isHome ? m.homeGoals : m.awayGoals;
-            const their = isHome ? m.awayGoals : m.homeGoals;
-            gf += my!; ga += their!;
-            if (my! > their!) w++; else if (my === their) d2++; else l++;
-            if (their === 0) cs++;
-          }
-          const total = w + d2 + l;
-          if (total === 0) return null;
+        {/* All-comp season stats */}
+        {data.allCompStats && (() => {
+          const ac = data.allCompStats;
           return (
             <>
-              <div style={{ fontSize: "12px", fontWeight: 600, color: "#8494A7", marginBottom: "8px" }}>전체 대회 최근 {total}경기</div>
+              <div style={{ fontSize: "12px", fontWeight: 600, color: "#8494A7", marginBottom: "8px" }}>2025-26 시즌 전체 대회</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(70px, 1fr))", gap: "6px" }}>
                 {[
-                  { label: "경기", value: total }, { label: "승", value: w }, { label: "무", value: d2 }, { label: "패", value: l },
-                  { label: "득점", value: gf }, { label: "실점", value: ga }, { label: "득실", value: gf - ga }, { label: "클린시트", value: cs },
+                  { label: "경기", value: ac.played }, { label: "승", value: ac.wins }, { label: "무", value: ac.draws }, { label: "패", value: ac.losses },
+                  { label: "득점", value: ac.goalsFor }, { label: "실점", value: ac.goalsAgainst }, { label: "득실", value: ac.goalsFor - ac.goalsAgainst }, { label: "클린시트", value: ac.cleanSheets },
                 ].map(s => (
                   <div key={s.label} style={{ background: "#0F172A", borderRadius: "8px", padding: "8px", textAlign: "center" }}>
                     <div style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{s.value}</div>

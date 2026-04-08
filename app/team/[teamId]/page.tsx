@@ -79,26 +79,61 @@ function TeamDetailContent() {
         </div>
       </div>
 
-      {/* Season Stats */}
+      {/* Season Stats — League */}
       {ss && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: "8px" }}>
-          {[
-            { label: "경기", value: ss.played },
-            { label: "승", value: ss.wins },
-            { label: "무", value: ss.draws },
-            { label: "패", value: ss.losses },
-            { label: "득점", value: ss.goalsFor },
-            { label: "실점", value: ss.goalsAgainst },
-            { label: "득실", value: ss.goalsFor - ss.goalsAgainst },
-            { label: "클린시트", value: ss.cleanSheets },
-          ].map(s => (
-            <div key={s.label} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
-              <div style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{s.value}</div>
-              <div style={{ fontSize: "10px", color: "#566378" }}>{s.label}</div>
-            </div>
-          ))}
+        <div>
+          <div style={{ fontSize: "13px", fontWeight: 700, color: "#10B981", marginBottom: "8px" }}>리그 기준</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", gap: "8px" }}>
+            {[
+              { label: "경기", value: ss.played },
+              { label: "승", value: ss.wins },
+              { label: "무", value: ss.draws },
+              { label: "패", value: ss.losses },
+              { label: "득점", value: ss.goalsFor },
+              { label: "실점", value: ss.goalsAgainst },
+              { label: "득실", value: ss.goalsFor - ss.goalsAgainst },
+              { label: "클린시트", value: ss.cleanSheets },
+            ].map(s => (
+              <div key={s.label} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                <div style={{ fontSize: "18px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{s.value}</div>
+                <div style={{ fontSize: "10px", color: "#566378" }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
+
+      {/* All competitions stats — computed from recent fixtures */}
+      {data.recent.length > 0 && (() => {
+        let w = 0, d = 0, l = 0, gf = 0, ga = 0;
+        for (const m of data.recent) {
+          const fin = m.status === "FT" || m.status === "AET" || m.status === "PEN";
+          if (!fin || m.homeGoals === null || m.awayGoals === null) continue;
+          const isHome = m.homeTeamId === teamId;
+          const my = isHome ? m.homeGoals : m.awayGoals;
+          const their = isHome ? m.awayGoals : m.homeGoals;
+          gf += my!; ga += their!;
+          if (my! > their!) w++; else if (my === their) d++; else l++;
+        }
+        const total = w + d + l;
+        if (total === 0) return null;
+        return (
+          <div>
+            <div style={{ fontSize: "12px", fontWeight: 600, color: "#8494A7", marginBottom: "6px" }}>전체 대회 최근 {total}경기</div>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {[
+                { label: "승", value: w }, { label: "무", value: d }, { label: "패", value: l },
+                { label: "득점", value: gf }, { label: "실점", value: ga }, { label: "득실", value: gf - ga },
+              ].map(s => (
+                <div key={s.label} style={{ background: "#0F172A", border: "1px solid #1E2D47", borderRadius: "8px", padding: "8px 12px", textAlign: "center" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{s.value}</div>
+                  <div style={{ fontSize: "9px", color: "#566378" }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Recent Matches */}
       {data.recent.length > 0 && (
@@ -120,11 +155,11 @@ function TeamDetailContent() {
                   <span style={{ fontSize: "10px", color: isHome ? "#10B981" : "#8494A7", width: "14px", flexShrink: 0 }}>{isHome ? "H" : "A"}</span>
                   <img src={`https://media.api-sports.io/football/teams/${opponentId}.png`} alt="" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <span style={{ fontSize: "12px", color: "#E1E7EF", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opponent}</span>
+                  <span style={{ fontSize: "9px", color: "#475569", flexShrink: 0 }}>{m.league}</span>
                   {fin && m.homeGoals !== null && (
                     <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{m.homeGoals}-{m.awayGoals}</span>
                   )}
                   {result && <FormBadge ch={result} />}
-                  <span style={{ fontSize: "9px", color: "#475569", flexShrink: 0 }}>{m.league}</span>
                 </div>
               );
             })}

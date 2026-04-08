@@ -19,9 +19,22 @@ interface PlayerData {
 const POS_LABELS: Record<string, string> = { Goalkeeper: "골키퍼", Defender: "수비수", Midfielder: "미드필더", Attacker: "공격수" };
 
 // Individual award keywords
-const INDIVIDUAL_KEYWORDS = ["ballon", "golden boot", "golden ball", "golden glove", "golden shoe", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal", "player of", "pichichi", "capocannoniere", "trofeo", "footballer of"];
+const INDIVIDUAL_KW = ["ballon", "golden boot", "golden ball", "golden glove", "golden shoe", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal", "player of", "pichichi", "capocannoniere", "trofeo", "footballer of", "playmaker", "the best"];
 
-// Country → flag emoji
+// Major team competitions (whitelist approach)
+const MAJOR_TEAM_KW = [
+  // Domestic leagues
+  "premier league", "la liga", "serie a", "bundesliga", "ligue 1", "eredivisie", "primeira liga", "süper lig",
+  // Domestic cups
+  "fa cup", "copa del rey", "coppa italia", "dfb-pokal", "dfb pokal", "coupe de france", "league cup", "carabao", "efl cup",
+  // Super cups
+  "community shield", "supercopa", "supercoppa", "dfl-supercup", "trophée des champions",
+  // Continental
+  "champions league", "europa league", "conference league", "uefa super cup", "club world cup", "intercontinental",
+  // National team
+  "world cup", "euro 20", "copa america", "nations league", "african cup", "asian cup",
+];
+
 const COUNTRY_FLAGS: Record<string, string> = {
   england: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", spain: "🇪🇸", italy: "🇮🇹", germany: "🇩🇪", france: "🇫🇷",
   portugal: "🇵🇹", netherlands: "🇳🇱", brazil: "🇧🇷", argentina: "🇦🇷", world: "🌍",
@@ -36,12 +49,13 @@ function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
   const [teamOpen, setTeamOpen] = useState(true);
   const [indivOpen, setIndivOpen] = useState(true);
 
-  const isIndividual = (t: { league: string }) => INDIVIDUAL_KEYWORDS.some(kw => t.league.toLowerCase().includes(kw));
+  const isIndividual = (t: { league: string }) => INDIVIDUAL_KW.some(kw => t.league.toLowerCase().includes(kw));
+  const isMajorTeam = (t: { league: string }) => MAJOR_TEAM_KW.some(kw => t.league.toLowerCase().includes(kw));
 
-  // Team: winners only
-  const teamTrophies = trophies.filter(t => !isIndividual(t) && t.place === "Winner");
-  // Individual: all (winners + nominees etc)
-  const indivTrophies = trophies.filter(t => isIndividual(t));
+  // Team: winners only + major competitions only
+  const teamTrophies = trophies.filter(t => !isIndividual(t) && t.place === "Winner" && isMajorTeam(t));
+  // Individual: winners only
+  const indivTrophies = trophies.filter(t => isIndividual(t) && t.place === "Winner");
 
   function groupTrophies(list: PlayerData["trophies"]) {
     const map = new Map<string, { league: string; country: string; seasons: string[]; count: number }>();
@@ -80,11 +94,10 @@ function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
                   <span style={{ fontSize: "14px", flexShrink: 0 }}>🏆</span>
                   {flag && <span style={{ fontSize: "14px", flexShrink: 0 }}>{flag}</span>}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                       <span style={{ fontSize: "14px", fontWeight: 700, color: "#FBBF24" }}>{t.league}</span>
                       {t.count > 1 && <span style={{ fontSize: "13px", fontWeight: 700, color: "#10B981" }}>{t.count}회</span>}
                     </div>
-                    <div style={{ fontSize: "10px", color: "#566378", marginTop: "2px" }}>{t.seasons.join(", ")}</div>
                   </div>
                 </div>
               );

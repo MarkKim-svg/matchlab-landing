@@ -138,6 +138,7 @@ export async function GET(
         awayTeam: m.teams?.away?.name ?? "",
         homeGoals: m.goals?.home ?? 0,
         awayGoals: m.goals?.away ?? 0,
+        league: m.league?.name ?? "",
       };
     });
 

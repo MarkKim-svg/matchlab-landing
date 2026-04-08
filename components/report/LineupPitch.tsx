@@ -24,19 +24,22 @@ function posColor(pos: string) {
 }
 
 // Formation → coordinates (% based within half-pitch)
+// GK at bottom (y=90%), FW at top (y=10%) — attack direction is upward
 function getPositions(formation: string, count: number): { x: number; y: number }[] {
   const parts = formation.split("-").map(Number).filter(n => n > 0);
   if (parts.length === 0) return evenSpread(count);
 
+  // GK (1) + formation lines: e.g. "4-2-3-1" → [1, 4, 2, 3, 1]
   const lines: number[] = [1, ...parts];
   const positions: { x: number; y: number }[] = [];
   const totalLines = lines.length;
 
   for (let li = 0; li < totalLines; li++) {
     const n = lines[li];
-    const y = 8 + (li / (totalLines - 1 || 1)) * 82;
+    // Invert: li=0 (GK) → y=90% (bottom), last line (FW) → y=10% (top)
+    const y = 90 - (li / (totalLines - 1 || 1)) * 80;
     for (let pi = 0; pi < n; pi++) {
-      const x = n === 1 ? 50 : 14 + (pi / (n - 1)) * 72;
+      const x = n === 1 ? 50 : 12 + (pi / (n - 1)) * 76;
       positions.push({ x, y });
     }
   }

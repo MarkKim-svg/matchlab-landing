@@ -382,15 +382,15 @@ export default function MatchesDatePage() {
             {/* Date nav */}
             <div className="mb-6">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white cursor-pointer" style={{ minWidth: "44px", minHeight: "44px", padding: "8px 12px", position: "relative", zIndex: 5 }}>← 이전</button>
-                <div className="text-center">
+                <button onClick={() => goDate(shiftDate(dateStr, -1))} className="rounded-lg border border-[#334155] bg-[#1E293B] text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white cursor-pointer" style={{ minWidth: "44px", minHeight: "44px", padding: "8px 12px", position: "relative", zIndex: 10 }}>← 이전</button>
+                <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
                   <DarkCalendar
                     value={dateStr}
                     onChange={goDate}
                     label={formatKoreanDate(dateStr)}
                   />
                 </div>
-                <button onClick={() => goDate(shiftDate(dateStr, 1))} className="rounded-lg border border-[#334155] bg-[#1E293B] text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white cursor-pointer" style={{ minWidth: "44px", minHeight: "44px", padding: "8px 12px", position: "relative", zIndex: 5 }}>다음 →</button>
+                <button onClick={() => goDate(shiftDate(dateStr, 1))} className="rounded-lg border border-[#334155] bg-[#1E293B] text-sm text-slate-300 transition hover:border-emerald-500/50 hover:text-white cursor-pointer" style={{ minWidth: "44px", minHeight: "44px", padding: "8px 12px", position: "relative", zIndex: 10 }}>다음 →</button>
               </div>
 
               {!loading && !error && (

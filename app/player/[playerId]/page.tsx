@@ -18,6 +18,80 @@ interface PlayerData {
 
 const POS_LABELS: Record<string, string> = { Goalkeeper: "골키퍼", Defender: "수비수", Midfielder: "미드필더", Attacker: "공격수" };
 
+// Individual award keywords
+const INDIVIDUAL_KEYWORDS = ["ballon", "golden", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal"];
+
+function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
+  const [teamOpen, setTeamOpen] = useState(false);
+  const [indivOpen, setIndivOpen] = useState(false);
+
+  // Split team vs individual
+  const isIndividual = (t: { league: string }) => INDIVIDUAL_KEYWORDS.some(kw => t.league.toLowerCase().includes(kw));
+  const teamTrophies = trophies.filter(t => !isIndividual(t));
+  const indivTrophies = trophies.filter(t => isIndividual(t));
+
+  // Group by league + place, aggregate seasons
+  function groupTrophies(list: PlayerData["trophies"]) {
+    const map = new Map<string, { league: string; place: string; seasons: string[]; count: number }>();
+    for (const t of list) {
+      const key = `${t.league}|${t.place}`;
+      const existing = map.get(key);
+      if (existing) {
+        existing.seasons.push(t.season);
+        existing.count++;
+      } else {
+        map.set(key, { league: t.league, place: t.place, seasons: [t.season], count: 1 });
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+  }
+
+  function TrophyGroup({ label, icon, items, open, toggle }: { label: string; icon: string; items: ReturnType<typeof groupTrophies>; open: boolean; toggle: () => void }) {
+    if (items.length === 0) return null;
+    return (
+      <div>
+        <button onClick={toggle} className="cursor-pointer" style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", padding: "6px 0", width: "100%" }}>
+          <span style={{ fontSize: "14px" }}>{icon}</span>
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF" }}>{label}</span>
+          <span style={{ fontSize: "12px", color: "#566378" }}>({items.reduce((s, t) => s + t.count, 0)})</span>
+          <span style={{ marginLeft: "auto", fontSize: "12px", color: "#566378" }}>{open ? "▼" : "▶"}</span>
+        </button>
+        {open && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "4px" }}>
+            {items.map((t, i) => {
+              const isWin = t.place === "Winner";
+              const isRunner = t.place === "2nd Place" || t.place.includes("Runner");
+              return (
+                <div key={i} style={{ background: isWin ? "#FBBF2408" : "#111827", border: isWin ? "1px solid #FBBF2420" : "1px solid #1E2D47", borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontSize: "13px", flexShrink: 0 }}>{isWin ? "🏆" : isRunner ? "🥈" : "🏅"}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: "13px", fontWeight: 700, color: isWin ? "#FBBF24" : "#E1E7EF" }}>{t.league}</span>
+                    {t.count > 1 && <span style={{ fontSize: "12px", fontWeight: 700, color: "#10B981", marginLeft: "6px" }}>{t.count}회</span>}
+                    <div style={{ fontSize: "10px", color: "#566378", marginTop: "2px" }}>{t.seasons.join(", ")}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const teamGrouped = groupTrophies(teamTrophies);
+  const indivGrouped = groupTrophies(indivTrophies);
+
+  return (
+    <div>
+      <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🏆 수상 경력</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <TrophyGroup label="팀 수상" icon="🏆" items={teamGrouped} open={teamOpen} toggle={() => setTeamOpen(v => !v)} />
+        <TrophyGroup label="개인 수상" icon="🏅" items={indivGrouped} open={indivOpen} toggle={() => setIndivOpen(v => !v)} />
+      </div>
+    </div>
+  );
+}
+
 export default function PlayerPage() {
   const params = useParams<{ playerId: string }>();
   const [data, setData] = useState<PlayerData | null>(null);
@@ -115,26 +189,8 @@ export default function PlayerPage() {
                 </div>
               </div>
             )}
-            {/* Trophies */}
-            {data.trophies.length > 0 && (
-              <div>
-                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🏆 수상 경력</h2>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                  {data.trophies.map((t, i) => {
-                    const isWinner = t.place === "Winner";
-                    const isRunner = t.place === "2nd Place" || t.place?.includes("Runner");
-                    return (
-                      <div key={i} style={{ background: isWinner ? "#FBBF2408" : "#111827", border: isWinner ? "1px solid #FBBF2425" : "1px solid #1E2D47", borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span style={{ fontSize: "14px", flexShrink: 0 }}>{isWinner ? "🏆" : isRunner ? "🥈" : "🏅"}</span>
-                        <span style={{ fontSize: "12px", color: isWinner ? "#FBBF24" : "#E1E7EF", fontWeight: isWinner ? 700 : 500, flex: 1 }}>{t.league}</span>
-                        <span style={{ fontSize: "11px", color: "#566378", flexShrink: 0 }}>{t.season}</span>
-                        <span style={{ fontSize: "10px", color: "#8494A7", flexShrink: 0 }}>{t.country}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            {/* Trophies — grouped & collapsed */}
+            {data.trophies.length > 0 && <TrophySection trophies={data.trophies} />}
 
             {/* Transfers */}
             {data.transfers.length > 0 && (

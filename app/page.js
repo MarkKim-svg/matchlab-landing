@@ -464,6 +464,24 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
+  /* Big match check */
+  const BIG_MATCH_TEAMS = [
+    ['Barcelona', 'Real Madrid'], ['Manchester United', 'Manchester City'],
+    ['Liverpool', 'Manchester United'], ['Arsenal', 'Tottenham'],
+    ['AC Milan', 'Inter'], ['Juventus', 'AC Milan'],
+    ['Bayern Munich', 'Borussia Dortmund'], ['PSG', 'Marseille'],
+    ['Atletico Madrid', 'Real Madrid'], ['Barcelona', 'Atletico Madrid'],
+  ];
+  function checkBigMatch(p) {
+    if (p.isBigMatch) return true;
+    if (p.league?.includes('챔피언스리그') || p.league?.includes('Champions League') || p.league?.includes('유로파')) return true;
+    const [h, a] = splitTeams(p.match);
+    return BIG_MATCH_TEAMS.some(([t1, t2]) =>
+      (h.includes(t1) && a.includes(t2)) || (h.includes(t2) && a.includes(t1))
+    );
+  }
+  const bigMatches = matches.filter(checkBigMatch);
+
   /* Derive cards */
   const topPick = matches.find((m) => m.confidence >= 4) ?? matches[0];
   const normalPick = matches.find((m) => m.confidence <= 3) ?? matches[1];
@@ -530,6 +548,20 @@ export default function Home() {
             <ReportPreview />
           </div>
         </section>
+
+        {/* ═══ 빅매치 배너 ═══ */}
+        {bigMatches.length > 0 && (
+          <div className="mx-auto max-w-2xl px-4 py-3">
+            <div className="flex items-center justify-center gap-2 rounded-xl bg-orange-500/10 border border-orange-500/30 px-4 py-2.5">
+              <span className="text-orange-400 text-sm font-bold animate-pulse">🔥</span>
+              <p className="text-sm text-[#F1F5F9]">
+                오늘의 빅매치: <span className="font-semibold text-orange-400">{splitTeams(bigMatches[0].match).join(' vs ')}</span>
+                {bigMatches.length > 1 && <span className="text-[#94A3B8]"> 외 {bigMatches.length - 1}건</span>}
+              </p>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#10B981]/20 text-[#10B981] font-semibold">Pro 전용</span>
+            </div>
+          </div>
+        )}
 
         {/* ═══ 3. 오늘의 분석 미리보기 ═══ */}
         <FadeSection>
@@ -710,6 +742,10 @@ export default function Home() {
                     <span className="text-emerald-500 shrink-0">✅</span>
                     고확신 ⭐4+⭐5 경기
                   </li>
+                  <li className="flex items-start gap-2 text-orange-400 font-semibold">
+                    <span className="text-emerald-500 shrink-0">✅</span>
+                    🔥 빅매치 전경기 분석
+                  </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
                     상세 분석 리포트 전체 열람
@@ -769,6 +805,34 @@ export default function Home() {
               </div>
             </div>
 
+            {/* 빅매치 비주얼 비교 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 max-w-lg mx-auto">
+              {/* Free */}
+              <div className="rounded-xl p-4 border border-[#334155] bg-[#1E293B]/50 relative overflow-hidden">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 mb-2">🔥 빅매치</span>
+                <div className="blur-sm pointer-events-none select-none">
+                  <p className="text-[13px] font-bold text-[#E1E7EF]">바르셀로나 vs 레알 마드리드</p>
+                  <p className="text-[11px] text-[#94A3B8] mt-1">AI 예측: ████ (██.█%)</p>
+                  <p className="text-[11px] text-[#FBBF24] mt-1">확신도: ⭐⭐⭐⭐⭐</p>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(15,23,42,0.6)" }}>
+                  <span className="text-xs font-semibold text-[#94A3B8]">🔒 Pro 전용</span>
+                </div>
+              </div>
+              {/* Pro */}
+              <div className="rounded-xl p-4 border-2 border-[#10B981] bg-[#1E293B]/50">
+                <div className="flex gap-2 mb-2">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">🔥 빅매치</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">PRO</span>
+                </div>
+                <p className="text-[13px] font-bold text-[#F1F5F9]">바르셀로나 vs 레알 마드리드</p>
+                <p className="text-[11px] text-[#10B981] font-semibold mt-1">AI 예측: 바르셀로나 승 (64.2%)</p>
+                <p className="text-[11px] text-[#FBBF24] mt-1">확신도: ⭐⭐⭐⭐⭐</p>
+                <p className="text-[10px] text-[#64748B] mt-1">ELO +142 | xG 2.31 vs 0.94</p>
+              </div>
+            </div>
+            <p className="text-center text-[11px] text-[#64748B] mt-3">빅매치 분석은 Pro에서만 열람 가능합니다</p>
+
             <div className="text-center mt-8">
               <a
                 href="/login"
@@ -805,6 +869,7 @@ export default function Home() {
                     { ok: true, text: "확신도 ⭐~⭐⭐⭐ 경기" },
                     { ok: true, text: "적중률 리포트 (전체 공개)" },
                     { ok: false, text: "고확신 ⭐4+ 경기" },
+                    { ok: false, text: "🔥 빅매치 분석" },
                     { ok: false, text: "상세 분석 근거" },
                     { ok: false, text: "배당 이동 분석" },
                   ].map((item) => (
@@ -846,6 +911,7 @@ export default function Home() {
                   {[
                     { text: "Free의 모든 것 +", highlight: false },
                     { text: "고확신 ⭐4+⭐5 경기 (AI가 가장 자신 있는 경기)", highlight: true },
+                    { text: "🔥 빅매치 전경기 분석 (챔스·더비·엘클라시코)", highlight: true },
                     { text: "4개 모델 상세 근거 · 확률", highlight: false },
                     { text: "배당 이동 분석", highlight: false },
                     { text: "웹 대시보드 열람", highlight: false },

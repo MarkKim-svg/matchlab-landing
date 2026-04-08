@@ -11,17 +11,21 @@ const ROUND_QUERIES = [
   "Round of 16 - 2nd Leg",
   "Quarter-finals",
   "Quarter-finals - 2nd Leg",
+  "Quarter Finals",
   "Semi-finals",
   "Semi-finals - 2nd Leg",
+  "Semi Finals",
   "Final",
+  "8th Finals",
 ];
 
 // Normalize round name to base round
 function baseRound(r: string): string {
-  if (r.includes("Round of 16")) return "R16";
-  if (r.includes("Quarter")) return "QF";
-  if (r.includes("Semi")) return "SF";
-  if (r.includes("Final")) return "F";
+  const rl = r.toLowerCase();
+  if (rl.includes("round of 16") || rl.includes("8th final")) return "R16";
+  if (rl.includes("quarter")) return "QF";
+  if (rl.includes("semi") && !rl.includes("quarter")) return "SF";
+  if (rl === "final" || (rl.includes("final") && !rl.includes("quarter") && !rl.includes("semi") && !rl.includes("8th"))) return "F";
   return r;
 }
 
@@ -65,7 +69,9 @@ export async function GET(
           { headers: { "x-apisports-key": apiKey }, next: { revalidate: 3600 } }
         );
         const data = await res.json();
-        for (const f of (data?.response ?? [])) {
+        const fixtures = data?.response ?? [];
+        console.log(`[tournament] league=${leagueId} round="${round}" fixtures=${fixtures.length}`);
+        for (const f of fixtures) {
           allFixtures.push({ ...f, _round: round });
         }
       } catch { /* skip */ }
@@ -168,6 +174,7 @@ export async function GET(
       rounds[br] = ties;
     }
 
+    console.log(`[tournament] league=${leagueId} final rounds:`, Object.keys(rounds).map(k => `${k}(${rounds[k].length})`).join(", "));
     return NextResponse.json({ rounds });
   } catch (err) {
     console.error("Tournament API error:", err);

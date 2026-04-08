@@ -14,11 +14,7 @@ const LEAGUES = [
   { id: "61", name: "리그1" },
   { id: "2", name: "UCL" },
   { id: "3", name: "UEL" },
-  { id: "45", name: "FA Cup" },
-  { id: "143", name: "코파" },
-  { id: "137", name: "코파IT" },
-  { id: "81", name: "DFB" },
-  { id: "66", name: "쿠프" },
+  { id: "848", name: "UECL" },
 ];
 
 const MAIN_LEAGUES = ["39", "140", "135", "78", "61"];

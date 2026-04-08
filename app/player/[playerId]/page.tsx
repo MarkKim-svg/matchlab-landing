@@ -19,7 +19,7 @@ interface PlayerData {
 const POS_LABELS: Record<string, string> = { Goalkeeper: "골키퍼", Defender: "수비수", Midfielder: "미드필더", Attacker: "공격수" };
 
 // Individual award keywords
-const INDIVIDUAL_KEYWORDS = ["ballon", "golden", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal", "player of"];
+const INDIVIDUAL_KEYWORDS = ["ballon", "golden boot", "golden ball", "golden glove", "golden shoe", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal", "player of", "pichichi", "capocannoniere", "trofeo", "footballer of"];
 
 // Country → flag emoji
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -43,24 +43,25 @@ function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
   // Individual: all (winners + nominees etc)
   const indivTrophies = trophies.filter(t => isIndividual(t));
 
-  function groupTrophies(list: PlayerData["trophies"], winnersOnly = false) {
-    const filtered = winnersOnly ? list.filter(t => t.place === "Winner") : list;
-    const map = new Map<string, { league: string; country: string; place: string; seasons: string[]; count: number }>();
-    for (const t of filtered) {
-      const key = t.league;
+  function groupTrophies(list: PlayerData["trophies"]) {
+    const map = new Map<string, { league: string; country: string; seasons: string[]; count: number }>();
+    for (const t of list) {
+      // Fix short/ambiguous names
+      const displayName = t.league.length <= 4 && t.country ? `${t.country} ${t.league}` : t.league;
+      const key = displayName;
       const existing = map.get(key);
       if (existing) {
-        existing.seasons.push(t.season);
+        if (!existing.seasons.includes(t.season)) existing.seasons.push(t.season);
         existing.count++;
       } else {
-        map.set(key, { league: t.league, country: t.country, place: t.place, seasons: [t.season], count: 1 });
+        map.set(key, { league: displayName, country: t.country, seasons: [t.season], count: 1 });
       }
     }
     return Array.from(map.values()).sort((a, b) => b.count - a.count);
   }
 
-  function TrophyGroup({ label, icon, items, open, toggle }: { label: string; icon: string; items: ReturnType<typeof groupTrophies>; open: boolean; toggle: () => void }) {
-    if (items.length === 0) return null;
+  function TrophyGroup({ label, icon, items, open, toggle, emptyMsg }: { label: string; icon: string; items: ReturnType<typeof groupTrophies>; open: boolean; toggle: () => void; emptyMsg?: string }) {
+    if (items.length === 0) return emptyMsg ? <div style={{ fontSize: "12px", color: "#566378", padding: "4px 0" }}>{emptyMsg}</div> : null;
     const totalCount = items.reduce((s, t) => s + t.count, 0);
     return (
       <div>
@@ -102,7 +103,7 @@ function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
       <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🏆 수상 경력</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         <TrophyGroup label="팀 수상" icon="🏆" items={teamGrouped} open={teamOpen} toggle={() => setTeamOpen(v => !v)} />
-        <TrophyGroup label="개인 수상" icon="🏅" items={indivGrouped} open={indivOpen} toggle={() => setIndivOpen(v => !v)} />
+        <TrophyGroup label="개인 수상" icon="🏅" items={indivGrouped} open={indivOpen} toggle={() => setIndivOpen(v => !v)} emptyMsg="개인 수상 기록이 없습니다" />
       </div>
     </div>
   );

@@ -142,8 +142,10 @@ function TeamDetailContent() {
                 <div key={i} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "10px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ fontSize: "10px", color: "#566378", width: "55px", flexShrink: 0 }}>{m.date.slice(5)}</span>
                   <span style={{ fontSize: "10px", color: isHome ? "#10B981" : "#8494A7", width: "14px", flexShrink: 0 }}>{isHome ? "H" : "A"}</span>
-                  <img src={`https://media.api-sports.io/football/teams/${opponentId}.png`} alt="" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  <span style={{ fontSize: "12px", color: "#E1E7EF", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opponent}</span>
+                  <Link href={`/team/${opponentId}`} onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: "4px", flex: 1, minWidth: 0, textDecoration: "none" }}>
+                    <img src={`https://media.api-sports.io/football/teams/${opponentId}.png`} alt="" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <span style={{ fontSize: "12px", color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} className="hover:text-emerald-400 transition-colors">{opponent}</span>
+                  </Link>
                   <span style={{ fontSize: "9px", color: "#475569", flexShrink: 0 }}>{m.league}</span>
                   {fin && m.homeGoals !== null && (
                     <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{m.homeGoals}-{m.awayGoals}</span>
@@ -169,8 +171,10 @@ function TeamDetailContent() {
                 <div key={i} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "10px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ fontSize: "10px", color: "#566378", width: "55px", flexShrink: 0 }}>{m.date.slice(5)}</span>
                   <span style={{ fontSize: "10px", color: isHome ? "#10B981" : "#8494A7", width: "14px", flexShrink: 0 }}>{isHome ? "H" : "A"}</span>
-                  <img src={`https://media.api-sports.io/football/teams/${opponentId}.png`} alt="" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  <span style={{ fontSize: "12px", color: "#E1E7EF", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opponent}</span>
+                  <Link href={`/team/${opponentId}`} style={{ display: "flex", alignItems: "center", gap: "4px", flex: 1, minWidth: 0, textDecoration: "none" }}>
+                    <img src={`https://media.api-sports.io/football/teams/${opponentId}.png`} alt="" style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <span style={{ fontSize: "12px", color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} className="hover:text-emerald-400 transition-colors">{opponent}</span>
+                  </Link>
                   <span style={{ fontSize: "10px", color: "#566378", flexShrink: 0 }}>{m.league}</span>
                 </div>
               );

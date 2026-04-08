@@ -407,14 +407,31 @@ export default function NewsletterReport({
         {detailLoading ? (
           <MatchDetailSkeleton />
         ) : matchDetail && (
-          <div className="space-y-5">
-            <FormTable form={matchDetail.form} homeName={home} awayName={away} homeTeamId={match.homeTeamId} awayTeamId={match.awayTeamId} />
-            <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} homeTeamId={match.homeTeamId} awayTeamId={match.awayTeamId} />
-            <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
-            {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
-            {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}
-            <InjuriesList injuries={matchDetail.injuries} />
-          </div>
+          <>
+            <div className="space-y-5">
+              <FormTable form={matchDetail.form} homeName={home} awayName={away} homeTeamId={match.homeTeamId} awayTeamId={match.awayTeamId} />
+              <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} homeTeamId={match.homeTeamId} awayTeamId={match.awayTeamId} />
+              <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
+            </div>
+
+            {locked ? (
+              <div className="relative" style={{ marginTop: "20px" }}>
+                <div className="space-y-4 pointer-events-none select-none" style={{ filter: "blur(6px)", maxHeight: "300px", overflow: "hidden" }}>
+                  {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
+                  {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}
+                  <InjuriesList injuries={matchDetail.injuries} />
+                </div>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(transparent, #0F172A)" }} />
+                <ProOverlay />
+              </div>
+            ) : (
+              <div className="space-y-5" style={{ marginTop: "20px" }}>
+                {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
+                {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}
+                <InjuriesList injuries={matchDetail.injuries} />
+              </div>
+            )}
+          </>
         )}
 
         {/* Remaining sections — Pro: 전체 오픈 / Free: 블러 */}

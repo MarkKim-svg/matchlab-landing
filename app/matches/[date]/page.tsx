@@ -173,9 +173,14 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
       className="rounded-xl border border-[#334155] border-l-4 transition hover:border-emerald-500/40"
       style={{ background: "#1E293B", ...cardStyle, padding: "16px", overflow: "hidden" }}
     >
-      {/* Row 1: League + confidence */}
+      {/* Row 1: League + bigMatch + confidence */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-        <LeagueBadge league={m.league} />
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <LeagueBadge league={m.league} />
+          {m.isBigMatch && (
+            <span style={{ background: "#EF444420", color: "#F87171", borderRadius: "6px", padding: "2px 6px", fontSize: "10px", fontWeight: 700 }}>🔥 빅매치</span>
+          )}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           {showDate && <span style={{ fontSize: "11px", color: "#566378" }}>{m.date}</span>}
           <span style={{ fontSize: "12px", color: "#8494A7" }}>{m.confidenceLabel}</span>

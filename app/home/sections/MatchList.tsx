@@ -13,6 +13,7 @@ interface Match {
   confidence: number;
   confidenceLabel: string;
   isProOnly: boolean;
+  isBigMatch?: boolean;
   homeTeamId?: string;
   awayTeamId?: string;
 }
@@ -66,7 +67,10 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
         style={{ background: "#1A2332", border: "1px solid #F59E0B55", padding: "16px", marginBottom: "16px" }}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-          <LeagueBadge league={match.league} />
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <LeagueBadge league={match.league} />
+            {match.isBigMatch && <span style={{ background: "#EF444420", color: "#F87171", borderRadius: "6px", padding: "2px 6px", fontSize: "10px", fontWeight: 700 }}>🔥</span>}
+          </div>
           <span style={{ background: "#FBBF2425", color: "#FBBF24", border: "1px solid #FBBF2450", borderRadius: "9999px", padding: "3px 10px", fontSize: "11px", fontWeight: 700 }}>
             🔒 Pro
           </span>
@@ -89,7 +93,10 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-          <LeagueBadge league={match.league} />
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <LeagueBadge league={match.league} />
+            {match.isBigMatch && <span style={{ background: "#EF444420", color: "#F87171", borderRadius: "6px", padding: "2px 6px", fontSize: "10px", fontWeight: 700 }}>🔥</span>}
+          </div>
           <GoldStars count={match.confidence} />
         </div>
         {teamRow}

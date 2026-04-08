@@ -384,6 +384,9 @@ export default function ReportPage() {
           {/* Confidence + prediction */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ fontSize: "14px", color: "#d4d4d4" }}>{match.confidenceLabel}</span>
+            {match.isBigMatch && (
+              <span style={{ background: "#EF444420", color: "#F87171", borderRadius: "8px", padding: "3px 10px", fontSize: "12px", fontWeight: 700 }}>🔥 {match.bigMatchReason || "빅매치"}</span>
+            )}
             {match.prediction && (
               <span style={{ background: "rgba(16,185,129,0.15)", color: "#34d399", borderRadius: "8px", padding: "4px 12px", fontSize: "13px", fontWeight: 700 }}>
                 {match.prediction}

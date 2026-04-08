@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import { isBigMatch } from "./big-match";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const DATABASE_ID = process.env.NOTION_PREDICTIONS_DB_ID!;
@@ -28,6 +29,8 @@ export interface MatchPrediction {
   confidence: number;
   confidenceLabel: string;
   isProOnly: boolean;
+  isBigMatch: boolean;
+  bigMatchReason?: string;
   poisson: { home: string; away: string };
   elo: { home: string; away: string };
   odds: { home: string; away: string };
@@ -144,6 +147,13 @@ function parseMatchPrediction(page: any): MatchPrediction | null {
 
   if (!date || !match) return null;
 
+  // Split team names for big match check
+  const sep = match.includes(" vs ") ? " vs " : "vs";
+  const parts = match.split(sep);
+  const homeTeam = parts[0]?.trim() ?? "";
+  const awayTeam = parts[1]?.trim() ?? "";
+  const bigMatch = isBigMatch({ homeTeam, awayTeam });
+
   return {
     id: page.id,
     match,
@@ -152,7 +162,9 @@ function parseMatchPrediction(page: any): MatchPrediction | null {
     prediction,
     confidence,
     confidenceLabel,
-    isProOnly: confidence >= 4,
+    isProOnly: confidence >= 4 || bigMatch.isBig,
+    isBigMatch: bigMatch.isBig,
+    bigMatchReason: bigMatch.reason,
     poisson: { home: getTextProp(props, "푸아송_홈승"), away: getTextProp(props, "푸아송_원정승") },
     elo: { home: getTextProp(props, "ELO_홈승"), away: getTextProp(props, "ELO_원정승") },
     odds: { home: getTextProp(props, "배당_홈승"), away: getTextProp(props, "배당_원정승") },

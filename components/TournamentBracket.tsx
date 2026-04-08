@@ -163,7 +163,7 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return <div style={{ textAlign: "center", padding: "40px 0", color: "#566378", fontSize: "14px" }}>토너먼트 데이터가 아직 없습니다</div>;
   }
 
-  // ── Reverse assignment: QF defines sides, then R16 follows ──
+  // ── Build bracket: QF→R16 reverse ordering ──
   const TBD: TieData = { team1: "미정", team2: "미정", team1Logo: "", team2Logo: "", leg1: null, leg2: null, aggTeam1: 0, aggTeam2: 0, winner: null, finished: false };
 
   function fillTo(arr: TieData[], n: number): TieData[] {
@@ -177,57 +177,74 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return [arr.slice(0, mid), arr.slice(mid)];
   }
 
-  function getTeams(tie: TieData): string[] {
-    return [tie.team1, tie.team2, tie.winner ?? ""].filter(Boolean).map(t => t.toLowerCase());
+  function tieTeams(tie: TieData): Set<string> {
+    return new Set([tie.team1, tie.team2, tie.winner ?? ""].filter(Boolean).map(t => t.toLowerCase()));
   }
 
-  // Step 1: Split QF into left/right (2 per side)
+  // Find R16 tie that contains a given team name
+  function findR16(teamName: string, pool: TieData[]): TieData | undefined {
+    const tn = teamName.toLowerCase();
+    return pool.find(t => t.team1.toLowerCase() === tn || t.team2.toLowerCase() === tn || t.winner?.toLowerCase() === tn);
+  }
+
+  // Step 1: Split QF left/right
   const [qfL, qfR] = splitHalf(qf);
 
-  // Step 2: Collect all teams in left QF
-  const leftTeams = new Set<string>();
-  for (const t of qfL) getTeams(t).forEach(n => leftTeams.add(n));
+  // Step 2: Order R16 by QF pairing — each QF match maps to 2 R16 matches
+  function orderR16ByQF(qfSide: TieData[]): TieData[] {
+    const r16Pool = [...r16];
+    const ordered: TieData[] = [];
+    const used = new Set<number>();
 
-  // Step 3: Assign R16 to left/right based on QF team membership
-  const r16L: TieData[] = [];
-  const r16R: TieData[] = [];
-  for (const t of r16) {
-    const teams = getTeams(t);
-    if (teams.some(n => leftTeams.has(n))) {
-      r16L.push(t);
-    } else {
-      r16R.push(t);
+    for (const qfTie of qfSide) {
+      // Find R16 matches for team1 and team2 of this QF
+      for (const teamName of [qfTie.team1, qfTie.team2]) {
+        const idx = r16Pool.findIndex((t, i) => {
+          if (used.has(i)) return false;
+          const teams = tieTeams(t);
+          return teams.has(teamName.toLowerCase());
+        });
+        if (idx >= 0) {
+          ordered.push(r16Pool[idx]);
+          used.add(idx);
+        }
+      }
+    }
+    return ordered;
+  }
+
+  const r16L = qf.length > 0 ? orderR16ByQF(qfL) : r16.slice(0, Math.ceil(r16.length / 2));
+  const r16R = qf.length > 0 ? orderR16ByQF(qfR) : r16.slice(Math.ceil(r16.length / 2));
+
+  // Collect remaining R16 not assigned (edge cases)
+  if (qf.length > 0) {
+    const assignedTeams = new Set([...r16L, ...r16R].map(t => `${t.team1}|${t.team2}`));
+    for (const t of r16) {
+      if (!assignedTeams.has(`${t.team1}|${t.team2}`)) {
+        if (r16L.length <= r16R.length) r16L.push(t); else r16R.push(t);
+      }
     }
   }
-  // Fallback if QF is empty: simple split
-  if (qf.length === 0 && r16.length > 0) {
-    const [a, b] = splitHalf(r16);
-    r16L.length = 0; r16R.length = 0;
-    r16L.push(...a); r16R.push(...b);
-  }
 
-  // Step 4: SF — assign based on left QF teams
+  // Step 3: SF — match to QF sides
+  const leftQfTeams = new Set<string>();
+  for (const t of qfL) tieTeams(t).forEach(n => leftQfTeams.add(n));
+
   const sfL: TieData[] = [];
   const sfR: TieData[] = [];
-  // Add QF left winners to leftTeams for SF tracking
-  for (const t of qfL) getTeams(t).forEach(n => leftTeams.add(n));
   for (const t of sf) {
-    const teams = getTeams(t);
-    if (teams.some(n => leftTeams.has(n))) {
-      sfL.push(t);
-    } else {
-      sfR.push(t);
-    }
+    const teams = tieTeams(t);
+    if ([...teams].some(n => leftQfTeams.has(n))) sfL.push(t);
+    else sfR.push(t);
   }
 
-  // Fill with TBD for display
-  const hasR16 = r16.length > 0;
-  const hasQF = qf.length > 0;
-  const finalQfL = (hasR16 || hasQF) ? fillTo(qfL, 2) : qfL;
-  const finalQfR = (hasR16 || hasQF) ? fillTo(qfR, 2) : qfR;
-  const finalSfL = (hasR16 || hasQF) ? fillTo(sfL, 1) : sfL;
-  const finalSfR = (hasR16 || hasQF) ? fillTo(sfR, 1) : sfR;
-  const finalF = f.length > 0 ? f : ((hasR16 || hasQF) ? [{ ...TBD }] : []);
+  // Fill TBD
+  const hasKnockout = r16.length > 0 || qf.length > 0;
+  const finalQfL = hasKnockout ? fillTo(qfL, 2) : qfL;
+  const finalQfR = hasKnockout ? fillTo(qfR, 2) : qfR;
+  const finalSfL = hasKnockout ? fillTo(sfL, 1) : sfL;
+  const finalSfR = hasKnockout ? fillTo(sfR, 1) : sfR;
+  const finalF = f.length > 0 ? f : (hasKnockout ? [{ ...TBD }] : []);
 
   return (
     <div style={{ position: "relative", overflow: "hidden" }}>

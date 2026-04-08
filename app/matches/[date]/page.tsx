@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -256,6 +256,7 @@ export default function MatchesDatePage() {
   // Team filter
   const [selectedTeam, setSelectedTeam] = useState<string>("전체");
   const [leagueTeams, setLeagueTeams] = useState<{ name: string; logo: string }[]>([]);
+  const teamScrollRef = useRef<HTMLDivElement>(null);
 
   // Auth
   useEffect(() => {
@@ -520,9 +521,11 @@ export default function MatchesDatePage() {
               </button>
             </div>
 
-            {/* Team filter */}
+            {/* Team filter with arrows */}
             {leagueTeams.length > 0 && (
-              <div style={{ overflowX: "auto", marginBottom: "16px" }} className="scrollbar-hide">
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "16px" }}>
+                <button onClick={() => teamScrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })} className="cursor-pointer hidden md:flex" style={{ flexShrink: 0, width: "28px", height: "28px", borderRadius: "50%", background: "#111827", border: "1px solid #1E2D47", color: "#8494A7", fontSize: "12px", alignItems: "center", justifyContent: "center", padding: 0 }}>◀</button>
+              <div ref={teamScrollRef} style={{ overflowX: "auto", flex: 1 }} className="scrollbar-hide">
                 <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap" }}>
                   <button onClick={() => setSelectedTeam("전체")} className="cursor-pointer" style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "6px 10px", borderRadius: "10px", border: "none", background: selectedTeam === "전체" ? "rgba(16,185,129,0.15)" : "transparent", minWidth: "56px" }}>
                     <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#1E293B", border: selectedTeam === "전체" ? "2px solid #10B981" : "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: "#8494A7" }}>All</div>
@@ -535,6 +538,8 @@ export default function MatchesDatePage() {
                     </button>
                   ))}
                 </div>
+              </div>
+                <button onClick={() => teamScrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })} className="cursor-pointer hidden md:flex" style={{ flexShrink: 0, width: "28px", height: "28px", borderRadius: "50%", background: "#111827", border: "1px solid #1E2D47", color: "#8494A7", fontSize: "12px", alignItems: "center", justifyContent: "center", padding: 0 }}>▶</button>
               </div>
             )}
 

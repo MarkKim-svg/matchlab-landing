@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const revalidate = 3600;
 
 const ALLOWED_LEAGUES = new Set(["39", "140", "135", "78", "61", "2", "3", "848", "45", "143", "137", "81", "66"]);
+const API_BASE = "https://v3.football.api-sports.io";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,20 +19,49 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "API key not configured" }, { status: 500 });
     }
 
-    const res = await fetch(
-      `https://v3.football.api-sports.io/standings?league=${league}&season=${season}`,
-      {
+    // Fetch standings + upcoming fixtures in parallel
+    const today = new Date().toISOString().split("T")[0];
+    const twoWeeks = new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0];
+
+    const [standingsRes, fixturesRes] = await Promise.all([
+      fetch(`${API_BASE}/standings?league=${league}&season=${season}`, {
         headers: { "x-apisports-key": apiKey },
         next: { revalidate: 3600 },
-      }
-    );
+      }),
+      apiKey ? fetch(`${API_BASE}/fixtures?league=${league}&season=${season}&from=${today}&to=${twoWeeks}`, {
+        headers: { "x-apisports-key": apiKey },
+        next: { revalidate: 3600 },
+      }) : Promise.resolve(null),
+    ]);
 
-    const data = await res.json();
+    const data = await standingsRes.json();
     const standings = data?.response?.[0]?.league?.standings?.[0];
 
     if (!standings || standings.length === 0) {
-      return NextResponse.json({ standings: [], season: null });
+      return NextResponse.json({ standings: [], season: null, nextFixtures: {} });
     }
+
+    // Build next fixture map: teamId → { opponent, opponentLogo, isHome, date }
+    const nextFixtures: Record<number, { opponent: string; opponentLogo: string; isHome: boolean; date: string }> = {};
+    try {
+      if (fixturesRes) {
+        const fxData = await fixturesRes.json();
+        const fixtures = (fxData?.response ?? []).sort((a: any, b: any) =>
+          (a.fixture?.date ?? "").localeCompare(b.fixture?.date ?? "")
+        );
+        for (const f of fixtures) {
+          const hId = f.teams?.home?.id;
+          const aId = f.teams?.away?.id;
+          const date = f.fixture?.date?.split("T")[0] ?? "";
+          if (hId && !nextFixtures[hId]) {
+            nextFixtures[hId] = { opponent: f.teams.away.name, opponentLogo: f.teams.away.logo, isHome: true, date };
+          }
+          if (aId && !nextFixtures[aId]) {
+            nextFixtures[aId] = { opponent: f.teams.home.name, opponentLogo: f.teams.home.logo, isHome: false, date };
+          }
+        }
+      }
+    } catch { /* skip */ }
 
     const parsed = standings.map((t: any) => ({
       rank: t.rank,
@@ -45,7 +75,8 @@ export async function GET(request: NextRequest) {
       lose: t.all.lose,
       goalsDiff: t.goalsDiff,
       description: t.description ?? null,
-      form: t.form ?? "", // "WWLDW"
+      form: t.form ?? "",
+      nextMatch: nextFixtures[t.team.id] ?? null,
     }));
 
     return NextResponse.json({

@@ -35,6 +35,7 @@ interface Standing {
   goalsDiff: number;
   description: string | null;
   form?: string; // "WWLDW"
+  nextMatch?: { opponent: string; opponentLogo: string; isHome: boolean; date: string } | null;
 }
 
 interface Scorer {
@@ -332,7 +333,8 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
               <th className="text-center py-3 hidden sm:table-cell w-10">패</th>
               <th className="text-center py-3 w-14">득실</th>
               <th className="text-center py-3 w-14">승점</th>
-              <th className="text-center py-3 pr-4 hidden sm:table-cell">폼</th>
+              <th className="text-center py-3 hidden sm:table-cell">폼</th>
+              <th className="text-center py-3 pr-4 hidden md:table-cell">다음</th>
             </tr>
           </thead>
           <tbody>
@@ -377,7 +379,7 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
                   <td className="text-center">
                     <span className="font-bold text-emerald-400 font-mono-data">{team.points}</span>
                   </td>
-                  <td className="text-center pr-4 hidden sm:table-cell">
+                  <td className="text-center hidden sm:table-cell">
                     {team.form && (
                       <div style={{ display: "flex", gap: "2px", justifyContent: "center" }}>
                         {team.form.split("").slice(-5).map((ch, i) => {
@@ -389,6 +391,26 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
                           );
                         })}
                       </div>
+                    )}
+                  </td>
+                  <td className="text-center pr-4 hidden md:table-cell">
+                    {team.nextMatch ? (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                        <span style={{ fontSize: "10px", color: team.nextMatch.isHome ? "#10B981" : "#8494A7" }}>
+                          {team.nextMatch.isHome ? "H" : "A"}
+                        </span>
+                        <img
+                          src={team.nextMatch.opponentLogo}
+                          alt={team.nextMatch.opponent}
+                          style={{ width: "18px", height: "18px", objectFit: "contain", filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }}
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                        />
+                        <span className="hidden lg:inline" style={{ fontSize: "11px", color: "#8494A7", maxWidth: "70px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {team.nextMatch.opponent}
+                        </span>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: "10px", color: "#566378" }}>-</span>
                     )}
                   </td>
                 </tr>

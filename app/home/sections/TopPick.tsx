@@ -12,6 +12,8 @@ interface MatchPrediction {
   elo: { home: string; away: string };
   xg: { home: string; away: string };
   aiAdjustment: string;
+  isProOnly: boolean;
+  isBigMatch?: boolean;
   homeTeamId?: string;
   awayTeamId?: string;
 }
@@ -96,8 +98,8 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
 
           {(() => {
             // Free 유저도 ⭐~⭐⭐⭐ 경기는 예측 결과 오픈
-            const isTopPickLocked = !isPro && topMatch.confidence >= 4;
-            const showPrediction = isPro || topMatch.confidence <= 3;
+            const isTopPickLocked = !isPro && (topMatch.confidence >= 4 || topMatch.isProOnly);
+            const showPrediction = isPro || (!topMatch.isProOnly && topMatch.confidence <= 3);
 
             return showPrediction ? (
               <>

@@ -214,7 +214,7 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); alert("결제 기능 준비 중입니다. 곧 오픈 예정!"); }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = "/pricing"; }}
               className="cursor-pointer"
               style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "white", fontWeight: 700, fontSize: "12px", padding: "4px 12px", borderRadius: "8px", border: "none" }}
             >

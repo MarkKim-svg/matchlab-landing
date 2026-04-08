@@ -99,3 +99,7 @@
 /* Lineup pitch mobile */
 .lineup-pitch { display:flex; flex-direction:column; }
 .lineup-subs { display:flex; flex-direction:column; gap:4px; }
+
+/* Pricing grid */
+.pricing-grid { grid-template-columns:1fr; }
+@media (min-width:768px) { .pricing-grid { grid-template-columns:1fr 1fr; } }

@@ -52,7 +52,7 @@ export default function ProUpgradeBanner({ dashboard, loading }: Props) {
       </div>
 
       <button
-        onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+        onClick={() => window.location.href = "/pricing"}
         className="inline-block text-white font-bold rounded-lg px-4 py-2 text-sm cursor-pointer"
         style={{
           background: "linear-gradient(135deg, #d97706, #b45309)",

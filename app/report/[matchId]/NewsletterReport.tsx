@@ -267,7 +267,7 @@ function ProOverlay() {
       <p className="mt-2 text-sm font-bold text-white">프리미엄 전용 분석</p>
       <p className="mt-1 text-xs text-center px-4" style={{ color: "#8494A7" }}>전술 분석 · 핵심 변수 · 상세 예측 데이터</p>
       <button
-        onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")}
+        onClick={() => window.location.href = "/pricing"}
         className="mt-3 rounded-lg px-5 py-2 text-xs font-bold text-white cursor-pointer"
         style={{ background: "linear-gradient(135deg, #d97706, #b45309)" }}
       >
@@ -425,7 +425,7 @@ export default function NewsletterReport({
                       <span key={t} style={{ fontSize: "13px", color: "#566378" }}>{t}</span>
                     ))}
                   </div>
-                  <button onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")} className="cursor-pointer" style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "white", fontWeight: 700, fontSize: "14px", padding: "10px 24px", borderRadius: "10px", border: "none" }}>
+                  <button onClick={() => window.location.href = "/pricing"} className="cursor-pointer" style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "white", fontWeight: 700, fontSize: "14px", padding: "10px 24px", borderRadius: "10px", border: "none" }}>
                     Pro 시작하기
                   </button>
                 </div>

@@ -37,7 +37,7 @@ function GoldStars({ count }: { count: number }) {
 }
 
 function handleProClick() {
-  alert("결제 기능 준비 중입니다. 곧 오픈 예정!");
+  window.location.href = "/pricing";
 }
 
 function MatchCard({ match, locked }: { match: Match; locked: boolean }) {

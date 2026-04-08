@@ -116,7 +116,7 @@ export default function MatchCarousel({ predictions, loading, isPro }: Props) {
           return (
             <div
               key={m.id}
-              onClick={() => { if (locked) { alert("Pro 구독 후 열람 가능합니다"); } else { window.location.href = `/report/${m.id}`; } }}
+              onClick={() => { if (locked) { window.location.href = "/pricing"; } else { window.location.href = `/report/${m.id}`; } }}
               className="snap-start shrink-0 w-[240px] rounded-xl p-3 border border-bg-border bg-bg-card hover:border-emerald-500/30 transition-all duration-200 flex flex-col items-center gap-2 overflow-hidden cursor-pointer"
             >
               {/* League badge */}

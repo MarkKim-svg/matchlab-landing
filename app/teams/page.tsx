@@ -55,26 +55,34 @@ export default function TeamsPage() {
     }
   }, [leagueId]);
 
-  // Debounced search via server API
+  // Debounced search — local teams + server API for players
   const doSearch = useCallback(async (q: string) => {
     if (q.length < 2) { setSearchResults([]); setShowResults(false); return; }
     setSearching(true);
     setShowResults(true);
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
+      // Local team search (instant, no API call)
+      const lq = q.toLowerCase();
+      const localTeams: SearchResult[] = teams
+        .filter(t => t.teamName.toLowerCase().includes(lq))
+        .slice(0, 8)
+        .map(t => ({ type: "team" as const, id: t.teamId, name: t.teamName, photo: t.teamLogo, extra: t.leagueName ?? `${t.rank}위` }));
 
-      const results: SearchResult[] = [
-        ...(data.teams ?? []).map((t: any) => ({ type: "team" as const, id: t.id, name: t.name, photo: t.logo, extra: t.country })),
-        ...(data.players ?? []).map((p: any) => ({ type: "player" as const, id: p.id, name: p.name, photo: p.photo, extra: p.team })),
-      ];
-      setSearchResults(results);
+      // Server API for players
+      let playerResults: SearchResult[] = [];
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        playerResults = (data.players ?? []).map((p: any) => ({ type: "player" as const, id: p.id, name: p.name, photo: p.photo, extra: p.team }));
+      } catch { /* skip */ }
+
+      setSearchResults([...localTeams, ...playerResults]);
     } catch {
       setSearchResults([]);
     } finally {
       setSearching(false);
     }
-  }, []);
+  }, [teams]);
 
   useEffect(() => {
     const timer = setTimeout(() => doSearch(query), 300);

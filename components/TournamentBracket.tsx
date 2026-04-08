@@ -201,17 +201,33 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return [left, right];
   }
 
-  const [qfL, qfR] = qf.length > 0 ? assignSide(qf) : [[], []];
-  const [sfL, sfR] = sf.length > 0 ? assignSide(sf) : [[], []];
+  // Assign then balance with TBD fills
+  const TBD: TieData = { team1: "미정", team2: "미정", team1Logo: "", team2Logo: "", leg1: null, leg2: null, aggTeam1: 0, aggTeam2: 0, winner: null, finished: false };
 
-  // Fill TBD if empty
-  const fillTBD = (arr: TieData[], expected: number): TieData[] => {
+  function fillTo(arr: TieData[], n: number): TieData[] {
     const result = [...arr];
-    while (result.length < expected) {
-      result.push({ team1: "미정", team2: "미정", team1Logo: "", team2Logo: "", leg1: null, leg2: null, aggTeam1: 0, aggTeam2: 0, winner: null, finished: false });
-    }
+    while (result.length < n) result.push({ ...TBD });
     return result;
-  };
+  }
+
+  // QF: assign by team tracking, then balance to 2 per side
+  let [qfL, qfR] = qf.length > 0 ? assignSide(qf) : [[], []] as [TieData[], TieData[]];
+  // Rebalance if lopsided (e.g., 3-1 → move extras)
+  while (qfL.length > 2 && qfR.length < 2) { qfR.push(qfL.pop()!); }
+  while (qfR.length > 2 && qfL.length < 2) { qfL.push(qfR.pop()!); }
+
+  // SF: assign then balance to 1 per side
+  let [sfL, sfR] = sf.length > 0 ? assignSide(sf) : [[], []] as [TieData[], TieData[]];
+  while (sfL.length > 1 && sfR.length < 1) { sfR.push(sfL.pop()!); }
+  while (sfR.length > 1 && sfL.length < 1) { sfL.push(sfR.pop()!); }
+
+  // Always show all rounds if R16 exists: fill with TBD
+  const hasR16 = r16.length > 0;
+  const finalQfL = hasR16 ? fillTo(qfL, 2) : qfL;
+  const finalQfR = hasR16 ? fillTo(qfR, 2) : qfR;
+  const finalSfL = hasR16 ? fillTo(sfL, 1) : sfL;
+  const finalSfR = hasR16 ? fillTo(sfR, 1) : sfR;
+  const finalF = f.length > 0 ? f : (hasR16 ? [{ ...TBD }] : []);
 
   return (
     <div style={{ position: "relative", overflow: "hidden" }}>
@@ -224,19 +240,21 @@ export default function TournamentBracket({ leagueId, season }: Props) {
         {r16L.length > 0 && (
           <>
             <BracketCol ties={r16L} label="16강" connector />
-            <Connector count={Math.floor(r16L.length / 2)} />
+            <Connector count={Math.floor(r16L.length / 2) || 1} />
           </>
         )}
-        {qfL.length > 0 && (
+        {finalQfL.length > 0 && (
           <>
-            <BracketCol ties={qfL} label="8강" connector />
-            <Connector count={Math.floor(qfL.length / 2)} />
+            <BracketCol ties={finalQfL} label="8강" connector />
+            <Connector count={Math.max(Math.floor(finalQfL.length / 2), 1)} />
           </>
         )}
-        {sfL.length > 0 && (
-          <BracketCol ties={sfL} label="4강" connector />
+        {finalSfL.length > 0 && (
+          <>
+            <BracketCol ties={finalSfL} label="4강" connector />
+            <Connector count={1} />
+          </>
         )}
-        {sfL.length > 0 && <Connector count={1} />}
 
         {/* ── Final (center) ── */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: "0 12px" }}>
@@ -250,23 +268,25 @@ export default function TournamentBracket({ leagueId, season }: Props) {
             ) : null;
           })()}
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#FBBF24", marginBottom: "8px" }}>결승</div>
-          {f.length > 0 ? <TieCard tie={f[0]} /> : <TBDCard />}
+          {finalF.length > 0 ? <TieCard tie={finalF[0]} /> : <TBDCard />}
         </div>
 
         {/* ── Right side (mirror) ── */}
-        {sfR.length > 0 && <Connector count={1} />}
-        {sfR.length > 0 && (
-          <BracketCol ties={sfR} label="4강" mirror connector />
-        )}
-        {qfR.length > 0 && (
+        {finalSfR.length > 0 && (
           <>
-            <Connector count={Math.floor(qfR.length / 2)} />
-            <BracketCol ties={qfR} label="8강" mirror connector />
+            <Connector count={1} />
+            <BracketCol ties={finalSfR} label="4강" mirror connector />
+          </>
+        )}
+        {finalQfR.length > 0 && (
+          <>
+            <Connector count={Math.max(Math.floor(finalQfR.length / 2), 1)} />
+            <BracketCol ties={finalQfR} label="8강" mirror connector />
           </>
         )}
         {r16R.length > 0 && (
           <>
-            <Connector count={Math.floor(r16R.length / 2)} />
+            <Connector count={Math.floor(r16R.length / 2) || 1} />
             <BracketCol ties={r16R} label="16강" mirror />
           </>
         )}

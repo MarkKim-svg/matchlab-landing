@@ -52,7 +52,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/mypage") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/standings");
+    pathname.startsWith("/standings") ||
+    pathname.startsWith("/teams") ||
+    pathname.startsWith("/team/");
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     const redirectTo = pathname + request.nextUrl.search;

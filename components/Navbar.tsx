@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Home, BarChart3, TrendingUp, Trophy } from "lucide-react";
+import { Home, BarChart3, TrendingUp, Trophy, Shield } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const BeakerIcon = () => (
@@ -25,6 +25,7 @@ const NAV_TABS = [
     icon: TrendingUp,
   },
   { label: "순위", href: "/standings", icon: Trophy },
+  { label: "팀", href: "/teams", icon: Shield },
   { label: "대시보드", href: "/dashboard", icon: BarChart3 },
 ];
 
@@ -33,7 +34,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const supabase = createClient();
   const isLanding = pathname === "/";
-  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage", "/standings", "/report/"].some(p => pathname.startsWith(p));
+  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage", "/standings", "/report/", "/teams", "/team/"].some(p => pathname.startsWith(p));
 
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);

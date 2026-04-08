@@ -415,14 +415,20 @@ export default function NewsletterReport({
             </div>
 
             {locked ? (
-              <div className="relative" style={{ marginTop: "20px" }}>
-                <div className="space-y-4 pointer-events-none select-none" style={{ filter: "blur(6px)", maxHeight: "300px", overflow: "hidden" }}>
-                  {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
-                  {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}
-                  <InjuriesList injuries={matchDetail.injuries} />
+              <div style={{ marginTop: "20px" }}>
+                <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "24px", textAlign: "center" }}>
+                  <span style={{ fontSize: "28px" }}>🔒</span>
+                  <p style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", marginTop: "8px" }}>프리미엄 전용 분석</p>
+                  <p style={{ fontSize: "12px", color: "#8494A7", marginTop: "4px", marginBottom: "16px" }}>아래 섹션은 Pro 구독자만 열람할 수 있습니다</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "center", marginBottom: "20px" }}>
+                    {["⭐ 탑 플레이어", "📋 예상 라인업", "🏥 부상/출장정지", "📊 상세 분석 리포트"].map(t => (
+                      <span key={t} style={{ fontSize: "13px", color: "#566378" }}>{t}</span>
+                    ))}
+                  </div>
+                  <button onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")} className="cursor-pointer" style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "white", fontWeight: 700, fontSize: "14px", padding: "10px 24px", borderRadius: "10px", border: "none" }}>
+                    Pro 시작하기
+                  </button>
                 </div>
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(transparent, #0F172A)" }} />
-                <ProOverlay />
               </div>
             ) : (
               <div className="space-y-5" style={{ marginTop: "20px" }}>

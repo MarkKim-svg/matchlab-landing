@@ -438,16 +438,24 @@ export default function ReportPage() {
               <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
             </div>
 
-            {/* Pro-locked data sections (title visible, content blurred) */}
+            {/* Pro-locked: unified overlay with section titles */}
             {locked ? (
-              <div className="relative" style={{ marginTop: "20px" }}>
-                <div className="space-y-4 pointer-events-none select-none" style={{ filter: "blur(6px)", maxHeight: "300px", overflow: "hidden" }}>
-                  {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
-                  {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}
-                  <InjuriesList injuries={matchDetail.injuries} />
+              <div style={{ marginTop: "20px" }}>
+                {/* Section titles + CTA */}
+                <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "24px", textAlign: "center" }}>
+                  <span style={{ fontSize: "28px" }}>🔒</span>
+                  <p style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", marginTop: "8px" }}>프리미엄 전용 분석</p>
+                  <p style={{ fontSize: "12px", color: "#8494A7", marginTop: "4px", marginBottom: "16px" }}>아래 섹션은 Pro 구독자만 열람할 수 있습니다</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "center", marginBottom: "20px" }}>
+                    {["⭐ 탑 플레이어", "📋 예상 라인업", "🏥 부상/출장정지", "📊 4모델 상세 분석", "🤖 AI 정성 분석", "💹 배당 분석"].map(t => (
+                      <span key={t} style={{ fontSize: "13px", color: "#566378" }}>{t}</span>
+                    ))}
+                  </div>
+                  <button onClick={() => alert("결제 기능 준비 중입니다. 곧 오픈 예정!")} className="cursor-pointer" style={{ background: "linear-gradient(135deg, #d97706, #b45309)", color: "white", fontWeight: 700, fontSize: "14px", padding: "10px 24px", borderRadius: "10px", border: "none" }}>
+                    Pro 시작하기
+                  </button>
                 </div>
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(transparent, #0F172A)" }} />
-                <ProOverlay />
+
               </div>
             ) : (
               <div className="space-y-5" style={{ marginTop: "20px" }}>
@@ -459,42 +467,9 @@ export default function ReportPage() {
           </>
         )}
 
-        {/* ---- Pro sections (single overlay wrapper) ---- */}
-        {locked ? (
-          <div className="relative">
-            <div className="space-y-5 pointer-events-none select-none" style={{ filter: "blur(10px)" }}>
-              <BlurCard title="모델별 분석" locked={false}>
-                <div className="divide-y divide-[#334155]">
-                  <ModelRow name="푸아송 모델" home={match.poisson.home} away={match.poisson.away} />
-                  <ModelRow name="ELO 레이팅" home={match.elo.home} away={match.elo.away} />
-                  <ModelRow name="배당 역산" home={match.odds.home} away={match.odds.away} />
-                  <ModelRow name="xG 기반" home={match.xg.home} away={match.xg.away} />
-                </div>
-              </BlurCard>
-              <BlurCard title="AI 정성 분석" locked={false}>
-                <div className="flex items-start gap-2">
-                  <span className="text-lg shrink-0">🤖</span>
-                  <p className="text-sm text-slate-300 leading-relaxed">분석 내용이 여기에 표시됩니다...</p>
-                </div>
-              </BlurCard>
-              <BlurCard title="배당 분석" locked={false}>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg bg-[#0F172A] p-4 text-center">
-                    <p className="text-xs text-slate-400 mb-1">홈승 배당</p>
-                    <p className="text-xl font-bold text-white">-</p>
-                  </div>
-                  <div className="rounded-lg bg-[#0F172A] p-4 text-center">
-                    <p className="text-xs text-slate-400 mb-1">원정승 배당</p>
-                    <p className="text-xl font-bold text-white">-</p>
-                  </div>
-                </div>
-              </BlurCard>
-            </div>
-            <ProOverlay />
-          </div>
-        ) : (
+        {/* ---- Pro model analysis sections ---- */}
+        {!locked && (
           <>
-            {/* ---- 4. 4-model ensemble ---- */}
             <BlurCard title="모델별 분석" locked={false}>
               <div className="divide-y divide-[#334155]">
                 <ModelRow name="푸아송 모델" home={match.poisson.home} away={match.poisson.away} />
@@ -509,8 +484,6 @@ export default function ReportPage() {
                 </div>
               )}
             </BlurCard>
-
-            {/* ---- 5. AI adjustment ---- */}
             <BlurCard title="AI 정성 분석" locked={false}>
               <div className="flex items-start gap-2">
                 <span className="text-lg shrink-0">🤖</span>
@@ -519,35 +492,18 @@ export default function ReportPage() {
                 </p>
               </div>
             </BlurCard>
-
-            {/* ---- 6. odds analysis ---- */}
             <BlurCard title="배당 분석" locked={false}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-lg bg-[#0F172A] p-4 text-center">
-              <p className="text-xs text-slate-400 mb-1">홈승 배당</p>
-              <p className="text-xl font-bold text-white">{match.odds.home || "-"}</p>
-            </div>
-            <div className="rounded-lg bg-[#0F172A] p-4 text-center">
-              <p className="text-xs text-slate-400 mb-1">원정승 배당</p>
-              <p className="text-xl font-bold text-white">{match.odds.away || "-"}</p>
-            </div>
-          </div>
-          {match.prediction && match.odds.home && match.odds.away && (
-            <div className="mt-3 text-center">
-              {(() => {
-                const h = parseFloat(match.odds.home) || 0;
-                const a = parseFloat(match.odds.away) || 0;
-                const oddsDirection = h < a ? "홈승" : "원정승";
-                const aiMatch = match.prediction.includes(oddsDirection);
-                return (
-                  <span className={`text-sm ${aiMatch ? "text-emerald-400" : "text-amber-400"}`}>
-                    {aiMatch ? "✅ 배당 방향과 AI 예측 일치" : "⚠️ 배당 방향과 AI 예측 불일치"}
-                  </span>
-                );
-              })()}
-            </div>
-          )}
-        </BlurCard>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg bg-[#0F172A] p-4 text-center">
+                  <p className="text-xs text-slate-400 mb-1">홈승 배당</p>
+                  <p className="text-xl font-bold text-white">{match.odds.home || "-"}</p>
+                </div>
+                <div className="rounded-lg bg-[#0F172A] p-4 text-center">
+                  <p className="text-xs text-slate-400 mb-1">원정승 배당</p>
+                  <p className="text-xl font-bold text-white">{match.odds.away || "-"}</p>
+                </div>
+              </div>
+            </BlurCard>
           </>
         )}
 

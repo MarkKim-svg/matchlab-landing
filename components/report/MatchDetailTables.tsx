@@ -142,10 +142,15 @@ export function FormTable({ form, homeName, awayName, homeTeamId, awayTeamId }: 
     <div>
       <SectionHeader emoji="📊" title="양팀 최근 폼 (10경기)" />
       <div style={{ overflowX: "auto", ...WRAP }}>
-        <table style={{ width: "100%", minWidth: "340px", borderCollapse: "collapse" }}>
+        <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse" }}>
+          <colgroup>
+            <col style={{ width: "100px" }} />
+            <col />
+            <col />
+          </colgroup>
           <thead>
             <tr style={{ borderBottom: "2px solid #1E2D47" }}>
-              <th style={{ ...TH, width: "80px" }}>지표</th>
+              <th style={{ ...TH, whiteSpace: "nowrap" }}>지표</th>
               <TeamHeader name={homeName} teamId={homeTeamId} />
               <TeamHeader name={awayName} teamId={awayTeamId} />
             </tr>
@@ -153,7 +158,7 @@ export function FormTable({ form, homeName, awayName, homeTeamId, awayTeamId }: 
           <tbody>
             {rows.map((r, i) => (
               <tr key={r.label} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
-                <td style={TD}>{r.label}</td>
+                <td style={{ ...TD, whiteSpace: "nowrap" }}>{r.label}</td>
                 <td style={{ ...TD_NUM, textAlign: "center" }}>
                   {typeof r.home === "string" ? r.home : <span style={{ display: "flex", gap: "4px", justifyContent: "center" }}>{r.home}</span>}
                 </td>
@@ -186,10 +191,15 @@ export function StatsTable({ stats, homeName, awayName, homeTeamId, awayTeamId }
     <div>
       <SectionHeader emoji="⚡" title="핵심 스탯 비교" />
       <div style={{ overflowX: "auto", ...WRAP }}>
-        <table style={{ width: "100%", minWidth: "340px", borderCollapse: "collapse" }}>
+        <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse" }}>
+          <colgroup>
+            <col style={{ width: "100px" }} />
+            <col />
+            <col />
+          </colgroup>
           <thead>
             <tr style={{ borderBottom: "2px solid #1E2D47" }}>
-              <th style={{ ...TH, width: "80px" }}>지표</th>
+              <th style={{ ...TH, whiteSpace: "nowrap" }}>지표</th>
               <TeamHeader name={homeName} teamId={homeTeamId} />
               <TeamHeader name={awayName} teamId={awayTeamId} />
             </tr>
@@ -197,7 +207,7 @@ export function StatsTable({ stats, homeName, awayName, homeTeamId, awayTeamId }
           <tbody>
             {rows.map((r, i) => (
               <tr key={r.label} style={{ background: rowBg(i), borderBottom: "1px solid #1E2D4766" }}>
-                <td style={TD}>{r.label}</td>
+                <td style={{ ...TD, whiteSpace: "nowrap" }}>{r.label}</td>
                 <td style={{ ...TD_NUM, textAlign: "center" }}>{r.home}</td>
                 <td style={{ ...TD_NUM, textAlign: "center" }}>{r.away}</td>
               </tr>

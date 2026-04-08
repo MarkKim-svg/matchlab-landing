@@ -59,32 +59,26 @@ export default function TeamsPage() {
     }
   }, [leagueId]);
 
-  // Debounced search
+  // Debounced search via server API
   const doSearch = useCallback(async (q: string) => {
     if (q.length < 2) { setSearchResults([]); setShowResults(false); return; }
     setSearching(true);
     setShowResults(true);
     try {
-      const [teamsRes, playersRes] = await Promise.all([
-        fetch(`https://v3.football.api-sports.io/teams?search=${encodeURIComponent(q)}`, {
-          headers: { "x-apisports-key": "proxy" }, // Will go through our proxy
-        }).catch(() => null),
-        Promise.resolve(null), // Player search requires API key on server
-      ]);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
 
-      // Use local team data for search instead
-      const matchedTeams = teams
-        .filter(t => t.teamName.toLowerCase().includes(q.toLowerCase()))
-        .slice(0, 5)
-        .map(t => ({ type: "team" as const, id: t.teamId, name: t.teamName, photo: t.teamLogo, extra: t.leagueName ?? `${t.rank}위` }));
-
-      setSearchResults(matchedTeams);
+      const results: SearchResult[] = [
+        ...(data.teams ?? []).map((t: any) => ({ type: "team" as const, id: t.id, name: t.name, photo: t.logo, extra: t.country })),
+        ...(data.players ?? []).map((p: any) => ({ type: "player" as const, id: p.id, name: p.name, photo: p.photo, extra: p.team })),
+      ];
+      setSearchResults(results);
     } catch {
       setSearchResults([]);
     } finally {
       setSearching(false);
     }
-  }, [teams]);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => doSearch(query), 300);

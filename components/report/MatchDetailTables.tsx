@@ -70,6 +70,15 @@ export interface MatchDetail {
   fixtureInfo?: { kickoffKST: string; round: string };
   lineups?: LineupsData | null;
   isEstimatedLineup?: boolean;
+  topPlayers?: { home: TopPlayer[]; away: TopPlayer[] } | null;
+}
+
+export interface TopPlayer {
+  name: string;
+  photo: string;
+  goals: number;
+  assists: number;
+  appearances: number;
 }
 
 // ── Styles ──
@@ -319,6 +328,53 @@ export function InjuriesList({ injuries }: { injuries: InjuryData[] }) {
 }
 
 // ── Skeleton ──
+
+// ── 5. Top Players ──
+
+export function TopPlayersSection({ topPlayers, homeName, awayName }: { topPlayers: { home: TopPlayer[]; away: TopPlayer[] }; homeName: string; awayName: string }) {
+  if (topPlayers.home.length === 0 && topPlayers.away.length === 0) return null;
+
+  function PlayerList({ players, teamName }: { players: TopPlayer[]; teamName: string }) {
+    return (
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF", marginBottom: "8px" }}>{teamName}</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          {players.map((p, i) => {
+            const isFirst = i === 0;
+            return (
+              <div key={p.name} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 8px", borderRadius: "8px", background: isFirst ? "#FBBF2410" : "#0F172A", border: isFirst ? "1px solid #FBBF2430" : "1px solid transparent" }}>
+                {p.photo ? (
+                  <img src={p.photo} alt={p.name} style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, background: "#1E293B" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                ) : (
+                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#1E293B", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#8494A7", flexShrink: 0 }}>
+                    {p.name.charAt(0)}
+                  </div>
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: "12px", fontWeight: 600, color: isFirst ? "#FBBF24" : "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+                </div>
+                <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{p.goals}G</span>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#8494A7", fontFamily: "'JetBrains Mono',monospace" }}>{p.assists}A</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <SectionHeader emoji="⭐" title="탑 플레이어" />
+      <div className="lineup-pitch" style={{ gap: "12px" }}>
+        <PlayerList players={topPlayers.home} teamName={homeName} />
+        <PlayerList players={topPlayers.away} teamName={awayName} />
+      </div>
+    </div>
+  );
+}
 
 export function MatchDetailSkeleton() {
   return (

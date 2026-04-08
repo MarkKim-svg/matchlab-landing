@@ -58,7 +58,7 @@ export async function GET(
     const season = fixture.league?.season ?? 2025;
 
     // 2. Fetch all data in parallel (phase 1)
-    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, confirmedLineups] = await Promise.all([
+    const [homeFixtures, awayFixtures, h2hData, homeStats, awayStats, standingsData, injuriesData, confirmedLineups, homePlayersRaw, awayPlayersRaw] = await Promise.all([
       apiFetch(`/fixtures?team=${homeTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures?team=${awayTeamId}&last=10`, apiKey),
       apiFetch(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}&last=5`, apiKey),
@@ -67,6 +67,8 @@ export async function GET(
       leagueId ? apiFetch(`/standings?league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
       apiFetch(`/injuries?fixture=${fixtureId}`, apiKey),
       apiFetch(`/fixtures/lineups?fixture=${fixtureId}`, apiKey),
+      leagueId ? apiFetch(`/players?team=${homeTeamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
+      leagueId ? apiFetch(`/players?team=${awayTeamId}&league=${leagueId}&season=${season}`, apiKey) : Promise.resolve([]),
     ]);
 
     // Phase 2: Fetch recent lineups using fixture IDs from homeFixtures/awayFixtures
@@ -325,6 +327,33 @@ export async function GET(
       }
     } catch { /* graceful fallback */ }
 
+    // 10. Top players (attack points = goals + assists)
+    let topPlayers = null;
+    try {
+      function parseTopPlayers(playersArr: any[]) {
+        if (!Array.isArray(playersArr)) return [];
+        return playersArr
+          .map((p: any) => {
+            const s = p.statistics?.[0];
+            return {
+              name: p.player?.name ?? "",
+              photo: p.player?.photo ?? "",
+              goals: s?.goals?.total ?? 0,
+              assists: s?.goals?.assists ?? 0,
+              appearances: s?.games?.appearences ?? 0,
+            };
+          })
+          .filter((p: any) => p.goals + p.assists > 0)
+          .sort((a: any, b: any) => (b.goals + b.assists) - (a.goals + a.assists))
+          .slice(0, 5);
+      }
+      const homePlayers = parseTopPlayers(homePlayersRaw);
+      const awayPlayers = parseTopPlayers(awayPlayersRaw);
+      if (homePlayers.length > 0 || awayPlayers.length > 0) {
+        topPlayers = { home: homePlayers, away: awayPlayers };
+      }
+    } catch { /* skip */ }
+
     return NextResponse.json({
       form,
       stats,
@@ -334,6 +363,7 @@ export async function GET(
       fixtureInfo: { kickoffKST, round },
       lineups,
       isEstimatedLineup: isEstimated,
+      topPlayers,
     });
   } catch (err) {
     console.error("match-detail API error:", err);

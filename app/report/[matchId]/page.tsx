@@ -8,7 +8,7 @@ import { LEAGUE_CONFIG } from "@/lib/constants";
 import { TeamLogo, LeagueBadge, ResultBadge, splitTeams, formatKoreanDate, fmtPct } from "@/components/match-ui";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
-import { FormTable, StatsTable, H2HTable, InjuriesList, MatchDetailSkeleton, type MatchDetail } from "@/components/report/MatchDetailTables";
+import { FormTable, StatsTable, H2HTable, InjuriesList, TopPlayersSection, MatchDetailSkeleton, type MatchDetail } from "@/components/report/MatchDetailTables";
 import LineupPitch from "@/components/report/LineupPitch";
 import type { MatchPrediction, MatchReport } from "@/lib/notion";
 import NewsletterReport from "./NewsletterReport";
@@ -434,6 +434,7 @@ export default function ReportPage() {
             <FormTable form={matchDetail.form} homeName={home} awayName={away} />
             <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} />
             <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
+            {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
             {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}
             <InjuriesList injuries={matchDetail.injuries} />
           </div>

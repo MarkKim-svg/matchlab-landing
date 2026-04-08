@@ -24,6 +24,7 @@ const LEAGUES = [
 
 interface Standing {
   rank: number;
+  teamId?: number;
   teamName: string;
   teamLogo: string;
   points: number;
@@ -33,6 +34,7 @@ interface Standing {
   lose: number;
   goalsDiff: number;
   description: string | null;
+  form?: string; // "WWLDW"
 }
 
 interface Scorer {
@@ -329,7 +331,8 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
               <th className="text-center py-3 hidden sm:table-cell w-10">무</th>
               <th className="text-center py-3 hidden sm:table-cell w-10">패</th>
               <th className="text-center py-3 w-14">득실</th>
-              <th className="text-center py-3 pr-4 w-14">승점</th>
+              <th className="text-center py-3 w-14">승점</th>
+              <th className="text-center py-3 pr-4 hidden sm:table-cell">폼</th>
             </tr>
           </thead>
           <tbody>
@@ -371,8 +374,22 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
                       {team.goalsDiff > 0 ? `+${team.goalsDiff}` : team.goalsDiff}
                     </span>
                   </td>
-                  <td className="text-center pr-4">
+                  <td className="text-center">
                     <span className="font-bold text-emerald-400 font-mono-data">{team.points}</span>
+                  </td>
+                  <td className="text-center pr-4 hidden sm:table-cell">
+                    {team.form && (
+                      <div style={{ display: "flex", gap: "2px", justifyContent: "center" }}>
+                        {team.form.split("").slice(-5).map((ch, i) => {
+                          const bg = ch === "W" ? "#10B981" : ch === "L" ? "#EF4444" : "#475569";
+                          return (
+                            <span key={i} style={{ width: "18px", height: "18px", borderRadius: "4px", background: bg, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 700, color: "#fff" }}>
+                              {ch === "W" ? "승" : ch === "L" ? "패" : "무"}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
                   </td>
                 </tr>
               );

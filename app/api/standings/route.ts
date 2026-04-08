@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
 
     const parsed = standings.map((t: any) => ({
       rank: t.rank,
+      teamId: t.team.id,
       teamName: t.team.name,
       teamLogo: t.team.logo,
       points: t.points,
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
       lose: t.all.lose,
       goalsDiff: t.goalsDiff,
       description: t.description ?? null,
+      form: t.form ?? "", // "WWLDW"
     }));
 
     return NextResponse.json({

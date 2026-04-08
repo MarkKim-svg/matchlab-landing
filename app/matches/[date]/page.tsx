@@ -253,6 +253,10 @@ export default function MatchesDatePage() {
   const [leagueFixtures, setLeagueFixtures] = useState<ApiFixture[]>([]);
   const [leagueLoading, setLeagueLoading] = useState(false);
 
+  // Team filter
+  const [selectedTeam, setSelectedTeam] = useState<string>("전체");
+  const [leagueTeams, setLeagueTeams] = useState<{ name: string; logo: string }[]>([]);
+
   // Auth
   useEffect(() => {
     async function checkAuth() {
@@ -315,6 +319,22 @@ export default function MatchesDatePage() {
       .catch(() => { setLeagueMatches([]); setLeagueFixtures([]); })
       .finally(() => setLeagueLoading(false));
   }, [viewTab, leagueTab, leagueMonth]);
+
+  // Fetch team list for filter (from standings)
+  useEffect(() => {
+    if (viewTab !== "league") return;
+    const leagueConfig = LEAGUE_TABS.find(l => l.key === leagueTab);
+    if (!leagueConfig) return;
+    // Map league key to standings API league ID
+    const leagueIdMap: Record<string, string> = { epl: "39", laliga: "140", seriea: "135", bundesliga: "78", ligue1: "61", ucl: "2", uel: "3", uecl: "848", facup: "45", copadelrey: "143", coppaitalia: "137", dfbpokal: "81", coupedefrance: "66" };
+    const lid = leagueIdMap[leagueTab];
+    if (!lid) { setLeagueTeams([]); return; }
+    setSelectedTeam("전체");
+    fetch(`/api/standings?league=${lid}`)
+      .then(r => r.json())
+      .then(d => setLeagueTeams((d.standings ?? []).map((t: any) => ({ name: t.teamName, logo: t.teamLogo }))))
+      .catch(() => setLeagueTeams([]));
+  }, [viewTab, leagueTab]);
 
   const isPro = userPlan === "pro";
 
@@ -500,6 +520,24 @@ export default function MatchesDatePage() {
               </button>
             </div>
 
+            {/* Team filter */}
+            {leagueTeams.length > 0 && (
+              <div style={{ overflowX: "auto", marginBottom: "16px" }} className="scrollbar-hide">
+                <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap" }}>
+                  <button onClick={() => setSelectedTeam("전체")} className="cursor-pointer" style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "6px 10px", borderRadius: "10px", border: "none", background: selectedTeam === "전체" ? "rgba(16,185,129,0.15)" : "transparent", minWidth: "56px" }}>
+                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#1E293B", border: selectedTeam === "전체" ? "2px solid #10B981" : "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: "#8494A7" }}>All</div>
+                    <span style={{ fontSize: "9px", color: selectedTeam === "전체" ? "#34D399" : "#566378", whiteSpace: "nowrap" }}>전체</span>
+                  </button>
+                  {leagueTeams.map(t => (
+                    <button key={t.name} onClick={() => setSelectedTeam(t.name)} className="cursor-pointer" style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "6px 10px", borderRadius: "10px", border: "none", background: selectedTeam === t.name ? "rgba(16,185,129,0.15)" : "transparent", minWidth: "56px" }}>
+                      <img src={t.logo} alt="" style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "contain", border: selectedTeam === t.name ? "2px solid #10B981" : "1px solid #334155", background: "#1E293B", padding: "2px" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <span style={{ fontSize: "9px", color: selectedTeam === t.name ? "#34D399" : "#566378", whiteSpace: "nowrap", maxWidth: "52px", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* League matches grouped by date */}
             {leagueLoading ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>
@@ -510,16 +548,22 @@ export default function MatchesDatePage() {
               </div>
             ) : (
               (() => {
-                // Merge predictions + fixtures by date
+                // Filter by selected team
+                const teamFilter = (home: string, away: string) =>
+                  selectedTeam === "전체" || home.includes(selectedTeam) || away.includes(selectedTeam);
+
                 type DayItem = { type: "prediction"; data: MatchPrediction } | { type: "fixture"; data: ApiFixture };
                 const byDate = new Map<string, DayItem[]>();
 
                 for (const m of leagueMatches) {
+                  const [h, a] = splitTeams(m.match);
+                  if (!teamFilter(h, a)) continue;
                   const list = byDate.get(m.date) ?? [];
                   list.push({ type: "prediction", data: m });
                   byDate.set(m.date, list);
                 }
                 for (const f of leagueFixtures) {
+                  if (!teamFilter(f.homeTeam, f.awayTeam)) continue;
                   const list = byDate.get(f.date) ?? [];
                   list.push({ type: "fixture", data: f });
                   byDate.set(f.date, list);

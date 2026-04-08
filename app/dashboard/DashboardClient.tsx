@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Donut from "@/components/ui/Donut";
 import { TeamLogo, splitTeams } from "@/components/match-ui";
 
@@ -15,6 +16,7 @@ interface WeeklyTrend {
 }
 
 interface RecentPrediction {
+  id: string;
   date: string;
   match: string;
   league: string;
@@ -400,6 +402,7 @@ function TrendTab({ trend }: { trend: WeeklyTrend[] }) {
 
 /* ---------- History Table ---------- */
 function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
+  const router = useRouter();
   if (rows.length === 0) {
     return <EmptyState msg="최근 예측이 없습니다" />;
   }
@@ -423,7 +426,7 @@ function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
             {rows.map((r, i) => {
               const [home, away] = splitTeams(r.match);
               return (
-              <tr key={`${r.date}-${r.match}-${i}`} style={{ borderTop: "1px solid #262626", color: "#d4d4d4" }}>
+              <tr key={`${r.date}-${r.match}-${i}`} onClick={() => r.id && router.push(`/report/${r.id}`)} style={{ borderTop: "1px solid #262626", color: "#d4d4d4", cursor: r.id ? "pointer" : "default" }} className="hover:bg-white/[0.03] transition-colors">
                 <td className="px-3 py-2 font-mono-data whitespace-nowrap">{r.date.slice(5)}</td>
                 <td className="px-3 py-2 truncate max-w-[100px]">{r.league}</td>
                 <td className="px-3 py-2 max-w-[180px]">
@@ -463,8 +466,9 @@ function HistoryTable({ rows }: { rows: RecentPrediction[] }) {
           return (
             <div
               key={`${r.date}-${r.match}-${i}`}
-              className="rounded-lg p-3"
-              style={{ background: "#1a1a1a", border: "1px solid #262626" }}
+              className="rounded-lg p-3 hover:bg-white/[0.03] transition-colors"
+              style={{ background: "#1a1a1a", border: "1px solid #262626", cursor: r.id ? "pointer" : "default" }}
+              onClick={() => r.id && router.push(`/report/${r.id}`)}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[11px] font-mono-data" style={{ color: MUTED }}>

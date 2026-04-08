@@ -5,6 +5,7 @@ const DATABASE_ID = process.env.NOTION_PREDICTIONS_DB_ID!;
 const POSTS_DB_ID = process.env.NOTION_POSTS_DB_ID || "ef6bea3fdacc4200a9d1a47ec11abbc8";
 
 export interface Prediction {
+  id: string;
   date: string;
   match: string;
   league: string;
@@ -103,6 +104,7 @@ function parsePrediction(page: any): Prediction | null {
   const awayTeamId = props["원정팀ID"]?.rich_text?.map((t: any) => t.plain_text).join("") ?? "";
 
   return {
+    id: page.id,
     date,
     match,
     league,

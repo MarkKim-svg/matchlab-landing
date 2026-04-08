@@ -405,9 +405,6 @@ function StandingsTable({ standings }: { standings: Standing[] }) {
                           style={{ width: "18px", height: "18px", objectFit: "contain", filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }}
                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                         />
-                        <span className="hidden lg:inline" style={{ fontSize: "11px", color: "#8494A7", maxWidth: "70px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {team.nextMatch.opponent}
-                        </span>
                       </div>
                     ) : (
                       <span style={{ fontSize: "10px", color: "#566378" }}>-</span>

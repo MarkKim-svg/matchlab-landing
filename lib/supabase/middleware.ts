@@ -54,7 +54,8 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/standings") ||
     pathname.startsWith("/teams") ||
-    pathname.startsWith("/team/");
+    pathname.startsWith("/team/") ||
+    pathname.startsWith("/player/");
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     const redirectTo = pathname + request.nextUrl.search;

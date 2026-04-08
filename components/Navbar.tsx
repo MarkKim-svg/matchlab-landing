@@ -34,7 +34,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const supabase = createClient();
   const isLanding = pathname === "/";
-  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage", "/standings", "/report/", "/teams", "/team/"].some(p => pathname.startsWith(p));
+  const isAuthPage = ["/home", "/matches/", "/dashboard", "/mypage", "/standings", "/report/", "/teams", "/team/", "/player/"].some(p => pathname.startsWith(p));
 
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);

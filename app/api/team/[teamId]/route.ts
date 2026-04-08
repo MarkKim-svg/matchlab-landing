@@ -75,6 +75,7 @@ export async function GET(
       .map((p: any) => {
         const s = p.statistics?.[0];
         return {
+          id: p.player?.id ?? 0,
           name: p.player?.name ?? "",
           photo: p.player?.photo ?? "",
           goals: s?.goals?.total ?? 0,

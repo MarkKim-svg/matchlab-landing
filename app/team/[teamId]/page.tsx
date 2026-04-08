@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import AuthTabBar from "@/components/AuthTabBar";
 import { Suspense } from "react";
@@ -9,7 +10,7 @@ import { Suspense } from "react";
 interface RecentMatch { fixtureId: number; date: string; homeTeam: string; awayTeam: string; homeTeamId: string; awayTeamId: string; homeGoals: number | null; awayGoals: number | null; league: string; status: string; }
 interface NextMatch { fixtureId: number; date: string; kickoffUTC: string; homeTeam: string; awayTeam: string; homeTeamId: string; awayTeamId: string; league: string; }
 interface SquadPlayer { id: number; name: string; number: number; position: string; photo: string; age: number; }
-interface TopPlayer { name: string; photo: string; goals: number; assists: number; appearances: number; }
+interface TopPlayer { id: number; name: string; photo: string; goals: number; assists: number; appearances: number; }
 interface SeasonStats { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number; cleanSheets: number; form: string; }
 
 const POS_ORDER = ["Goalkeeper", "Defender", "Midfielder", "Attacker"];
@@ -184,12 +185,14 @@ function TeamDetailContent() {
           <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>⭐ 탑 플레이어</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {data.topPlayers.map((p, i) => (
-              <div key={p.name} style={{ background: i === 0 ? "#FBBF2410" : "#111827", border: i === 0 ? "1px solid #FBBF2430" : "1px solid #1E2D47", borderRadius: "10px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <Link key={p.name} href={`/player/${p.id}`} style={{ textDecoration: "none" }}>
+              <div style={{ background: i === 0 ? "#FBBF2410" : "#111827", border: i === 0 ? "1px solid #FBBF2430" : "1px solid #1E2D47", borderRadius: "10px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }} className="hover:border-emerald-500/30 transition-colors">
                 {p.photo ? <img src={p.photo} alt="" style={{ width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /> : <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "#1E293B", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, color: "#8494A7", flexShrink: 0 }}>{p.name.charAt(0)}</div>}
                 <span style={{ fontSize: "12px", fontWeight: 600, color: i === 0 ? "#FBBF24" : "#E1E7EF", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</span>
                 <span style={{ fontSize: "12px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{p.goals}G</span>
                 <span style={{ fontSize: "12px", fontWeight: 700, color: "#8494A7", fontFamily: "'JetBrains Mono',monospace", flexShrink: 0 }}>{p.assists}A</span>
               </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -207,13 +210,15 @@ function TeamDetailContent() {
                 <div style={{ fontSize: "12px", fontWeight: 700, color: "#10B981", marginBottom: "6px" }}>{POS_LABELS[pos] || pos}</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "6px" }}>
                   {players.map(p => (
-                    <div key={p.id} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "8px", padding: "8px 10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                      {p.photo ? <img src={p.photo} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /> : <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#1E293B", flexShrink: 0 }} />}
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: "11px", fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.number ? `#${p.number} ` : ""}{p.name}</div>
-                        <div style={{ fontSize: "9px", color: "#566378" }}>{p.age}세</div>
+                    <Link key={p.id} href={`/player/${p.id}`} style={{ textDecoration: "none" }}>
+                      <div style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "8px", padding: "8px 10px", display: "flex", alignItems: "center", gap: "6px" }} className="hover:border-emerald-500/30 transition-colors">
+                        {p.photo ? <img src={p.photo} alt="" style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /> : <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#1E293B", flexShrink: 0 }} />}
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: "11px", fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.number ? `#${p.number} ` : ""}{p.name}</div>
+                          <div style={{ fontSize: "9px", color: "#566378" }}>{p.age}세</div>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>

@@ -115,9 +115,22 @@ function SectionHeader({ emoji, title }: { emoji: string; title: string }) {
   );
 }
 
+// ── Team header with logo ──
+
+function TeamHeader({ name, teamId }: { name: string; teamId?: string }) {
+  return (
+    <th style={{ ...TH, textAlign: "center" as const }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+        {teamId && <img src={`https://media.api-sports.io/football/teams/${teamId}.png`} alt="" style={{ width: "16px", height: "16px", objectFit: "contain", filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+        <span>{name}</span>
+      </div>
+    </th>
+  );
+}
+
 // ── 1. Form Table ──
 
-export function FormTable({ form, homeName, awayName }: { form: MatchDetail["form"]; homeName: string; awayName: string }) {
+export function FormTable({ form, homeName, awayName, homeTeamId, awayTeamId }: { form: MatchDetail["form"]; homeName: string; awayName: string; homeTeamId?: string; awayTeamId?: string }) {
   const rows = [
     { label: "최근 폼", home: form.home.results.slice(0, 5).reverse().map((r, i) => <FormBadge key={i} result={r} />), away: form.away.results.slice(0, 5).reverse().map((r, i) => <FormBadge key={i} result={r} />) },
     { label: "승-무-패", home: `${form.home.wins}-${form.home.draws}-${form.home.losses}`, away: `${form.away.wins}-${form.away.draws}-${form.away.losses}` },
@@ -132,9 +145,9 @@ export function FormTable({ form, homeName, awayName }: { form: MatchDetail["for
         <table style={{ width: "100%", minWidth: "340px", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "2px solid #1E2D47" }}>
-              <th style={TH}>지표</th>
-              <th style={{ ...TH, textAlign: "center" }}>{homeName}</th>
-              <th style={{ ...TH, textAlign: "center" }}>{awayName}</th>
+              <th style={{ ...TH, width: "80px" }}>지표</th>
+              <TeamHeader name={homeName} teamId={homeTeamId} />
+              <TeamHeader name={awayName} teamId={awayTeamId} />
             </tr>
           </thead>
           <tbody>
@@ -158,7 +171,7 @@ export function FormTable({ form, homeName, awayName }: { form: MatchDetail["for
 
 // ── 2. Stats Table ──
 
-export function StatsTable({ stats, homeName, awayName }: { stats: MatchDetail["stats"]; homeName: string; awayName: string }) {
+export function StatsTable({ stats, homeName, awayName, homeTeamId, awayTeamId }: { stats: MatchDetail["stats"]; homeName: string; awayName: string; homeTeamId?: string; awayTeamId?: string }) {
   if (!stats.home && !stats.away) return null;
   const h = stats.home;
   const a = stats.away;
@@ -176,9 +189,9 @@ export function StatsTable({ stats, homeName, awayName }: { stats: MatchDetail["
         <table style={{ width: "100%", minWidth: "340px", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "2px solid #1E2D47" }}>
-              <th style={TH}>지표</th>
-              <th style={{ ...TH, textAlign: "center" }}>{homeName}</th>
-              <th style={{ ...TH, textAlign: "center" }}>{awayName}</th>
+              <th style={{ ...TH, width: "80px" }}>지표</th>
+              <TeamHeader name={homeName} teamId={homeTeamId} />
+              <TeamHeader name={awayName} teamId={awayTeamId} />
             </tr>
           </thead>
           <tbody>

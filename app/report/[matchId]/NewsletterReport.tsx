@@ -408,8 +408,8 @@ export default function NewsletterReport({
           <MatchDetailSkeleton />
         ) : matchDetail && (
           <div className="space-y-5">
-            <FormTable form={matchDetail.form} homeName={home} awayName={away} />
-            <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} />
+            <FormTable form={matchDetail.form} homeName={home} awayName={away} homeTeamId={match.homeTeamId} awayTeamId={match.awayTeamId} />
+            <StatsTable stats={matchDetail.stats} homeName={home} awayName={away} homeTeamId={match.homeTeamId} awayTeamId={match.awayTeamId} />
             <H2HTable h2h={matchDetail.h2h} homeName={home} awayName={away} />
             {matchDetail.topPlayers && <TopPlayersSection topPlayers={matchDetail.topPlayers} homeName={home} awayName={away} />}
             {matchDetail.lineups && <LineupPitch lineups={matchDetail.lineups} homeName={home} awayName={away} isEstimated={matchDetail.isEstimatedLineup} isFinished={!!match.result} />}

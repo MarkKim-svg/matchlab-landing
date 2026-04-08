@@ -163,15 +163,46 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return <div style={{ textAlign: "center", padding: "40px 0", color: "#566378", fontSize: "14px" }}>토너먼트 데이터가 아직 없습니다</div>;
   }
 
-  // Split into left half / right half for mirror bracket
-  const splitHalf = (arr: TieData[]) => {
+  // Split into left/right halves with winner tracking
+  const splitHalf = (arr: TieData[]): [TieData[], TieData[]] => {
     const mid = Math.ceil(arr.length / 2);
     return [arr.slice(0, mid), arr.slice(mid)];
   };
 
   const [r16L, r16R] = splitHalf(r16);
-  const [qfL, qfR] = splitHalf(qf);
-  const [sfL, sfR] = splitHalf(sf);
+
+  // Track which teams belong to left bracket
+  const leftTeams = new Set<string>();
+  for (const t of r16L) {
+    leftTeams.add(t.team1.toLowerCase());
+    leftTeams.add(t.team2.toLowerCase());
+    if (t.winner) leftTeams.add(t.winner.toLowerCase());
+  }
+
+  // Assign QF ties to left/right based on team membership
+  function assignSide(ties: TieData[]): [TieData[], TieData[]] {
+    const left: TieData[] = [];
+    const right: TieData[] = [];
+    for (const t of ties) {
+      const t1Left = leftTeams.has(t.team1.toLowerCase());
+      const t2Left = leftTeams.has(t.team2.toLowerCase());
+      if (t1Left || t2Left) {
+        left.push(t);
+        // Add winner to left set for next round
+        if (t.winner) leftTeams.add(t.winner.toLowerCase());
+        leftTeams.add(t.team1.toLowerCase());
+        leftTeams.add(t.team2.toLowerCase());
+      } else {
+        right.push(t);
+      }
+    }
+    // If assignment failed (no matches), fall back to split
+    if (left.length === 0 && right.length === 0) return splitHalf(ties);
+    return [left, right];
+  }
+
+  const [qfL, qfR] = qf.length > 0 ? assignSide(qf) : [[], []];
+  const [sfL, sfR] = sf.length > 0 ? assignSide(sf) : [[], []];
 
   // Fill TBD if empty
   const fillTBD = (arr: TieData[], expected: number): TieData[] => {

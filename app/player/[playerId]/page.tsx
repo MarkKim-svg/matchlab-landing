@@ -19,28 +19,41 @@ interface PlayerData {
 const POS_LABELS: Record<string, string> = { Goalkeeper: "골키퍼", Defender: "수비수", Midfielder: "미드필더", Attacker: "공격수" };
 
 // Individual award keywords
-const INDIVIDUAL_KEYWORDS = ["ballon", "golden", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal"];
+const INDIVIDUAL_KEYWORDS = ["ballon", "golden", "best player", "mvp", "poty", "young player", "top scorer", "top assist", "best goal", "player of"];
+
+// Country → flag emoji
+const COUNTRY_FLAGS: Record<string, string> = {
+  england: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", spain: "🇪🇸", italy: "🇮🇹", germany: "🇩🇪", france: "🇫🇷",
+  portugal: "🇵🇹", netherlands: "🇳🇱", brazil: "🇧🇷", argentina: "🇦🇷", world: "🌍",
+  europe: "🇪🇺", "saudi-arabia": "🇸🇦", turkey: "🇹🇷", usa: "🇺🇸", japan: "🇯🇵",
+};
+
+function getFlag(country: string): string {
+  return COUNTRY_FLAGS[country.toLowerCase()] ?? "";
+}
 
 function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
-  const [teamOpen, setTeamOpen] = useState(false);
-  const [indivOpen, setIndivOpen] = useState(false);
+  const [teamOpen, setTeamOpen] = useState(true);
+  const [indivOpen, setIndivOpen] = useState(true);
 
-  // Split team vs individual
   const isIndividual = (t: { league: string }) => INDIVIDUAL_KEYWORDS.some(kw => t.league.toLowerCase().includes(kw));
-  const teamTrophies = trophies.filter(t => !isIndividual(t));
+
+  // Team: winners only
+  const teamTrophies = trophies.filter(t => !isIndividual(t) && t.place === "Winner");
+  // Individual: all (winners + nominees etc)
   const indivTrophies = trophies.filter(t => isIndividual(t));
 
-  // Group by league + place, aggregate seasons
-  function groupTrophies(list: PlayerData["trophies"]) {
-    const map = new Map<string, { league: string; place: string; seasons: string[]; count: number }>();
-    for (const t of list) {
-      const key = `${t.league}|${t.place}`;
+  function groupTrophies(list: PlayerData["trophies"], winnersOnly = false) {
+    const filtered = winnersOnly ? list.filter(t => t.place === "Winner") : list;
+    const map = new Map<string, { league: string; country: string; place: string; seasons: string[]; count: number }>();
+    for (const t of filtered) {
+      const key = t.league;
       const existing = map.get(key);
       if (existing) {
         existing.seasons.push(t.season);
         existing.count++;
       } else {
-        map.set(key, { league: t.league, place: t.place, seasons: [t.season], count: 1 });
+        map.set(key, { league: t.league, country: t.country, place: t.place, seasons: [t.season], count: 1 });
       }
     }
     return Array.from(map.values()).sort((a, b) => b.count - a.count);
@@ -48,25 +61,28 @@ function TrophySection({ trophies }: { trophies: PlayerData["trophies"] }) {
 
   function TrophyGroup({ label, icon, items, open, toggle }: { label: string; icon: string; items: ReturnType<typeof groupTrophies>; open: boolean; toggle: () => void }) {
     if (items.length === 0) return null;
+    const totalCount = items.reduce((s, t) => s + t.count, 0);
     return (
       <div>
         <button onClick={toggle} className="cursor-pointer" style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", padding: "6px 0", width: "100%" }}>
           <span style={{ fontSize: "14px" }}>{icon}</span>
           <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF" }}>{label}</span>
-          <span style={{ fontSize: "12px", color: "#566378" }}>({items.reduce((s, t) => s + t.count, 0)})</span>
+          <span style={{ fontSize: "12px", color: "#10B981", fontWeight: 700 }}>{totalCount}회</span>
           <span style={{ marginLeft: "auto", fontSize: "12px", color: "#566378" }}>{open ? "▼" : "▶"}</span>
         </button>
         {open && (
           <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "4px" }}>
             {items.map((t, i) => {
-              const isWin = t.place === "Winner";
-              const isRunner = t.place === "2nd Place" || t.place.includes("Runner");
+              const flag = getFlag(t.country);
               return (
-                <div key={i} style={{ background: isWin ? "#FBBF2408" : "#111827", border: isWin ? "1px solid #FBBF2420" : "1px solid #1E2D47", borderRadius: "8px", padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "13px", flexShrink: 0 }}>{isWin ? "🏆" : isRunner ? "🥈" : "🏅"}</span>
+                <div key={i} style={{ background: "#FBBF2408", border: "1px solid #FBBF2420", borderRadius: "8px", padding: "10px 12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontSize: "14px", flexShrink: 0 }}>🏆</span>
+                  {flag && <span style={{ fontSize: "14px", flexShrink: 0 }}>{flag}</span>}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ fontSize: "13px", fontWeight: 700, color: isWin ? "#FBBF24" : "#E1E7EF" }}>{t.league}</span>
-                    {t.count > 1 && <span style={{ fontSize: "12px", fontWeight: 700, color: "#10B981", marginLeft: "6px" }}>{t.count}회</span>}
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "6px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "14px", fontWeight: 700, color: "#FBBF24" }}>{t.league}</span>
+                      {t.count > 1 && <span style={{ fontSize: "13px", fontWeight: 700, color: "#10B981" }}>{t.count}회</span>}
+                    </div>
                     <div style={{ fontSize: "10px", color: "#566378", marginTop: "2px" }}>{t.seasons.join(", ")}</div>
                   </div>
                 </div>

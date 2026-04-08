@@ -152,7 +152,16 @@ function parseMatchPrediction(page: any): MatchPrediction | null {
   const parts = match.split(sep);
   const homeTeam = parts[0]?.trim() ?? "";
   const awayTeam = parts[1]?.trim() ?? "";
-  const bigMatch = isBigMatch({ homeTeam, awayTeam });
+
+  // Map Korean league names to API-Football IDs
+  const leagueIdMap: Record<string, number> = {
+    "프리미어리그": 39, "라리가": 140, "세리에A": 135, "분데스리가": 78, "리그1": 61,
+    "챔피언스리그": 2, "유로파리그": 3, "컨퍼런스리그": 848,
+    "FA컵": 45, "코파델레이": 143, "코파이탈리아": 137, "DFB포칼": 81, "쿠프드프랑스": 66,
+  };
+  const leagueIdNum = leagueIdMap[league] ?? 0;
+
+  const bigMatch = isBigMatch({ homeTeam, awayTeam, leagueId: leagueIdNum });
 
   return {
     id: page.id,

@@ -73,19 +73,25 @@ export function isBigMatch(match: {
     return { isBig: true, reason: "상위 6위 맞대결" };
   }
 
-  // 3. UCL knockout
-  if (leagueId === UCL_ID && round && UCL_KNOCKOUT_PATTERNS.test(round)) {
-    return { isBig: true, reason: "UCL 녹아웃" };
+  // 3. UCL — knockout if round provided, otherwise all UCL matches
+  if (leagueId === UCL_ID) {
+    if (!round || UCL_KNOCKOUT_PATTERNS.test(round)) {
+      return { isBig: true, reason: "챔피언스리그" };
+    }
   }
 
-  // 4. UEL/UECL semi+final
-  if ((leagueId === UEL_ID || leagueId === UECL_ID) && round && SEMI_FINAL_PATTERN.test(round)) {
-    return { isBig: true, reason: leagueId === UEL_ID ? "UEL 4강+" : "UECL 4강+" };
+  // 4. UEL/UECL — semi+final if round provided, otherwise skip
+  if ((leagueId === UEL_ID || leagueId === UECL_ID)) {
+    if (round && SEMI_FINAL_PATTERN.test(round)) {
+      return { isBig: true, reason: leagueId === UEL_ID ? "UEL 4강+" : "UECL 4강+" };
+    }
   }
 
-  // 5. Domestic cup semi+final
-  if (leagueId && CUP_IDS.has(leagueId) && round && SEMI_FINAL_PATTERN.test(round)) {
-    return { isBig: true, reason: "컵대회 4강+" };
+  // 5. Domestic cup — semi+final if round provided
+  if (leagueId && CUP_IDS.has(leagueId)) {
+    if (round && SEMI_FINAL_PATTERN.test(round)) {
+      return { isBig: true, reason: "컵대회 4강+" };
+    }
   }
 
   return { isBig: false };

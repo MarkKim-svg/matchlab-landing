@@ -140,7 +140,7 @@ function DataTable({ rows, hasHeader }: { rows: ReportRich[][][]; hasHeader: boo
                 <th
                   key={i}
                   className="text-left text-[11px] font-semibold uppercase tracking-wider"
-                  style={{ color: "#10B981", padding: "12px 16px", background: "#0A1121" }}
+                  style={{ color: "#FFFFFF", padding: "12px 16px", background: "#374151" }}
                 >
                   <RichSpan parts={cell} />
                 </th>
@@ -415,7 +415,7 @@ export default function NewsletterReport({
             </div>
 
             {locked ? (
-              <div style={{ marginTop: "20px" }}>
+              <div style={{ marginTop: "20px", borderTop: "2px solid #FBBF24", paddingTop: "20px" }}>
                 <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "24px", textAlign: "center" }}>
                   <span style={{ fontSize: "28px" }}>🔒</span>
                   <p style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", marginTop: "8px" }}>프리미엄 전용 분석</p>

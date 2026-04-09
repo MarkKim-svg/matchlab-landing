@@ -57,7 +57,7 @@ export default function PreviewSection() {
               {MATCHES.map((m) => <MatchCard key={m.teams} match={m} />)}
               <div className="text-center pt-3 pb-1">
                 <p className="text-[13px] text-[#8494A7] mb-3">오늘 분석 12경기 중 2경기만 공개 중</p>
-                <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex bg-emerald-500 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-colors">카톡으로 구독 문의 →</a>
+                <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex bg-emerald-500 hover:bg-emerald-400 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-colors">카톡으로 구독 문의 →</a>
               </div>
             </div>
           </div>

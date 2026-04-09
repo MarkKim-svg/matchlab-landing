@@ -48,7 +48,7 @@ export default function RealResults() {
   return (
     <FadeSection>
       <div className="border-t border-[#152035]" />
-      <section className="bg-bg-900 py-20 px-6">
+      <section className="bg-bg-900 py-20 md:py-24 px-6">
         <div className="text-center mb-12">
           <div className="font-mono-data font-medium text-[11px] tracking-[0.25em] uppercase text-emerald-500 mb-2">REAL RESULTS</div>
           <h2 className="font-body font-bold text-[28px] md:text-[36px] tracking-[-0.5px] leading-[1.2] text-[#E1E7EF]">어제 AI는 이렇게 맞췄습니다</h2>

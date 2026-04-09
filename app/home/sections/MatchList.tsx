@@ -28,7 +28,7 @@ function GoldStars({ count }: { count: number }) {
   return (
     <span className="inline-flex gap-0.5">
       {Array.from({ length: 5 }, (_, i) => (
-        <svg key={i} width="14" height="14" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
+        <svg key={i} width="18" height="18" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
           <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
         </svg>
       ))}
@@ -64,14 +64,14 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
       <div
         onClick={handleProClick}
         className="rounded-xl cursor-pointer"
-        style={{ background: "#1A2332", border: "1px solid #F59E0B55", padding: "16px", marginBottom: "16px" }}
+        style={{ background: "#1A2332", border: "2px solid #FBBF24", padding: "16px", marginBottom: "16px" }}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <LeagueBadge league={match.league} />
             {match.isBigMatch && <span style={{ background: "#EF444420", color: "#F87171", borderRadius: "6px", padding: "2px 6px", fontSize: "10px", fontWeight: 700 }}>🔥</span>}
           </div>
-          <span style={{ background: "#FBBF2425", color: "#FBBF24", border: "1px solid #FBBF2450", borderRadius: "9999px", padding: "3px 10px", fontSize: "11px", fontWeight: 700 }}>
+          <span style={{ background: "#FBBF2425", color: "#FBBF24", border: "1px solid #FBBF2450", borderRadius: "9999px", padding: "3px 10px", fontSize: "13px", fontWeight: 700 }}>
             🔒 Pro
           </span>
         </div>

@@ -443,7 +443,7 @@ export default function ReportPage() {
 
             {/* Pro-locked: unified overlay with section titles */}
             {locked ? (
-              <div style={{ marginTop: "20px" }}>
+              <div style={{ marginTop: "20px", borderTop: "2px solid #FBBF24", paddingTop: "20px" }}>
                 {/* Section titles + CTA */}
                 <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "14px", padding: "24px", textAlign: "center" }}>
                   <span style={{ fontSize: "28px" }}>🔒</span>

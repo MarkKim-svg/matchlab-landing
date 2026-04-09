@@ -19,7 +19,7 @@ export default function HowItWorks() {
 
   return (
     <FadeSection>
-      <section className="bg-bg-900 py-20 px-6">
+      <section className="bg-bg-900 py-20 md:py-24 px-6">
         <div className="text-center mb-12">
           <div className="font-mono-data font-medium text-[11px] tracking-[0.25em] uppercase text-emerald-500 mb-2">HOW IT WORKS</div>
           <h2 className="font-body font-bold text-[32px] md:text-[40px] tracking-[-0.5px] text-[#E1E7EF]">이렇게 작동합니다</h2>

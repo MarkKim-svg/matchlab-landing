@@ -5,6 +5,17 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 function Donut({ percent, label, sub }: { percent: number; label: string; sub: string }) {
   const r = 42, C = 2 * Math.PI * r;
   const filled = (percent / 100) * C;
@@ -28,6 +39,9 @@ function Donut({ percent, label, sub }: { percent: number; label: string; sub: s
 export default function PricingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [dashData, setDashData] = useState<any>(null);
+  const [freeOpen, setFreeOpen] = useState(false);
+  const [proOpen, setProOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetch("/api/dashboard?period=all")
@@ -53,8 +67,8 @@ export default function PricingPage() {
       {/* ═══ Header ═══ */}
       <section style={{ padding: "64px 16px", textAlign: "center" }}>
         <span style={{ color: "#10B981", fontSize: "11px", fontFamily: "'JetBrains Mono',monospace", letterSpacing: "0.2em", textTransform: "uppercase" }}>PRICING</span>
-        <h1 style={{ color: "#F1F5F9", fontSize: "30px", fontWeight: 700, marginTop: "12px", lineHeight: 1.3 }}>AI 축구 분석, 당신에게 맞는<br />플랜을 선택하세요</h1>
-        <p style={{ color: "#94A3B8", fontSize: "16px", marginTop: "8px" }}>매일 업데이트되는 분석 리포트를 확인하세요</p>
+        <h1 style={{ color: "#FFFFFF", fontSize: "30px", fontWeight: 800, marginTop: "12px", lineHeight: 1.3 }}>AI 축구 분석, 당신에게 맞는<br />플랜을 선택하세요</h1>
+        <p style={{ color: "#6B7280", fontSize: "15px", marginTop: "8px" }}>매일 업데이트되는 분석 리포트를 확인하세요</p>
       </section>
 
       {/* ═══ Free vs Pro Cards ═══ */}
@@ -62,52 +76,80 @@ export default function PricingPage() {
         <div className="pricing-grid" style={{ display: "grid", gap: "24px" }}>
           {/* Free */}
           <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "16px", padding: "32px" }}>
-            <div style={{ fontSize: "20px", fontWeight: 700, color: "#F1F5F9" }}>Free</div>
+            <div style={{ fontSize: "20px", fontWeight: 700, color: "#FFFFFF" }}>Free</div>
             <div style={{ marginTop: "8px" }}>
-              <span style={{ fontSize: "36px", fontWeight: 700, color: "#F1F5F9" }}>0원</span>
-              <span style={{ fontSize: "14px", color: "#94A3B8" }}>/월</span>
+              <span style={{ fontSize: "36px", fontWeight: 700, color: "#FFFFFF" }}>0원</span>
+              <span style={{ fontSize: "14px", color: "#6B7280" }}>/월</span>
             </div>
-            <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
-            <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {["전경기 AI 예측 결과 열람", "확신도 ⭐~⭐⭐⭐ 경기", "적중률 대시보드", "기본 경기 정보 (폼, H2H, 순위)"].map(t => (
-                <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#94A3B8" }}>
-                  <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
-                </li>
-              ))}
-            </ul>
+            {/* Mobile: accordion toggle */}
+            {isMobile && (
+              <button
+                onClick={() => setFreeOpen(!freeOpen)}
+                className="cursor-pointer"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #334155", background: "transparent", color: "#94A3B8", fontSize: "13px", fontWeight: 600 }}
+              >
+                {freeOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{freeOpen ? "▲" : "▼"}</span>
+              </button>
+            )}
+            {(!isMobile || freeOpen) && (
+              <>
+                <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
+                <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {["전경기 AI 예측 결과 열람", "확신도 ⭐~⭐⭐⭐ 경기", "적중률 대시보드", "기본 경기 정보 (폼, H2H, 순위)"].map(t => (
+                    <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#94A3B8" }}>
+                      <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
             <Link href="/login" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", border: "1px solid #334155", color: "#94A3B8", textAlign: "center", fontSize: "15px", fontWeight: 700, textDecoration: "none" }} className="hover:border-emerald-500 transition-colors">
               무료로 시작하기
             </Link>
           </div>
 
           {/* Pro */}
-          <div style={{ background: "#1E293B", border: "2px solid #10B981", borderRadius: "16px", padding: "32px", position: "relative" }}>
+          <div style={{ background: "#1F2937", border: "2px solid #FBBF24", borderRadius: "16px", padding: "32px", position: "relative" }}>
             <div style={{ position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)", background: "#10B981", color: "white", fontSize: "12px", fontWeight: 700, padding: "4px 16px", borderRadius: "9999px" }}>추천</div>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "rgba(251,191,36,0.1)", color: "#FBBF24", border: "1px solid rgba(251,191,36,0.3)", fontSize: "12px", fontWeight: 700, padding: "4px 12px", borderRadius: "9999px", marginBottom: "16px" }}>🎉 얼리버드 특가</span>
-            <div style={{ fontSize: "20px", fontWeight: 700, color: "#F1F5F9" }}>Pro</div>
-            <div style={{ fontSize: "14px", color: "#64748B", textDecoration: "line-through" }}>14,900원</div>
+            <div style={{ fontSize: "20px", fontWeight: 700, color: "#FFFFFF" }}>Pro</div>
+            <div style={{ fontSize: "14px", color: "#6B7280", textDecoration: "line-through" }}>14,900원</div>
             <div style={{ marginTop: "4px" }}>
               <span style={{ fontSize: "36px", fontWeight: 700, color: "#FBBF24" }}>9,900원</span>
-              <span style={{ fontSize: "14px", color: "#94A3B8" }}>/월</span>
+              <span style={{ fontSize: "14px", color: "#6B7280" }}>/월</span>
             </div>
-            <p style={{ fontSize: "12px", color: "#94A3B8", marginTop: "4px" }}>커피 3잔 가격으로 매일 AI 분석</p>
-            <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
-            <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {[
-                "Free 전체 포함",
-                "⭐⭐⭐⭐~⭐⭐⭐⭐⭐ 고확신 경기 열람",
-                "🔥 빅매치 전경기 분석 (엘클라시코, 챔스, 더비매치)",
-                "상세 분석 리포트 전체 열람 (전술분석·핵심변수·AI 정성분석)",
-                "4모델 앙상블 상세 근거",
-                "배당 이동 분석",
-                "예상 라인업 + 부상자 상세",
-              ].map(t => (
-                <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#F1F5F9" }}>
-                  <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer hover:bg-emerald-600 transition-colors" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", background: "#10B981", color: "white", textAlign: "center", fontSize: "15px", fontWeight: 700, width: "100%", border: "none" }}>
+            <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "4px" }}>커피 3잔 가격으로 매일 AI 분석</p>
+            {/* Mobile: accordion toggle */}
+            {isMobile && (
+              <button
+                onClick={() => setProOpen(!proOpen)}
+                className="cursor-pointer"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #FBBF2440", background: "transparent", color: "#FBBF24", fontSize: "13px", fontWeight: 600 }}
+              >
+                {proOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{proOpen ? "▲" : "▼"}</span>
+              </button>
+            )}
+            {(!isMobile || proOpen) && (
+              <>
+                <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
+                <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {[
+                    "Free 전체 포함",
+                    "⭐⭐⭐⭐~⭐⭐⭐⭐⭐ 고확신 경기 열람",
+                    "🔥 빅매치 전경기 분석 (엘클라시코, 챔스, 더비매치)",
+                    "상세 분석 리포트 전체 열람 (전술분석·핵심변수·AI 정성분석)",
+                    "4모델 앙상블 상세 근거",
+                    "배당 이동 분석",
+                    "예상 라인업 + 부상자 상세",
+                  ].map(t => (
+                    <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#FFFFFF" }}>
+                      <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", background: "#10B981", color: "white", textAlign: "center", fontSize: "15px", fontWeight: 700, width: "100%", border: "none" }}>
               Pro 시작하기
             </button>
           </div>
@@ -117,7 +159,7 @@ export default function PricingPage() {
       {/* ═══ Compare ═══ */}
       <section style={{ maxWidth: "768px", margin: "80px auto 0", padding: "0 16px", textAlign: "center" }}>
         <span style={{ color: "#10B981", fontSize: "11px", fontFamily: "'JetBrains Mono',monospace", letterSpacing: "0.2em", textTransform: "uppercase" }}>COMPARE</span>
-        <h2 style={{ color: "#F1F5F9", fontSize: "24px", fontWeight: 700, marginTop: "8px" }}>Pro에서만 열리는 분석</h2>
+        <h2 style={{ color: "#FFFFFF", fontSize: "24px", fontWeight: 700, marginTop: "8px" }}>Pro에서만 열리는 분석</h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "32px" }}>
           {/* Free */}
@@ -160,7 +202,7 @@ export default function PricingPage() {
       {/* ═══ Accuracy ═══ */}
       <section style={{ maxWidth: "576px", margin: "80px auto 0", padding: "0 16px", textAlign: "center" }}>
         <span style={{ color: "#10B981", fontSize: "11px", fontFamily: "'JetBrains Mono',monospace", letterSpacing: "0.2em", textTransform: "uppercase" }}>ACCURACY</span>
-        <h2 style={{ color: "#F1F5F9", fontSize: "24px", fontWeight: 700, marginTop: "8px" }}>투명하게 공개합니다</h2>
+        <h2 style={{ color: "#FFFFFF", fontSize: "24px", fontWeight: 700, marginTop: "8px" }}>투명하게 공개합니다</h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px", marginTop: "32px" }}>
           <Donut percent={overallRate || 52} label="전체 적중률" sub="전체" />
@@ -173,7 +215,7 @@ export default function PricingPage() {
       <section style={{ maxWidth: "640px", margin: "80px auto 0", padding: "0 16px" }}>
         <div style={{ textAlign: "center" }}>
           <span style={{ color: "#10B981", fontSize: "11px", fontFamily: "'JetBrains Mono',monospace", letterSpacing: "0.2em", textTransform: "uppercase" }}>FAQ</span>
-          <h2 style={{ color: "#F1F5F9", fontSize: "24px", fontWeight: 700, marginTop: "8px" }}>자주 묻는 질문</h2>
+          <h2 style={{ color: "#FFFFFF", fontSize: "24px", fontWeight: 700, marginTop: "8px" }}>자주 묻는 질문</h2>
         </div>
         <div style={{ marginTop: "32px", display: "flex", flexDirection: "column", gap: "12px" }}>
           {FAQS.map((f, i) => (
@@ -190,9 +232,9 @@ export default function PricingPage() {
 
       {/* ═══ Bottom CTA ═══ */}
       <section style={{ marginTop: "80px", paddingBottom: "80px", textAlign: "center", padding: "0 16px" }}>
-        <p style={{ color: "#94A3B8", fontSize: "14px" }}>지금 Pro를 시작하면</p>
-        <p style={{ color: "#F1F5F9", fontSize: "18px", fontWeight: 700, marginTop: "4px" }}>오늘의 빅매치 분석을 바로 확인할 수 있습니다</p>
-        <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer" style={{ background: "#10B981", color: "white", fontWeight: 700, padding: "12px 32px", borderRadius: "12px", marginTop: "24px", border: "none", fontSize: "15px" }}>
+        <p style={{ color: "#6B7280", fontSize: "14px" }}>지금 Pro를 시작하면</p>
+        <p style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700, marginTop: "4px" }}>오늘의 빅매치 분석을 바로 확인할 수 있습니다</p>
+        <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ background: "#10B981", color: "white", fontWeight: 700, padding: "14px 32px", borderRadius: "12px", marginTop: "24px", border: "none", fontSize: "16px" }}>
           Pro 시작하기
         </button>
         <p style={{ fontSize: "12px", color: "#64748B", marginTop: "12px" }}>

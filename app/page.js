@@ -429,7 +429,7 @@ function MatchPreviewCard({ match, variant }) {
    ════════════════════════════════════════════ */
 function SectionWrap({ children, id, className = "" }) {
   return (
-    <section id={id} className={`max-w-[960px] mx-auto py-14 px-5 border-t border-bg-border-subtle ${className}`}>
+    <section id={id} className={`max-w-[960px] mx-auto py-20 md:py-24 px-5 border-t border-bg-border-subtle ${className}`}>
       {children}
     </section>
   );
@@ -499,7 +499,7 @@ export default function Home() {
       <Navbar />
       <main className="bg-bg-deep">
         {/* ═══ 2. Hero + PhoneMockup ═══ */}
-        <section className="pt-8 pb-16 md:pt-16 md:pb-20 px-5">
+        <section className="pt-8 pb-20 md:pt-16 md:pb-24 px-5">
           <div className="max-w-[960px] mx-auto flex flex-wrap items-center gap-10 lg:gap-16">
             {/* Left */}
             <div className="flex-1 min-w-[280px]">
@@ -512,7 +512,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <h1 className="font-body font-bold text-[24px] sm:text-[32px] md:text-[40px] leading-[1.2] tracking-[-0.5px] text-text-primary mb-2">
+              <h1 className="font-body font-extrabold text-[28px] sm:text-[36px] md:text-[48px] lg:text-[56px] leading-[1.15] tracking-[-0.5px] text-white mb-2">
                 매일 업데이트되는
                 <br />
                 <span className="text-emerald-400">AI 축구 분석 리포트</span>
@@ -522,7 +522,7 @@ export default function Home() {
                   ⭐4+ 적중률 {highConfRate}% · {totalGames}경기 검증
                 </p>
               )}
-              <p className="text-text-secondary text-[14px] md:text-[16px] mb-8 max-w-md leading-relaxed font-body break-keep">
+              <p className="text-[#6B7280] text-[14px] md:text-[15px] mb-8 max-w-md leading-relaxed font-body break-keep">
                 4개 통계 모델이 매일 수십 경기를 분석합니다. 가장 적중 확률 높은 경기만 골라, 근거와 함께 제공합니다.
               </p>
 
@@ -530,7 +530,7 @@ export default function Home() {
               <div className="flex flex-wrap gap-3 mb-2">
                 <a
                   href="/login"
-                  className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-7 py-3.5 rounded-[14px] text-[15px] transition-all font-body"
+                  className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-8 py-4 rounded-[14px] text-lg transition-all font-body"
                 >
                   무료로 시작하기
                 </a>
@@ -603,7 +603,7 @@ export default function Home() {
               <p className="text-sm text-text-secondary mb-4">오늘의 고확신 경기, 지금 확인하세요</p>
               <a
                 href="/login"
-                className="inline-block bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-[14px] text-sm transition-all font-body"
+                className="inline-block bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-6 py-3 rounded-[14px] text-sm transition-all font-body"
               >
                 전체 분석 보기 →
               </a>
@@ -735,7 +735,7 @@ export default function Home() {
               </div>
 
               {/* Pro card + open mockup */}
-              <div className="rounded-[14px] p-6" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #d97706" }}>
+              <div className="rounded-[14px] p-6" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "2px solid #d97706" }}>
                 <div className="font-body font-bold text-lg mb-4 text-gold-400">Pro</div>
                 <ul className="space-y-3 text-sm font-body mb-5">
                   <li className="flex items-start gap-2 text-gold-400 font-semibold">
@@ -883,7 +883,7 @@ export default function Home() {
                 </ul>
                 <a
                   href="/login"
-                  className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-emerald-500 hover:bg-emerald-700 text-white transition-all font-body"
+                  className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-emerald-500 hover:bg-emerald-400 text-white transition-all font-body"
                 >
                   무료로 시작하기
                 </a>
@@ -892,7 +892,7 @@ export default function Home() {
               {/* Pro */}
               <div
                 className="relative rounded-[14px] px-7 py-9 order-first sm:order-last hover:border-bg-border transition-colors"
-                style={{ background: "linear-gradient(135deg, #1c1308, #2a1a08)", border: "1px solid #d97706" }}
+                style={{ background: "linear-gradient(135deg, #1c1308, #2a1a08)", border: "2px solid #d97706" }}
               >
                 <div
                   className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-white text-xs font-bold px-3 py-1 rounded-full font-body"
@@ -1020,7 +1020,7 @@ export default function Home() {
             <p className="text-text-secondary text-sm mt-3">AI가 매일 골라주는 경기, 무료로 시작하세요.</p>
             <a
               href="/login"
-              className="inline-block bg-emerald-500 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-[14px] text-[15px] transition-all font-body mt-6"
+              className="inline-block bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-8 py-4 rounded-[14px] text-[15px] transition-all font-body mt-6"
             >
               무료로 시작하기
             </a>

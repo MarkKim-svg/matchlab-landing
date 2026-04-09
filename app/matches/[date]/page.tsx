@@ -163,15 +163,18 @@ function MatchCard({ m, locked, isPro, showDate }: { m: MatchPrediction; locked:
   const hasResult = m.result && m.result !== "";
   const isJudged = m.isCorrect === "적중" || m.isCorrect === "미적중";
 
+  const isProCard = m.isProOnly;
   const cardStyle = {
-    borderLeftColor: leagueColor,
-    backgroundImage: `linear-gradient(to bottom, ${leagueColor}18, transparent 6px)`,
+    borderLeftColor: isProCard ? "#FBBF24" : leagueColor,
+    backgroundImage: isProCard
+      ? `linear-gradient(to bottom, rgba(251,191,36,0.06), transparent 12px)`
+      : `linear-gradient(to bottom, ${leagueColor}18, transparent 6px)`,
   };
 
   const inner = (
     <div
-      className="rounded-xl border border-[#334155] border-l-4 transition hover:border-emerald-500/40"
-      style={{ background: "#1E293B", ...cardStyle, padding: "16px", overflow: "hidden" }}
+      className={`rounded-xl border-l-4 transition hover:border-emerald-500/40 ${isProCard ? "border border-[#FBBF2440]" : "border border-[#334155]"}`}
+      style={{ background: isProCard ? "#1A2332" : "#1E293B", ...cardStyle, padding: "16px", overflow: "hidden" }}
     >
       {/* Row 1: League + bigMatch + confidence */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
@@ -468,8 +471,8 @@ export default function MatchesDatePage() {
             {!loading && !error && grouped.map(group => (
               <section key={group.stars} style={{ marginBottom: "32px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                  <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>
-                    {group.label} <span style={{ fontSize: "14px", fontWeight: 400, color: "#8494A7" }}>{group.sub}</span>
+                  <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#FFFFFF" }}>
+                    {group.label} <span style={{ fontSize: "14px", fontWeight: 400, color: "#6B7280" }}>{group.sub}</span>
                   </h2>
                   {group.stars >= 4 && (
                     <span style={{ background: "#F59E0B25", color: "#FBBF24", borderRadius: "9999px", padding: "2px 8px", fontSize: "10px", fontWeight: 700 }}>PRO</span>

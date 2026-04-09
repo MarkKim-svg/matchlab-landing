@@ -83,7 +83,7 @@ export interface TopPlayer {
 
 // ── Styles ──
 
-const TH: React.CSSProperties = { color: "#10B981", padding: "10px 14px", background: "#0A1121", fontSize: "11px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.05em", textAlign: "left" as const };
+const TH: React.CSSProperties = { color: "#FFFFFF", padding: "10px 14px", background: "#374151", fontSize: "11px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.05em", textAlign: "left" as const };
 const TD: React.CSSProperties = { padding: "10px 14px", color: "#d4d4d4", fontSize: "13px" };
 const TD_NUM: React.CSSProperties = { ...TD, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#E1E7EF" };
 const WRAP: React.CSSProperties = { border: "1px solid #1E2D47", borderRadius: "12px", overflow: "hidden" };

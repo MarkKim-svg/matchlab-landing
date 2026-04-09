@@ -23,7 +23,7 @@ export default function PlansSection() {
   return (
     <FadeSection id="pricing">
       <div className="border-t border-[#152035]" />
-      <section className="bg-bg-900 py-20 px-6">
+      <section className="bg-bg-900 py-20 md:py-24 px-6">
         <div className="text-center mb-12">
           <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] leading-[1.2] text-[#E1E7EF]">
             매일 아침, AI가 고른 최고의 경기<br />
@@ -35,7 +35,7 @@ export default function PlansSection() {
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* ── Pro Card (모바일에서 먼저) ── */}
           <div className="relative rounded-[14px] px-7 py-9 order-first md:order-last hover:border-[#1E2D47] transition-colors"
-            style={{ background: "linear-gradient(135deg, #1c1308, #2a1a08)", border: "1px solid #d97706" }}>
+            style={{ background: "linear-gradient(135deg, #1c1308, #2a1a08)", border: "2px solid #d97706" }}>
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-white text-xs font-bold px-3 py-1 rounded-full font-body"
               style={{ backgroundColor: "#d97706" }}>
               얼리버드
@@ -73,7 +73,7 @@ export default function PlansSection() {
               ))}
             </ul>
             <a href="/login"
-              className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-emerald-500 hover:bg-emerald-700 text-white transition-all font-body">
+              className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-emerald-500 hover:bg-emerald-400 text-white transition-all font-body">
               무료로 시작하기
             </a>
           </div>

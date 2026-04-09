@@ -28,7 +28,7 @@ function GoldStars({ count }: { count: number }) {
   return (
     <span className="inline-flex gap-0.5">
       {Array.from({ length: 5 }, (_, i) => (
-        <svg key={i} width="16" height="16" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
+        <svg key={i} width="20" height="20" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
           <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
         </svg>
       ))}
@@ -86,13 +86,13 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
           {/* VS Layout */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="flex flex-col items-center gap-1.5 flex-1">
-              <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={40} />
-              <span className="text-[20px] font-extrabold text-bg-50 text-center leading-tight">{home}</span>
+              <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={48} />
+              <span className="text-xl font-bold text-white text-center leading-tight">{home}</span>
             </div>
             <span className="text-[18px] font-bold text-text-muted px-2">VS</span>
             <div className="flex flex-col items-center gap-1.5 flex-1">
-              <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={40} />
-              <span className="text-[20px] font-extrabold text-bg-50 text-center leading-tight">{away}</span>
+              <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={48} />
+              <span className="text-xl font-bold text-white text-center leading-tight">{away}</span>
             </div>
           </div>
 

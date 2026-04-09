@@ -2,21 +2,18 @@ import FadeSection from "@/lib/FadeSection";
 import { KAKAO_CHANNEL_URL } from "@/lib/constants";
 
 const FREE_ITEMS = [
-  { ok: true, text: "전경기 AI 예측 열람" },
-  { ok: true, text: "확신도 ⭐~⭐⭐⭐ 경기" },
-  { ok: true, text: "예측 결과 + 확률바" },
-  { ok: true, text: "적중률 리포트 (전체 공개)" },
-  { ok: false, text: "고확신 ⭐4+ 경기" },
-  { ok: false, text: "상세 분석 리포트 (전술·핵심변수)" },
-  { ok: false, text: "시장 지표 분석" },
+  "전경기 예측 결과 열람",
+  "확신도 1~3성급 경기",
+  "예측 결과 + 확률바",
+  "적중률 리포트 (전체 공개)",
 ];
 
 const PRO_ITEMS = [
-  { text: "Free의 모든 것 +" },
-  { text: "고확신 ⭐4+⭐5 경기", highlight: true },
-  { text: "상세 분석 리포트 전체 열람" },
-  { text: "시장 지표 분석" },
-  { text: "전술 분석 · 핵심 변수" },
+  { text: "Free의 모든 것 +", highlight: false },
+  { text: "고확신 4~5성급 경기", highlight: true },
+  { text: "상세 분석 리포트 전체 열람", highlight: false },
+  { text: "시장 지표 분석", highlight: false },
+  { text: "전술 분석 · 핵심 변수", highlight: false },
 ];
 
 export default function PlansSection() {
@@ -40,14 +37,14 @@ export default function PlansSection() {
               style={{ backgroundColor: "#d97706" }}>
               얼리버드
             </div>
-            <div className="font-body font-bold text-xl mb-1 text-gold-400">Pro</div>
+            <div className="font-body font-bold text-xl mb-1 text-[#E1E7EF]">Pro</div>
             <div className="text-[14px] text-[#566378] line-through font-body">정가 ₩14,900</div>
             <div className="font-display font-bold text-[28px] tracking-[-1px] text-gold-400 mb-1">월 ₩9,900</div>
             <ul className="mt-5 mb-6 space-y-2">
               {PRO_ITEMS.map(item => (
                 <li key={item.text} className="text-sm flex items-start gap-2 font-body">
-                  <span className="text-emerald-500 font-bold shrink-0">✅</span>
-                  <span className={item.highlight ? "text-gold-400 font-semibold" : "text-[#8494A7]"}>{item.text}</span>
+                  <span className="text-[#8494A7] shrink-0">•</span>
+                  <span className={item.highlight ? "text-white font-semibold" : "text-[#8494A7]"}>{item.text}</span>
                 </li>
               ))}
             </ul>
@@ -60,20 +57,18 @@ export default function PlansSection() {
 
           {/* ── Free Card ── */}
           <div className="bg-[#111827] border border-[#152035] rounded-[14px] px-7 py-9 hover:border-[#1E2D47] transition-colors order-last md:order-first">
-            <div className="font-body font-bold text-xl mb-1 text-emerald-500">Free</div>
+            <div className="font-body font-bold text-xl mb-1 text-[#E1E7EF]">Free</div>
             <div className="font-display font-bold text-[28px] tracking-[-1px] text-[#E1E7EF] mb-1">₩0</div>
             <ul className="mt-5 mb-6 space-y-2">
-              {FREE_ITEMS.map(item => (
-                <li key={item.text} className="text-sm flex items-start gap-2 font-body">
-                  <span className={`font-bold shrink-0 ${item.ok ? "text-emerald-500" : "text-error"}`}>
-                    {item.ok ? "✅" : "❌"}
-                  </span>
-                  <span className="text-[#8494A7]">{item.text}</span>
+              {FREE_ITEMS.map(text => (
+                <li key={text} className="text-sm flex items-start gap-2 font-body">
+                  <span className="text-[#8494A7] shrink-0">•</span>
+                  <span className="text-[#8494A7]">{text}</span>
                 </li>
               ))}
             </ul>
             <a href="/login"
-              className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-emerald-500 hover:bg-emerald-400 text-white transition-all font-body">
+              className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-[#059669] hover:bg-[#047857] text-white transition-all font-body">
               무료로 시작하기
             </a>
           </div>

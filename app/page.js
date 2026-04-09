@@ -23,7 +23,7 @@ const DUMMY_MATCHES = [
     date: new Date().toISOString().split("T")[0],
     prediction: "아스널 승",
     confidence: 4,
-    confidenceLabel: "⭐⭐⭐⭐",
+    confidenceLabel: "4성급",
     probability: 72,
     reason: "홈 최근 8경기 6승, 상대 전적 우위",
     isProOnly: false,
@@ -37,7 +37,7 @@ const DUMMY_MATCHES = [
     date: new Date().toISOString().split("T")[0],
     prediction: "오버 2.5",
     confidence: 3,
-    confidenceLabel: "⭐⭐⭐",
+    confidenceLabel: "3성급",
     probability: 65,
     reason: "양팀 최근 5경기 평균 3.2골",
     isProOnly: false,
@@ -51,7 +51,7 @@ const DUMMY_MATCHES = [
     date: new Date().toISOString().split("T")[0],
     prediction: "인테르 승",
     confidence: 5,
-    confidenceLabel: "⭐⭐⭐⭐⭐",
+    confidenceLabel: "5성급",
     probability: 78,
     reason: "리그 1위 홈 무패 행진 중",
     isProOnly: true,
@@ -59,8 +59,6 @@ const DUMMY_MATCHES = [
     awayTeamId: "496",
   },
 ];
-
-const LEAGUES_PILLS = ["EPL", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UCL"];
 
 const FAQS = [
   {
@@ -83,7 +81,7 @@ const FAQS = [
 
 
 /* ────────────────────────────────────────────
-   PhoneMockup
+   PhoneMockup — simplified (no model grid)
    ────────────────────────────────────────────── */
 function ReportPreview() {
   const homeProb = 72;
@@ -111,13 +109,7 @@ function ReportPreview() {
               <img src="https://media.api-sports.io/football/leagues/39.png" alt="EPL" width={12} height={12} className="rounded-full bg-white p-0.5 object-contain" />
               프리미어리그
             </span>
-            <span className="inline-flex gap-0.5">
-              {[1,2,3,4,5].map(i => (
-                <svg key={i} width="10" height="10" viewBox="0 0 20 20" fill={i <= 4 ? "#FBBF24" : "#334155"}>
-                  <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
-                </svg>
-              ))}
-            </span>
+            <span className="text-[9px] text-[#8494A7] font-semibold">4성급</span>
           </div>
 
           {/* Teams VS */}
@@ -135,7 +127,7 @@ function ReportPreview() {
 
           {/* AI prediction pill */}
           <div className="flex justify-center">
-            <span className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-white" style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>
+            <span className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-white" style={{ background: "#059669" }}>
               AI 예측: 아스널 승
             </span>
           </div>
@@ -151,29 +143,11 @@ function ReportPreview() {
               <div key={b.label} className="flex items-center gap-2">
                 <span className="w-10 text-right text-[9px] text-text-muted shrink-0">{b.label}</span>
                 <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "#1A2332" }}>
-                  <div className="h-full rounded-full" style={{ width: `${b.val}%`, background: b.highlight ? "#10B981" : "#475569" }} />
+                  <div className="h-full rounded-full" style={{ width: `${b.val}%`, background: b.highlight ? "#059669" : "#475569" }} />
                 </div>
-                <span className={`w-8 text-[9px] font-mono-data font-medium shrink-0 ${b.highlight ? "text-emerald-400" : "text-text-muted"}`}>{b.val}%</span>
+                <span className={`w-8 text-[9px] font-mono-data font-medium shrink-0 ${b.highlight ? "text-white" : "text-text-muted"}`}>{b.val}%</span>
               </div>
             ))}
-          </div>
-
-          {/* Model data sub-card */}
-          <div className="rounded-lg p-2.5 space-y-1" style={{ background: "#0F172A", border: "1px solid #1E2D47" }}>
-            <div className="text-[9px] font-semibold text-text-secondary mb-1">모델별 분석</div>
-            <div className="grid grid-cols-2 gap-1.5">
-              {[
-                { label: "푸아송", home: "68%", away: "12%" },
-                { label: "ELO", home: "71%", away: "11%" },
-                { label: "xG 기반", home: "74%", away: "9%" },
-                { label: "시장 지표", home: "70%", away: "13%" },
-              ].map(m => (
-                <div key={m.label} className="rounded py-1 px-1.5 text-center" style={{ background: "#1A2332" }}>
-                  <div className="text-[8px] text-text-muted">{m.label}</div>
-                  <div className="font-mono-data text-[9px] text-bg-200">{m.home} : {m.away}</div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Key reason */}
@@ -182,8 +156,6 @@ function ReportPreview() {
           </div>
         </div>
       </div>
-
-      <p className="text-center text-[11px] text-text-muted mt-3 font-body">가입하면 매일 이렇게 보입니다</p>
     </div>
   );
 }
@@ -202,7 +174,7 @@ function DonutChart({ rate, label }) {
         <circle cx={70} cy={70} r={R} fill="none" stroke="#161F33" strokeWidth={14} />
         <circle
           cx={70} cy={70} r={R} fill="none"
-          stroke="#10B981" strokeWidth={14} strokeLinecap="round"
+          stroke="#059669" strokeWidth={14} strokeLinecap="round"
           strokeDasharray={`${dash} ${C - dash}`}
           transform="rotate(-90 70 70)"
         />
@@ -241,7 +213,7 @@ function AccordionItem({ q, a }) {
         className="w-full px-5 py-[18px] text-[15px] font-semibold cursor-pointer flex justify-between items-center text-left bg-transparent border-none text-text-primary font-body"
       >
         {q}
-        <span className="text-emerald-500 text-xl font-normal ml-4 shrink-0">{open ? "−" : "+"}</span>
+        <span className="text-[#8494A7] text-xl font-normal ml-4 shrink-0">{open ? "−" : "+"}</span>
       </button>
       {open && <div className="px-5 pb-4 text-sm text-text-secondary leading-relaxed font-body">{a}</div>}
     </div>
@@ -262,21 +234,6 @@ function TeamLogoImg({ teamId, name, size = 28 }) {
       className="shrink-0 object-contain"
       onError={(e) => { e.target.style.display = "none"; }}
     />
-  );
-}
-
-/* ────────────────────────────────────────────
-   GoldStars
-   ──────────────────────────────────────────── */
-function GoldStars({ count }) {
-  return (
-    <span className="inline-flex gap-0.5">
-      {Array.from({ length: 5 }, (_, i) => (
-        <svg key={i} width="14" height="14" viewBox="0 0 20 20" fill={i < count ? "#FBBF24" : "#334155"}>
-          <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.51.91-5.32L2.27 6.69l5.34-.78z" />
-        </svg>
-      ))}
-    </span>
   );
 }
 
@@ -311,11 +268,10 @@ function LeaguePill({ league }) {
 }
 
 /* ────────────────────────────────────────────
-   MatchPreviewCard — /home TopPick 스타일
+   MatchPreviewCard
    ──────────────────────────────────────────── */
 function MatchPreviewCard({ match, variant }) {
   const [home, away] = splitTeams(match.match);
-  // API has no probability field — use dummy probability if present, otherwise show confidenceLabel
   const prob = match.probability ?? 0;
 
   if (variant === "pro") {
@@ -324,7 +280,7 @@ function MatchPreviewCard({ match, variant }) {
         <div className="blur-[6px] pointer-events-none select-none p-5">
           <div className="flex items-center justify-between mb-3">
             <LeaguePill league={match.league} />
-            <GoldStars count={match.confidence} />
+            <span className="text-[11px] text-[#8494A7] font-semibold">{match.confidence}성급</span>
           </div>
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="flex flex-col items-center gap-1">
@@ -340,10 +296,9 @@ function MatchPreviewCard({ match, variant }) {
           <div className="text-sm text-text-primary">{match.prediction}</div>
         </div>
         <div className="absolute inset-0 bg-bg-card/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 rounded-xl">
-          <span className="text-2xl">🔒</span>
-          <span className="text-emerald-500 font-bold text-sm font-body">Pro 전용 · 고확신 경기</span>
-          <span className="text-gold-400 text-xs font-bold mt-1">어제 Pro 경기: 3전 2승</span>
-          <span className="text-text-muted text-xs font-body">가입 후 확인하세요</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8494A7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span className="text-white font-bold text-sm font-body">Pro 전용 · 고확신 경기</span>
+          <span className="text-[#8494A7] text-xs font-body">가입 후 확인하세요</span>
         </div>
       </div>
     );
@@ -351,28 +306,16 @@ function MatchPreviewCard({ match, variant }) {
 
   const isTop = variant === "top";
   const borderStyle = isTop
-    ? { background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #d97706" }
+    ? { background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #334155" }
     : { background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #152035" };
 
   return (
-    <div className="rounded-xl overflow-hidden relative" style={borderStyle}>
-      {/* Gold bar for TOP PICK */}
-      {isTop && (
-        <div className="h-[3px]" style={{ background: "linear-gradient(90deg, #FBBF24, #F59E0B, #FBBF24)" }} />
-      )}
-
+    <div className={`rounded-xl overflow-hidden relative ${isTop ? "md:col-span-2" : ""}`} style={borderStyle}>
       <div className="p-5">
-        {/* League + badge + stars */}
+        {/* League + confidence */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <LeaguePill league={match.league} />
-            {isTop && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gold-500/15 text-gold-400 border border-gold-500/30 font-mono-data uppercase tracking-wider">
-                TOP PICK
-              </span>
-            )}
-          </div>
-          <GoldStars count={match.confidence} />
+          <LeaguePill league={match.league} />
+          <span className="text-[11px] text-[#8494A7] font-semibold">{match.confidence}성급</span>
         </div>
 
         {/* VS layout */}
@@ -392,22 +335,15 @@ function MatchPreviewCard({ match, variant }) {
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[13px] font-semibold text-text-primary font-body">{match.prediction}</span>
-            {prob > 0 ? (
-              <span className="text-[13px] font-bold text-emerald-400 font-display">{prob}%</span>
-            ) : (
-              <span className="text-[12px] text-text-muted">확신도 {match.confidenceLabel || `⭐×${match.confidence}`}</span>
+            {prob > 0 && (
+              <span className="text-[13px] font-bold text-white font-display">{prob}%</span>
             )}
           </div>
           {prob > 0 && (
             <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#0F172A" }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${prob}%`,
-                  background: isTop
-                    ? "linear-gradient(90deg, #FBBF24, #10B981)"
-                    : "#10B981",
-                }}
+                style={{ width: `${prob}%`, background: "#059669" }}
               />
             </div>
           )}
@@ -498,28 +434,19 @@ export default function Home() {
     <>
       <Navbar />
       <main className="bg-bg-deep">
-        {/* ═══ 2. Hero + PhoneMockup ═══ */}
+        {/* ═══ Hero + PhoneMockup ═══ */}
         <section className="pt-8 pb-20 md:pt-16 md:pb-24 px-5">
           <div className="max-w-[960px] mx-auto flex flex-wrap items-center gap-10 lg:gap-16">
             {/* Left */}
             <div className="flex-1 min-w-[280px]">
-              {/* League pills */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {LEAGUES_PILLS.map((l) => (
-                  <span key={l} className="text-[11px] font-semibold px-3 py-1 rounded-full border border-bg-border-subtle text-text-secondary">
-                    {l}
-                  </span>
-                ))}
-              </div>
-
               <h1 className="font-body font-extrabold text-[28px] sm:text-[36px] md:text-[48px] lg:text-[56px] leading-[1.15] tracking-[-0.5px] text-white mb-2">
                 매일 업데이트되는
                 <br />
-                <span className="text-emerald-400">AI 축구 분석 리포트</span>
+                <span className="text-[#E1E7EF]">AI 축구 분석 리포트</span>
               </h1>
               {highConfRate > 0 && (
-                <p className="text-emerald-400 text-lg font-display font-bold mb-4">
-                  ⭐4+ 적중률 {highConfRate}% · {totalGames}경기 검증
+                <p className="text-white text-lg font-display font-bold mb-4">
+                  고확신(4성급 이상) 적중률 {highConfRate}% · {totalGames}경기 검증
                 </p>
               )}
               <p className="text-[#6B7280] text-[14px] md:text-[15px] mb-8 max-w-md leading-relaxed font-body break-keep">
@@ -530,7 +457,7 @@ export default function Home() {
               <div className="flex flex-wrap gap-3 mb-2">
                 <a
                   href="/login"
-                  className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-8 py-4 rounded-[14px] text-lg transition-all font-body"
+                  className="bg-[#059669] hover:bg-[#047857] text-white font-bold px-8 py-4 rounded-[14px] text-lg transition-all font-body"
                 >
                   무료로 시작하기
                 </a>
@@ -549,26 +476,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ 빅매치 배너 ═══ */}
+        {/* ═══ 빅매치 배너 (단순화) ═══ */}
         {bigMatches.length > 0 && (
           <div className="mx-auto max-w-2xl px-4 py-3">
-            <div className="flex items-center justify-center gap-2 rounded-xl bg-orange-500/10 border border-orange-500/30 px-4 py-2.5">
-              <span className="text-orange-400 text-sm font-bold animate-pulse">🔥</span>
-              <p className="text-sm text-[#F1F5F9]">
-                오늘의 빅매치: <span className="font-semibold text-orange-400">{splitTeams(bigMatches[0].match).join(' vs ')}</span>
-                {bigMatches.length > 1 && <span className="text-[#94A3B8]"> 외 {bigMatches.length - 1}건</span>}
+            <div className="flex items-center justify-center gap-2 rounded-xl px-4 py-2.5" style={{ background: "#161F33" }}>
+              <p className="text-sm text-[#E1E7EF]">
+                오늘의 빅매치: <span className="font-semibold text-white">{splitTeams(bigMatches[0].match).join(' vs ')}</span>
+                {bigMatches.length > 1 && <span className="text-[#8494A7]"> 외 {bigMatches.length - 1}건</span>}
               </p>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#10B981]/20 text-[#10B981] font-semibold">Pro 전용</span>
+              <span className="text-[10px] text-[#8494A7] font-semibold ml-1">Pro 전용</span>
             </div>
           </div>
         )}
 
-        {/* ═══ 3. 오늘의 분석 미리보기 ═══ */}
+        {/* ═══ 오늘의 분석 미리보기 ═══ */}
         <FadeSection>
           <SectionWrap id="preview">
             <div className="text-center mb-10">
-              <span className="section-label mb-3">TODAY</span>
-              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
+              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary">
                 오늘의 분석 미리보기
               </h2>
               <p className="text-text-secondary text-sm mt-2 font-body">매일 아침 업데이트되는 AI 예측을 확인하세요</p>
@@ -587,14 +512,14 @@ export default function Home() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* TOP PICK */}
+                {/* TOP PICK — spans 2 cols on desktop */}
                 {topPick && <MatchPreviewCard match={topPick} variant="top" />}
 
-                {/* Normal */}
-                {normalPick && <MatchPreviewCard match={normalPick} variant="normal" />}
-
-                {/* Pro locked */}
-                {proPick && <MatchPreviewCard match={proPick} variant="pro" />}
+                {/* Normal + Pro stacked */}
+                <div className="flex flex-col gap-4">
+                  {normalPick && <MatchPreviewCard match={normalPick} variant="normal" />}
+                  {proPick && <MatchPreviewCard match={proPick} variant="pro" />}
+                </div>
               </div>
             )}
 
@@ -603,7 +528,7 @@ export default function Home() {
               <p className="text-sm text-text-secondary mb-4">오늘의 고확신 경기, 지금 확인하세요</p>
               <a
                 href="/login"
-                className="inline-block bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-6 py-3 rounded-[14px] text-sm transition-all font-body"
+                className="inline-block bg-[#059669] hover:bg-[#047857] text-white font-bold px-6 py-3 rounded-[14px] text-sm transition-all font-body"
               >
                 전체 분석 보기 →
               </a>
@@ -612,14 +537,10 @@ export default function Home() {
           </SectionWrap>
         </FadeSection>
 
-        {/* ═══ 4. 적중률 라이브 트래커 ═══ */}
+        {/* ═══ 적중률 라이브 트래커 ═══ */}
         <FadeSection id="accuracy">
           <SectionWrap>
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1 mb-4">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot" />
-                <span className="section-label" style={{ border: "none", padding: 0 }}>LIVE DATA</span>
-              </div>
               <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary">
                 적중률 라이브 트래커
               </h2>
@@ -630,7 +551,7 @@ export default function Home() {
               {/* Donut — row-span-2, 고확신 적중률 */}
               <div className="bg-bg-card border border-bg-border rounded-[14px] p-6 flex items-center justify-center row-span-2">
                 {highConfRate > 0 ? (
-                  <DonutChart rate={highConfRate} label="고확신 ⭐4+" />
+                  <DonutChart rate={highConfRate} label="고확신 4성급+" />
                 ) : (
                   <div className="text-center">
                     <div className="text-text-muted text-sm font-body">데이터 수집중</div>
@@ -647,7 +568,7 @@ export default function Home() {
             <div className="text-center mt-6 space-y-3">
               <a
                 href="/dashboard"
-                className="text-sm text-emerald-400 underline hover:text-emerald-300 transition-colors font-body"
+                className="text-sm text-[#8494A7] underline hover:text-white transition-colors font-body"
               >
                 전체 대시보드 보기 →
               </a>
@@ -660,50 +581,32 @@ export default function Home() {
           </SectionWrap>
         </FadeSection>
 
-        {/* ═══ 5. Pro 비교 ═══ */}
+        {/* ═══ Pro 비교 ═══ */}
         <FadeSection>
           <SectionWrap>
             <div className="text-center mb-10">
-              <span className="section-label mb-3">PRO</span>
-              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
+              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary">
                 Pro 구독자는 매일 이런 분석을 받습니다
               </h2>
               <p className="text-text-secondary text-sm mt-2 font-body">무료는 맛보기, Pro는 매일 전체 분석</p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-5 max-w-[720px] mx-auto">
-              {/* Free card + blurred mockup */}
+              {/* Free card */}
               <div className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-6">
-                <div className="font-body font-bold text-lg mb-4 text-emerald-500">Free</div>
+                <div className="font-body font-bold text-lg mb-4 text-[#E1E7EF]">Free</div>
                 <ul className="space-y-3 text-sm font-body mb-5">
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    전경기 AI 예측 열람
-                  </li>
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    확신도 ⭐~⭐⭐⭐
-                  </li>
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    예측 결과 + 확률
-                  </li>
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    핵심 근거 3줄
-                  </li>
+                  {["전경기 예측 열람", "1~3성급 경기", "예측 결과 + 확률", "핵심 근거 3줄"].map(text => (
+                    <li key={text} className="flex items-start gap-2 text-text-secondary">
+                      <span className="text-[#8494A7] shrink-0">•</span>
+                      {text}
+                    </li>
+                  ))}
                 </ul>
                 {/* Mini report — blurred/locked */}
                 <div className="rounded-xl overflow-hidden border border-bg-border-subtle relative" style={{ background: "#0F172A" }}>
                   <div className="p-3 space-y-2 blur-[4px] pointer-events-none select-none">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-medium text-white/80" style={{ backgroundColor: "#3D195B55" }}>EPL</span>
-                      <span className="text-[8px] text-text-muted ml-auto">⭐⭐⭐⭐</span>
-                    </div>
                     <div className="text-center text-[11px] font-bold text-bg-50">아스널 vs 첼시</div>
-                    <div className="flex justify-center">
-                      <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">AI 예측: 아스널 승</span>
-                    </div>
                     <div className="space-y-1">
                       {[{ l: "홈승", w: 72 }, { l: "무", w: 18 }, { l: "원정", w: 10 }].map(b => (
                         <div key={b.l} className="flex items-center gap-1">
@@ -715,87 +618,48 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
-                    <div className="rounded-lg p-2 space-y-1" style={{ background: "#1A2332" }}>
-                      <div className="text-[7px] text-text-muted">모델별 분석</div>
-                      <div className="grid grid-cols-2 gap-1">
-                        {["푸아송", "ELO", "xG", "시장"].map(m => (
-                          <div key={m} className="rounded py-0.5 px-1 text-center" style={{ background: "#0F172A" }}>
-                            <div className="text-[6px] text-text-muted">{m}</div>
-                            <div className="text-[7px] text-bg-200">--% : --%</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl" style={{ background: "rgba(6,11,20,0.6)" }}>
-                    <span className="text-xl">🔒</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8494A7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     <span className="text-text-muted text-[10px] font-bold">상세 근거 잠김</span>
                   </div>
                 </div>
               </div>
 
-              {/* Pro card + open mockup */}
-              <div className="rounded-[14px] p-6" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "2px solid #d97706" }}>
-                <div className="font-body font-bold text-lg mb-4 text-gold-400">Pro</div>
+              {/* Pro card */}
+              <div className="rounded-[14px] p-6" style={{ background: "linear-gradient(145deg, #1A2332, #1E293B)", border: "1px solid #334155" }}>
+                <div className="font-body font-bold text-lg mb-4 text-[#E1E7EF]">Pro</div>
                 <ul className="space-y-3 text-sm font-body mb-5">
-                  <li className="flex items-start gap-2 text-gold-400 font-semibold">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    고확신 ⭐4+⭐5 경기
-                  </li>
-                  <li className="flex items-start gap-2 text-orange-400 font-semibold">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    🔥 빅매치 전경기 분석
-                  </li>
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    상세 분석 리포트 전체 열람
-                  </li>
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    시장 지표 분석
-                  </li>
-                  <li className="flex items-start gap-2 text-text-secondary">
-                    <span className="text-emerald-500 shrink-0">✅</span>
-                    전술 분석 · 핵심 변수
-                  </li>
+                  {[
+                    { text: "고확신 4~5성급 경기", highlight: true },
+                    { text: "빅매치 전경기 분석", highlight: true },
+                    { text: "상세 분석 리포트 전체 열람", highlight: false },
+                    { text: "시장 지표 분석", highlight: false },
+                    { text: "전술 분석 · 핵심 변수", highlight: false },
+                  ].map(item => (
+                    <li key={item.text} className={`flex items-start gap-2 ${item.highlight ? "text-white font-semibold" : "text-text-secondary"}`}>
+                      <span className="text-[#8494A7] shrink-0">•</span>
+                      {item.text}
+                    </li>
+                  ))}
                 </ul>
                 {/* Mini report — fully open */}
                 <div className="rounded-xl overflow-hidden border border-bg-border" style={{ background: "#0F172A" }}>
                   <div className="p-3 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-medium text-white/80" style={{ backgroundColor: "#3D195B55" }}>EPL</span>
-                      <span className="text-[8px] text-gold-400 ml-auto">⭐⭐⭐⭐</span>
-                    </div>
                     <div className="text-center text-[11px] font-bold text-bg-50">아스널 vs 첼시</div>
                     <div className="flex justify-center">
-                      <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ background: "linear-gradient(135deg, #059669, #10B981)" }}>AI 예측: 아스널 승</span>
+                      <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ background: "#059669" }}>AI 예측: 아스널 승</span>
                     </div>
                     <div className="space-y-1">
                       {[{ l: "홈승", w: 72, h: true }, { l: "무", w: 18, h: false }, { l: "원정", w: 10, h: false }].map(b => (
                         <div key={b.l} className="flex items-center gap-1">
                           <span className="w-7 text-[7px] text-text-muted text-right">{b.l}</span>
                           <div className="flex-1 h-2 rounded-full" style={{ background: "#1A2332" }}>
-                            <div className="h-full rounded-full" style={{ width: `${b.w}%`, background: b.h ? "#10B981" : "#475569" }} />
+                            <div className="h-full rounded-full" style={{ width: `${b.w}%`, background: b.h ? "#059669" : "#475569" }} />
                           </div>
-                          <span className={`text-[7px] w-6 font-mono-data ${b.h ? "text-emerald-400" : "text-text-muted"}`}>{b.w}%</span>
+                          <span className={`text-[7px] w-6 font-mono-data ${b.h ? "text-white" : "text-text-muted"}`}>{b.w}%</span>
                         </div>
                       ))}
-                    </div>
-                    <div className="rounded-lg p-2 space-y-1" style={{ background: "#1A2332" }}>
-                      <div className="text-[7px] text-text-secondary font-semibold">모델별 분석</div>
-                      <div className="grid grid-cols-2 gap-1">
-                        {[
-                          { m: "푸아송", h: "68%", a: "12%" },
-                          { m: "ELO", h: "71%", a: "11%" },
-                          { m: "xG", h: "74%", a: "9%" },
-                          { m: "시장", h: "70%", a: "13%" },
-                        ].map(d => (
-                          <div key={d.m} className="rounded py-0.5 px-1 text-center" style={{ background: "#0F172A" }}>
-                            <div className="text-[6px] text-text-muted">{d.m}</div>
-                            <div className="text-[7px] text-bg-200 font-mono-data">{d.h} : {d.a}</div>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                     <div className="text-[8px] text-text-secondary border-t border-bg-border-subtle pt-1.5">
                       홈 최근 8경기 6승, 상대 전적 우위. 4개 모델 모두 홈승 일치.
@@ -809,29 +673,29 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 max-w-lg mx-auto">
               {/* Free */}
               <div className="rounded-xl p-4 border border-[#334155] bg-[#1E293B]/50 relative overflow-hidden">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 mb-2">🔥 빅매치</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-[#8494A7] border border-[#334155] mb-2">빅매치</span>
                 <div className="blur-sm pointer-events-none select-none">
                   <p className="text-[13px] font-bold text-[#E1E7EF]">바르셀로나 vs 레알 마드리드</p>
                   <p className="text-[11px] text-[#94A3B8] mt-1">AI 예측: ████ (██.█%)</p>
-                  <p className="text-[11px] text-[#FBBF24] mt-1">확신도: ⭐⭐⭐⭐⭐</p>
+                  <p className="text-[11px] text-[#8494A7] mt-1">확신도: 5성급</p>
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(15,23,42,0.6)" }}>
-                  <span className="text-xs font-semibold text-[#94A3B8]">🔒 Pro 전용</span>
+                  <span className="text-xs font-semibold text-[#8494A7]">Pro 전용</span>
                 </div>
               </div>
               {/* Pro */}
-              <div className="rounded-xl p-4 border-2 border-[#10B981] bg-[#1E293B]/50">
+              <div className="rounded-xl p-4 border border-[#334155] bg-[#1E293B]/50">
                 <div className="flex gap-2 mb-2">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">🔥 빅매치</span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">PRO</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-[#8494A7] border border-[#334155]">빅매치</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold text-[#8494A7] border border-[#334155]">PRO</span>
                 </div>
-                <p className="text-[13px] font-bold text-[#F1F5F9]">바르셀로나 vs 레알 마드리드</p>
-                <p className="text-[11px] text-[#10B981] font-semibold mt-1">AI 예측: 바르셀로나 승 (64.2%)</p>
-                <p className="text-[11px] text-[#FBBF24] mt-1">확신도: ⭐⭐⭐⭐⭐</p>
-                <p className="text-[10px] text-[#64748B] mt-1">ELO +142 | xG 2.31 vs 0.94</p>
+                <p className="text-[13px] font-bold text-[#E1E7EF]">바르셀로나 vs 레알 마드리드</p>
+                <p className="text-[11px] text-white font-semibold mt-1">AI 예측: 바르셀로나 승 (64.2%)</p>
+                <p className="text-[11px] text-[#8494A7] mt-1">확신도: 5성급</p>
+                <p className="text-[10px] text-[#566378] mt-1">ELO +142 | xG 2.31 vs 0.94</p>
               </div>
             </div>
-            <p className="text-center text-[11px] text-[#64748B] mt-3">빅매치 분석은 Pro에서만 열람 가능합니다</p>
+            <p className="text-center text-[11px] text-[#566378] mt-3">빅매치 분석은 Pro에서만 열람 가능합니다</p>
 
             <div className="text-center mt-8">
               <a
@@ -845,12 +709,11 @@ export default function Home() {
           </SectionWrap>
         </FadeSection>
 
-        {/* ═══ 6. Pricing ═══ */}
+        {/* ═══ Pricing ═══ */}
         <FadeSection id="pricing">
           <SectionWrap>
             <div className="text-center mb-10">
-              <span className="section-label mb-3">PRICING</span>
-              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
+              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary">
                 AI 축구 분석 리포트 구독
                 <br />
                 — 월 9,900원
@@ -861,29 +724,23 @@ export default function Home() {
             <div className="grid sm:grid-cols-2 gap-5 max-w-[640px] mx-auto">
               {/* Free */}
               <div className="bg-bg-card border border-bg-border-subtle rounded-[14px] px-7 py-9 hover:border-bg-border transition-colors order-last sm:order-first">
-                <div className="font-body font-bold text-xl mb-1 text-emerald-500">Free</div>
+                <div className="font-body font-bold text-xl mb-1 text-[#E1E7EF]">Free</div>
                 <div className="font-display font-bold text-[28px] tracking-[-1px] text-text-primary mb-1">₩0</div>
                 <ul className="mt-5 mb-6 space-y-2">
                   {[
-                    { ok: true, text: "전경기 AI 예측 열람" },
-                    { ok: true, text: "확신도 ⭐~⭐⭐⭐ 경기" },
-                    { ok: true, text: "적중률 리포트 (전체 공개)" },
-                    { ok: false, text: "고확신 ⭐4+ 경기" },
-                    { ok: false, text: "🔥 빅매치 분석" },
-                    { ok: false, text: "상세 분석 근거" },
-                    { ok: false, text: "시장 지표 분석" },
-                  ].map((item) => (
-                    <li key={item.text} className="text-sm flex items-start gap-2 font-body">
-                      <span className={`font-bold shrink-0 ${item.ok ? "text-emerald-500" : "text-error"}`}>
-                        {item.ok ? "✅" : "❌"}
-                      </span>
-                      <span className="text-text-secondary">{item.text}</span>
+                    "전경기 예측 열람",
+                    "1~3성급 경기",
+                    "적중률 리포트 (전체 공개)",
+                  ].map((text) => (
+                    <li key={text} className="text-sm flex items-start gap-2 font-body">
+                      <span className="text-[#8494A7] shrink-0">•</span>
+                      <span className="text-text-secondary">{text}</span>
                     </li>
                   ))}
                 </ul>
                 <a
                   href="/login"
-                  className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-emerald-500 hover:bg-emerald-400 text-white transition-all font-body"
+                  className="block w-full py-3.5 rounded-[14px] text-[15px] font-bold text-center bg-[#059669] hover:bg-[#047857] text-white transition-all font-body"
                 >
                   무료로 시작하기
                 </a>
@@ -900,25 +757,25 @@ export default function Home() {
                 >
                   얼리버드
                 </div>
-                <div className="font-body font-bold text-xl mb-1 text-gold-400">Pro</div>
-                <p className="text-[11px] text-gold-400/70 mt-1 font-body">얼리버드 가격은 곧 종료됩니다</p>
+                <div className="font-body font-bold text-xl mb-1 text-[#E1E7EF]">Pro</div>
+                <p className="text-[11px] text-[#8494A7] mt-1 font-body">얼리버드 가격은 곧 종료됩니다</p>
                 <div className="text-[14px] text-text-muted line-through font-body">정가 ₩14,900</div>
                 <div className="font-display font-bold text-[28px] tracking-[-1px] text-gold-400 mb-1">월 ₩9,900</div>
-                <p className="text-emerald-400 text-xs mb-4 font-body">
+                <p className="text-[#8494A7] text-xs mb-4 font-body">
                   매일 가장 유리한 경기만 빠르게 받고 싶은 분께
                 </p>
                 <ul className="mt-3 mb-6 space-y-2">
                   {[
                     { text: "Free의 모든 것 +", highlight: false },
-                    { text: "고확신 ⭐4+⭐5 경기 (AI가 가장 자신 있는 경기)", highlight: true },
-                    { text: "🔥 빅매치 전경기 분석 (챔스·더비·엘클라시코)", highlight: true },
+                    { text: "고확신 4~5성급 경기 (AI가 가장 자신 있는 경기)", highlight: true },
+                    { text: "빅매치 전경기 분석 (챔스·더비·엘클라시코)", highlight: true },
                     { text: "4개 모델 상세 근거 · 확률", highlight: false },
                     { text: "시장 지표 분석", highlight: false },
                     { text: "웹 대시보드 열람", highlight: false },
                   ].map((item) => (
                     <li key={item.text} className="text-sm flex items-start gap-2 font-body">
-                      <span className="text-emerald-500 font-bold shrink-0">✅</span>
-                      <span className={item.highlight ? "text-gold-400 font-semibold" : "text-text-secondary"}>
+                      <span className="text-[#8494A7] shrink-0">•</span>
+                      <span className={item.highlight ? "text-white font-semibold" : "text-text-secondary"}>
                         {item.text}
                       </span>
                     </li>
@@ -932,8 +789,8 @@ export default function Home() {
                   Pro 시작하기
                 </a>
                 {dashData?.highConfidence && dashData.highConfidence.total > 0 && (
-                  <p className="text-[11px] text-emerald-400 text-center mt-3 font-body">
-                    어제 고확신 경기 결과: {dashData.highConfidence.correct}/{dashData.highConfidence.total} 적중 ✅
+                  <p className="text-[11px] text-[#8494A7] text-center mt-3 font-body">
+                    어제 고확신 경기 결과: {dashData.highConfidence.correct}/{dashData.highConfidence.total} 적중
                   </p>
                 )}
               </div>
@@ -941,65 +798,11 @@ export default function Home() {
           </SectionWrap>
         </FadeSection>
 
-        {/* ═══ HOW IT WORKS ═══ */}
-        <FadeSection>
-          <SectionWrap>
-            <div className="text-center mb-10">
-              <span className="section-label mb-3">HOW IT WORKS</span>
-              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
-                3단계로 시작하세요
-              </h2>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-4">
-              {[
-                {
-                  step: "①",
-                  title: "무료 가입",
-                  desc: "30초, 카드 불필요",
-                  icon: (
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" />
-                    </svg>
-                  ),
-                },
-                {
-                  step: "②",
-                  title: "매일 분석 확인",
-                  desc: "웹에서 오늘의 경기 확인. 고확신 경기는 Pro에서",
-                  icon: (
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-                    </svg>
-                  ),
-                },
-                {
-                  step: "③",
-                  title: "투명한 검증",
-                  desc: "모든 예측은 자동 기록. 적중률 투명 공개",
-                  icon: (
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                  ),
-                },
-              ].map((item) => (
-                <div key={item.step} className="bg-bg-card border border-bg-border-subtle rounded-[14px] p-6 text-center hover:border-bg-border transition-colors">
-                  <div className="flex justify-center mb-3">{item.icon}</div>
-                  <div className="text-text-primary font-bold text-base mb-1 font-body">{item.step} {item.title}</div>
-                  <p className="text-text-secondary text-sm font-body">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </SectionWrap>
-        </FadeSection>
-
-        {/* ═══ 7. FAQ ═══ */}
+        {/* ═══ FAQ ═══ */}
         <FadeSection>
           <SectionWrap id="faq">
             <div className="text-center mb-10">
-              <span className="section-label mb-3">FAQ</span>
-              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
+              <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary">
                 자주 묻는 질문
               </h2>
             </div>
@@ -1020,7 +823,7 @@ export default function Home() {
             <p className="text-text-secondary text-sm mt-3">AI가 매일 골라주는 경기, 무료로 시작하세요.</p>
             <a
               href="/login"
-              className="inline-block bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-8 py-4 rounded-[14px] text-[15px] transition-all font-body mt-6"
+              className="inline-block bg-[#059669] hover:bg-[#047857] text-white font-bold px-8 py-4 rounded-[14px] text-[15px] transition-all font-body mt-6"
             >
               무료로 시작하기
             </a>
@@ -1029,7 +832,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* ═══ 8. Footer ═══ */}
+      {/* ═══ Footer ═══ */}
       <Footer />
     </>
   );

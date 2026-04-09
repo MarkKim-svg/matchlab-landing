@@ -6,9 +6,9 @@ import { KAKAO_CHANNEL_URL } from "@/lib/constants";
 
 const MATCHES = [
   { confLabel:"★5", confClass:"bg-gold-400 text-bg-900 ", teams:"나폴리 vs 유벤투스", meta:"세리에A · 04:00",
-    pred:"나폴리 승 (78.2%)", stats:[{label:"xG",value:"2.31 vs 0.87"},{label:"ELO",value:"+127"},{label:"배당",value:"1.65 → 1.58 ↓"}], locked:false },
+    pred:"나폴리 승 (78.2%)", stats:[{label:"xG",value:"2.31 vs 0.87"},{label:"ELO",value:"+127"},{label:"시장",value:"1.65 → 1.58 ↓"}], locked:false },
   { confLabel:"★4", confClass:"bg-gold-500 text-white", teams:"아스널 vs 첼시", meta:"EPL · 04:00",
-    pred:"아스널 승 (62.3%)", stats:[{label:"xG",value:"1.82 vs 1.14"},{label:"ELO",value:"+89"},{label:"배당",value:"1.85 → 1.80 ↓"}], locked:false },
+    pred:"아스널 승 (62.3%)", stats:[{label:"xG",value:"1.82 vs 1.14"},{label:"ELO",value:"+89"},{label:"시장",value:"1.85 → 1.80 ↓"}], locked:false },
   { confLabel:"★4", confClass:"bg-gold-500 text-white", teams:"레알 마드리드 vs 아틀레티코", meta:"라리가 · 05:00", locked:true },
 ];
 

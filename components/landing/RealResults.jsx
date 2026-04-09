@@ -4,13 +4,13 @@ import FadeSection from "@/lib/FadeSection";
 
 const RESULTS = [
   { stars:5, badge:"★5", badgeClass:"bg-gold-400 text-bg-900 ", teams:"나폴리 vs 유벤투스", league:"세리에A · 03.27",
-    pred:"나폴리 승 (78.2%)", data:[{label:"xG",value:"2.31 vs 0.87"},{label:"ELO",value:"+127"},{label:"배당",value:"1.65 → 1.58 ↓"}],
+    pred:"나폴리 승 (78.2%)", data:[{label:"xG",value:"2.31 vs 0.87"},{label:"ELO",value:"+127"},{label:"시장",value:"1.65 → 1.58 ↓"}],
     score:"2 : 0", hit:true, cardBorder:"border-gold-400/30" },
   { stars:4, badge:"★4", badgeClass:"bg-gold-500 text-bg-900", teams:"아스널 vs 첼시", league:"EPL · 03.27",
-    pred:"아스널 승 (62.3%)", data:[{label:"xG",value:"1.82 vs 1.14"},{label:"ELO",value:"+89"},{label:"배당",value:"1.85 → 1.80 ↓"}],
+    pred:"아스널 승 (62.3%)", data:[{label:"xG",value:"1.82 vs 1.14"},{label:"ELO",value:"+89"},{label:"시장",value:"1.85 → 1.80 ↓"}],
     score:"1 : 0", hit:true, cardBorder:"border-gold-500/30" },
   { stars:4, badge:"★4", badgeClass:"bg-gold-500 text-bg-900", teams:"바르셀로나 vs 비야레알", league:"라리가 · 03.27",
-    pred:"오버 2.5 (71.8%)", data:[{label:"xG",value:"1.95 vs 1.22"},{label:"ELO",value:"+65"},{label:"배당",value:"1.72 → 1.70 ↓"}],
+    pred:"오버 2.5 (71.8%)", data:[{label:"xG",value:"1.95 vs 1.22"},{label:"ELO",value:"+65"},{label:"시장",value:"1.72 → 1.70 ↓"}],
     score:"1 : 0", hit:false, cardBorder:"border-bg-700", note:"틀린 예측도 숨기지 않습니다" },
 ];
 

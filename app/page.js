@@ -166,7 +166,7 @@ function ReportPreview() {
                 { label: "푸아송", home: "68%", away: "12%" },
                 { label: "ELO", home: "71%", away: "11%" },
                 { label: "xG 기반", home: "74%", away: "9%" },
-                { label: "배당 역산", home: "70%", away: "13%" },
+                { label: "시장 지표", home: "70%", away: "13%" },
               ].map(m => (
                 <div key={m.label} className="rounded py-1 px-1.5 text-center" style={{ background: "#1A2332" }}>
                   <div className="text-[8px] text-text-muted">{m.label}</div>
@@ -718,7 +718,7 @@ export default function Home() {
                     <div className="rounded-lg p-2 space-y-1" style={{ background: "#1A2332" }}>
                       <div className="text-[7px] text-text-muted">모델별 분석</div>
                       <div className="grid grid-cols-2 gap-1">
-                        {["푸아송", "ELO", "xG", "배당"].map(m => (
+                        {["푸아송", "ELO", "xG", "시장"].map(m => (
                           <div key={m} className="rounded py-0.5 px-1 text-center" style={{ background: "#0F172A" }}>
                             <div className="text-[6px] text-text-muted">{m}</div>
                             <div className="text-[7px] text-bg-200">--% : --%</div>
@@ -752,7 +752,7 @@ export default function Home() {
                   </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
-                    배당 이동 분석
+                    시장 지표 분석
                   </li>
                   <li className="flex items-start gap-2 text-text-secondary">
                     <span className="text-emerald-500 shrink-0">✅</span>
@@ -788,7 +788,7 @@ export default function Home() {
                           { m: "푸아송", h: "68%", a: "12%" },
                           { m: "ELO", h: "71%", a: "11%" },
                           { m: "xG", h: "74%", a: "9%" },
-                          { m: "배당", h: "70%", a: "13%" },
+                          { m: "시장", h: "70%", a: "13%" },
                         ].map(d => (
                           <div key={d.m} className="rounded py-0.5 px-1 text-center" style={{ background: "#0F172A" }}>
                             <div className="text-[6px] text-text-muted">{d.m}</div>
@@ -871,7 +871,7 @@ export default function Home() {
                     { ok: false, text: "고확신 ⭐4+ 경기" },
                     { ok: false, text: "🔥 빅매치 분석" },
                     { ok: false, text: "상세 분석 근거" },
-                    { ok: false, text: "배당 이동 분석" },
+                    { ok: false, text: "시장 지표 분석" },
                   ].map((item) => (
                     <li key={item.text} className="text-sm flex items-start gap-2 font-body">
                       <span className={`font-bold shrink-0 ${item.ok ? "text-emerald-500" : "text-error"}`}>
@@ -913,7 +913,7 @@ export default function Home() {
                     { text: "고확신 ⭐4+⭐5 경기 (AI가 가장 자신 있는 경기)", highlight: true },
                     { text: "🔥 빅매치 전경기 분석 (챔스·더비·엘클라시코)", highlight: true },
                     { text: "4개 모델 상세 근거 · 확률", highlight: false },
-                    { text: "배당 이동 분석", highlight: false },
+                    { text: "시장 지표 분석", highlight: false },
                     { text: "웹 대시보드 열람", highlight: false },
                   ].map((item) => (
                     <li key={item.text} className="text-sm flex items-start gap-2 font-body">

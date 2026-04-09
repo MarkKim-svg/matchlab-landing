@@ -450,7 +450,7 @@ export default function ReportPage() {
                   <p style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", marginTop: "8px" }}>프리미엄 전용 분석</p>
                   <p style={{ fontSize: "12px", color: "#8494A7", marginTop: "4px", marginBottom: "16px" }}>아래 섹션은 Pro 구독자만 열람할 수 있습니다</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "center", marginBottom: "20px" }}>
-                    {["⭐ 탑 플레이어", "📋 예상 라인업", "🏥 부상/출장정지", "📊 4모델 상세 분석", "🤖 AI 정성 분석", "💹 배당 분석"].map(t => (
+                    {["⭐ 탑 플레이어", "📋 예상 라인업", "🏥 부상/출장정지", "📊 4모델 상세 분석", "🤖 AI 정성 분석", "💹 시장 지표 분석"].map(t => (
                       <span key={t} style={{ fontSize: "13px", color: "#566378" }}>{t}</span>
                     ))}
                   </div>
@@ -477,7 +477,7 @@ export default function ReportPage() {
               <div className="divide-y divide-[#334155]">
                 <ModelRow name="푸아송 모델" home={match.poisson.home} away={match.poisson.away} />
                 <ModelRow name="ELO 레이팅" home={match.elo.home} away={match.elo.away} />
-                <ModelRow name="배당 역산" home={match.odds.home} away={match.odds.away} />
+                <ModelRow name="시장 지표" home={match.odds.home} away={match.odds.away} />
                 <ModelRow name="xG 기반" home={match.xg.home} away={match.xg.away} />
               </div>
               {match.modelAgreement && (
@@ -495,14 +495,14 @@ export default function ReportPage() {
                 </p>
               </div>
             </BlurCard>
-            <BlurCard title="배당 분석" locked={false}>
+            <BlurCard title="시장 지표 분석" locked={false}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-lg bg-[#0F172A] p-4 text-center">
-                  <p className="text-xs text-slate-400 mb-1">홈승 배당</p>
+                  <p className="text-xs text-slate-400 mb-1">홈승 시장 지표</p>
                   <p className="text-xl font-bold text-white">{match.odds.home || "-"}</p>
                 </div>
                 <div className="rounded-lg bg-[#0F172A] p-4 text-center">
-                  <p className="text-xs text-slate-400 mb-1">원정승 배당</p>
+                  <p className="text-xs text-slate-400 mb-1">원정승 시장 지표</p>
                   <p className="text-xl font-bold text-white">{match.odds.away || "-"}</p>
                 </div>
               </div>

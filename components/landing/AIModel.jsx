@@ -4,7 +4,7 @@ const MODELS = [
   { name: "Poisson", desc: "과거 득실 데이터로 예상 골 수 분포를 계산", icon: "λ" },
   { name: "ELO Rating", desc: "팀 상대 전력을 동적으로 평가하는 레이팅", icon: "Δ" },
   { name: "xG Model", desc: "슈팅 위치·각도 기반 기대 득점을 산출", icon: "xG" },
-  { name: "시장 배당", desc: "베팅 시장의 집단 지성에서 확률을 추출", icon: "%" },
+  { name: "시장 지표", desc: "시장 데이터의 집단 지성에서 확률을 추출", icon: "%" },
 ];
 
 export default function AIModel() {

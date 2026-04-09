@@ -122,7 +122,7 @@ export default function PricingPage() {
                   "🔥 빅매치 전경기 분석 (엘클라시코, 챔스, 더비매치)",
                   "상세 분석 리포트 전체 열람 (전술분석·핵심변수·AI 정성분석)",
                   "4모델 앙상블 상세 근거",
-                  "배당 이동 분석",
+                  "시장 지표 분석",
                   "예상 라인업 + 부상자 상세",
                 ].map(t => (
                   <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#FFFFFF" }}>

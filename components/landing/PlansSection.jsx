@@ -8,14 +8,14 @@ const FREE_ITEMS = [
   { ok: true, text: "적중률 리포트 (전체 공개)" },
   { ok: false, text: "고확신 ⭐4+ 경기" },
   { ok: false, text: "상세 분석 리포트 (전술·핵심변수)" },
-  { ok: false, text: "배당 이동 분석" },
+  { ok: false, text: "시장 지표 분석" },
 ];
 
 const PRO_ITEMS = [
   { text: "Free의 모든 것 +" },
   { text: "고확신 ⭐4+⭐5 경기", highlight: true },
   { text: "상세 분석 리포트 전체 열람" },
-  { text: "배당 이동 분석" },
+  { text: "시장 지표 분석" },
   { text: "전술 분석 · 핵심 변수" },
 ];
 

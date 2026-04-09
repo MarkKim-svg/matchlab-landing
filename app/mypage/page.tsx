@@ -121,7 +121,7 @@ export default function MyPage() {
               <ul className="space-y-2.5 mb-6">
                 {[
                   "⭐⭐⭐⭐+ 고확신 경기 분석",
-                  "배당 이동 분석",
+                  "시장 지표 분석",
                   "Claude AI 상세 근거",
                   "전경기 리포트",
                 ].map((item) => (

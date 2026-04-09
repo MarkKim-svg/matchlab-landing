@@ -4,7 +4,7 @@ import FadeSection from "@/lib/FadeSection";
 
 const STEPS = [
   { num:1, title:"데이터 수집", desc:"API-Football에서 매일 경기, 통계, 라인업을 자동 수집합니다", detail:"매일 12개 리그, 30+ 경기 자동 수집" },
-  { num:2, title:"AI 앙상블 분석", desc:"푸아송 + ELO + xG + 배당 모델을 Claude AI가 종합 분석합니다", detail:"4가지 모델이 각각 확률을 계산하고, AI가 최종 조정" },
+  { num:2, title:"AI 앙상블 분석", desc:"푸아송 + ELO + xG + 시장 지표 모델을 Claude AI가 종합 분석합니다", detail:"4가지 모델이 각각 확률을 계산하고, AI가 최종 조정" },
   { num:3, title:"카톡으로 발송", desc:"매일 오전 10시, 확신도별 분석이 카카오톡으로 도착합니다", detail:"오전 10시, 확신도별로 정리된 분석이 도착" },
 ];
 

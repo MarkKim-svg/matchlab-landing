@@ -66,7 +66,7 @@ export default function TermsPage() {
               <p>회사가 제공하는 서비스는 다음과 같습니다.</p>
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li><strong className="text-[#F1F5F9]">무료(Free)</strong>: 하루 프리뷰 분석 2경기 제공</li>
-                <li><strong className="text-[#F1F5F9]">Pro 구독</strong>: 전경기 분석 + 고확신 픽 + 배당 분석 제공</li>
+                <li><strong className="text-[#F1F5F9]">Pro 구독</strong>: 전경기 분석 + 고확신 픽 + 시장 지표 분석 제공</li>
               </ul>
             </section>
 

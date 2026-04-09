@@ -69,6 +69,8 @@ function Card({ children, className, style }: { children: ReactNode; className?:
         border: "1px solid #1E2D47",
         borderRadius: "14px",
         padding: "20px",
+        overflow: "hidden",
+        minWidth: 0,
         ...style,
       }}
     >

@@ -104,7 +104,7 @@ export default function MatchCarousel({ predictions, loading, isPro }: Props) {
 
       <div
         ref={scrollRef}
-        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-5 px-5"
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
         onMouseEnter={pauseAuto}
         onMouseLeave={resumeAuto}
         onTouchStart={pauseAuto}

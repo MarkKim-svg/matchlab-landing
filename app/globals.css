@@ -80,11 +80,12 @@
 .scrollbar-hide::-webkit-scrollbar { display:none; }
 
 /* Home page grid layout */
-.home-layout { display:flex; flex-direction:column; gap:16px; padding:24px 16px; padding-bottom:96px; }
+.home-layout { display:flex; flex-direction:column; gap:16px; padding:24px 16px; padding-bottom:96px; max-width:80rem; margin:0 auto; overflow:hidden; }
 @media (min-width:768px) { .home-layout { padding-bottom:24px; } }
-.home-main { display:flex; flex-direction:column; gap:16px; }
-.home-sidebar { }
+.home-main { display:flex; flex-direction:column; gap:16px; min-width:0; }
+.home-sidebar { min-width:0; }
 .home-2col { display:grid; grid-template-columns:1fr; gap:16px; }
+.home-2col > * { min-width:0; overflow:hidden; }
 
 @media (min-width:768px) {
   .home-layout { display:grid; grid-template-columns:7fr 3fr; gap:20px; }

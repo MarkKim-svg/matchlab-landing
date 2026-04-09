@@ -114,10 +114,10 @@ export default function HomeSidebar() {
                       {t.rank}
                     </span>
                   </td>
-                  <td style={{ padding: "4px" }}>
+                  <td style={{ padding: "4px", maxWidth: 0 }}>
                     <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                      <img src={t.teamLogo} alt="" style={{ width: "14px", height: "14px", objectFit: "contain" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                      <span style={{ fontWeight: 600, color: "#E1E7EF" }}>{t.teamName}</span>
+                      <img src={t.teamLogo} alt="" style={{ width: "14px", height: "14px", objectFit: "contain", flexShrink: 0 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <span style={{ fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.teamName}</span>
                     </span>
                   </td>
                   <td style={{ textAlign: "center", padding: "4px", color: "#8494A7" }}>{t.played}</td>

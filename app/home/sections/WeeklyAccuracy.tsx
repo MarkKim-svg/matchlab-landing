@@ -179,8 +179,8 @@ export default function WeeklyAccuracy({ dashboard, loading }: Props) {
               return (
                 <div
                   key={r.id}
-                  className="flex items-center gap-2 py-1.5 px-2 rounded-lg"
-                  style={{ background: "#1A2332" }}
+                  className="flex items-center gap-1.5 py-1.5 px-2 rounded-lg"
+                  style={{ background: "#1A2332", overflow: "hidden" }}
                 >
                   <span
                     className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
@@ -192,12 +192,12 @@ export default function WeeklyAccuracy({ dashboard, loading }: Props) {
                     {isHit ? "✓" : "✗"}
                   </span>
                   <TeamLogo teamId={r.homeTeamId ?? ""} teamName={home} size={16} />
-                  <span className="text-[14px] font-bold text-bg-100 truncate">{home}</span>
-                  <span className="text-[9px] text-text-muted">vs</span>
+                  <span className="text-[11px] font-bold text-bg-100 truncate min-w-0">{home}</span>
+                  <span className="text-[9px] text-text-muted shrink-0">vs</span>
                   <TeamLogo teamId={r.awayTeamId ?? ""} teamName={away} size={16} />
-                  <span className="text-[14px] font-bold text-bg-100 truncate">{away}</span>
+                  <span className="text-[11px] font-bold text-bg-100 truncate min-w-0">{away}</span>
                   {r.result && (
-                    <span className="ml-auto shrink-0 font-mono-data text-[12px] font-bold text-bg-50">
+                    <span className="ml-auto shrink-0 font-mono-data text-[11px] font-bold text-bg-50">
                       {r.result}
                     </span>
                   )}

@@ -5,17 +5,6 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-  return isMobile;
-}
-
 function Donut({ percent, label, sub }: { percent: number; label: string; sub: string }) {
   const r = 42, C = 2 * Math.PI * r;
   const filled = (percent / 100) * C;
@@ -41,7 +30,6 @@ export default function PricingPage() {
   const [dashData, setDashData] = useState<any>(null);
   const [freeOpen, setFreeOpen] = useState(false);
   const [proOpen, setProOpen] = useState(false);
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetch("/api/dashboard?period=all")
@@ -81,28 +69,25 @@ export default function PricingPage() {
               <span style={{ fontSize: "36px", fontWeight: 700, color: "#FFFFFF" }}>0원</span>
               <span style={{ fontSize: "14px", color: "#6B7280" }}>/월</span>
             </div>
-            {/* Mobile: accordion toggle */}
-            {isMobile && (
-              <button
-                onClick={() => setFreeOpen(!freeOpen)}
-                className="cursor-pointer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #334155", background: "transparent", color: "#94A3B8", fontSize: "13px", fontWeight: 600 }}
-              >
-                {freeOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{freeOpen ? "▲" : "▼"}</span>
-              </button>
-            )}
-            {(!isMobile || freeOpen) && (
-              <>
-                <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
-                <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {["전경기 AI 예측 결과 열람", "확신도 ⭐~⭐⭐⭐ 경기", "적중률 대시보드", "기본 경기 정보 (폼, H2H, 순위)"].map(t => (
-                    <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#94A3B8" }}>
-                      <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+            {/* Mobile: accordion toggle (hidden on sm+) */}
+            <button
+              onClick={() => setFreeOpen(!freeOpen)}
+              className="cursor-pointer sm:hidden"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #334155", background: "transparent", color: "#94A3B8", fontSize: "13px", fontWeight: 600 }}
+            >
+              {freeOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{freeOpen ? "▲" : "▼"}</span>
+            </button>
+            {/* Desktop: always show. Mobile: show only when open */}
+            <div className={`sm:block ${freeOpen ? "block" : "hidden"}`}>
+              <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
+              <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {["전경기 AI 예측 결과 열람", "확신도 ⭐~⭐⭐⭐ 경기", "적중률 대시보드", "기본 경기 정보 (폼, H2H, 순위)"].map(t => (
+                  <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#94A3B8" }}>
+                    <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <Link href="/login" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", border: "1px solid #334155", color: "#94A3B8", textAlign: "center", fontSize: "15px", fontWeight: 700, textDecoration: "none" }} className="hover:border-emerald-500 transition-colors">
               무료로 시작하기
             </Link>
@@ -119,36 +104,33 @@ export default function PricingPage() {
               <span style={{ fontSize: "14px", color: "#6B7280" }}>/월</span>
             </div>
             <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "4px" }}>커피 3잔 가격으로 매일 AI 분석</p>
-            {/* Mobile: accordion toggle */}
-            {isMobile && (
-              <button
-                onClick={() => setProOpen(!proOpen)}
-                className="cursor-pointer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #FBBF2440", background: "transparent", color: "#FBBF24", fontSize: "13px", fontWeight: 600 }}
-              >
-                {proOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{proOpen ? "▲" : "▼"}</span>
-              </button>
-            )}
-            {(!isMobile || proOpen) && (
-              <>
-                <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
-                <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {[
-                    "Free 전체 포함",
-                    "⭐⭐⭐⭐~⭐⭐⭐⭐⭐ 고확신 경기 열람",
-                    "🔥 빅매치 전경기 분석 (엘클라시코, 챔스, 더비매치)",
-                    "상세 분석 리포트 전체 열람 (전술분석·핵심변수·AI 정성분석)",
-                    "4모델 앙상블 상세 근거",
-                    "배당 이동 분석",
-                    "예상 라인업 + 부상자 상세",
-                  ].map(t => (
-                    <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#FFFFFF" }}>
-                      <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+            {/* Mobile: accordion toggle (hidden on sm+) */}
+            <button
+              onClick={() => setProOpen(!proOpen)}
+              className="cursor-pointer sm:hidden"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #FBBF2440", background: "transparent", color: "#FBBF24", fontSize: "13px", fontWeight: 600 }}
+            >
+              {proOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{proOpen ? "▲" : "▼"}</span>
+            </button>
+            {/* Desktop: always show. Mobile: show only when open */}
+            <div className={`sm:block ${proOpen ? "block" : "hidden"}`}>
+              <div style={{ borderTop: "1px solid #334155", margin: "24px 0" }} />
+              <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {[
+                  "Free 전체 포함",
+                  "⭐⭐⭐⭐~⭐⭐⭐⭐⭐ 고확신 경기 열람",
+                  "🔥 빅매치 전경기 분석 (엘클라시코, 챔스, 더비매치)",
+                  "상세 분석 리포트 전체 열람 (전술분석·핵심변수·AI 정성분석)",
+                  "4모델 앙상블 상세 근거",
+                  "배당 이동 분석",
+                  "예상 라인업 + 부상자 상세",
+                ].map(t => (
+                  <li key={t} style={{ display: "flex", gap: "8px", fontSize: "14px", color: "#FFFFFF" }}>
+                    <span style={{ color: "#10B981", flexShrink: 0 }}>✓</span>{t}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", background: "#10B981", color: "white", textAlign: "center", fontSize: "15px", fontWeight: 700, width: "100%", border: "none" }}>
               Pro 시작하기
             </button>

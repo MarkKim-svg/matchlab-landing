@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginContent() {
@@ -13,9 +14,14 @@ export default function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
   const [isKakaoInApp, setIsKakaoInApp] = useState(false);
+
+  const passwordMismatch = mode === "signup" && confirmPassword !== "" && password !== confirmPassword;
+  const signupDisabled = mode === "signup" && (password !== confirmPassword || !agreedToTerms);
 
   const supabase = createClient();
 
@@ -181,13 +187,53 @@ export default function LoginContent() {
                              focus:outline-none focus:border-emerald-500 transition-colors"
                 />
 
+                {mode === "signup" && (
+                  <>
+                    <input
+                      type="password"
+                      placeholder="비밀번호 확인"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className={`w-full h-12 px-4 rounded-xl bg-bg-900 border
+                                 text-bg-50 text-sm placeholder:text-bg-200
+                                 focus:outline-none transition-colors ${
+                                   passwordMismatch
+                                     ? "border-error focus:border-error"
+                                     : "border-bg-700 focus:border-emerald-500"
+                                 }`}
+                    />
+                    {passwordMismatch && (
+                      <p className="text-error text-sm px-1">비밀번호가 일치하지 않습니다</p>
+                    )}
+                  </>
+                )}
+
                 {error && (
                   <p className="text-error text-sm px-1">{error}</p>
                 )}
 
+                {mode === "signup" && (
+                  <label className="flex items-start gap-2 px-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 accent-emerald-500 cursor-pointer"
+                    />
+                    <span className="text-sm text-bg-200 leading-snug">
+                      <Link href="/terms" className="text-emerald-400 underline underline-offset-4" target="_blank">이용약관</Link>
+                      {" 및 "}
+                      <Link href="/privacy" className="text-emerald-400 underline underline-offset-4" target="_blank">개인정보처리방침</Link>
+                      에 동의합니다
+                    </span>
+                  </label>
+                )}
+
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || signupDisabled}
                   className="w-full h-12 rounded-xl font-medium text-[15px] transition-all cursor-pointer
                              bg-emerald-500 text-white hover:bg-emerald-400
                              disabled:opacity-50 disabled:cursor-not-allowed"
@@ -209,6 +255,8 @@ export default function LoginContent() {
                       onClick={() => {
                         setMode("signup");
                         setError("");
+                        setConfirmPassword("");
+                        setAgreedToTerms(false);
                       }}
                       className="text-emerald-400 underline underline-offset-4 cursor-pointer"
                     >
@@ -222,6 +270,8 @@ export default function LoginContent() {
                       onClick={() => {
                         setMode("login");
                         setError("");
+                        setConfirmPassword("");
+                        setAgreedToTerms(false);
                       }}
                       className="text-emerald-400 underline underline-offset-4 cursor-pointer"
                     >

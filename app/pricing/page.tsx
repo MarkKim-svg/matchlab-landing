@@ -80,8 +80,8 @@ export default function PricingPage() {
       } else {
         alert("결제가 완료되었습니다. (테스트 결제 - 자동 환불)");
       }
-    } catch (err) {
-      console.error("결제 오류:", err);
+    } catch (err: any) {
+      alert("결제 에러: " + (err?.message || String(err)));
     } finally {
       setPaying(false);
     }

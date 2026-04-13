@@ -98,7 +98,7 @@ function FormBadge({ result }: { result: string }) {
   };
   const c = colors[result] ?? colors.D;
   return (
-    <span style={{ background: c.bg, color: c.text, borderRadius: "4px", padding: "2px 8px", fontSize: "12px", fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+    <span style={{ background: c.bg, color: c.text, borderRadius: "4px", padding: "2px 5px", fontSize: "10px", fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
       {result}
     </span>
   );

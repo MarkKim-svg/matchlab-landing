@@ -348,11 +348,16 @@ export default function NewsletterReport({
               <TeamLogo teamId={match.homeTeamId} teamName={home} size={88} />
               <span className="text-base md:text-[22px]" style={{ fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>{home}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, gap: "4px" }}>
               {match.result ? (
-                <span style={{ fontSize: "36px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
+                <span className="text-2xl md:text-4xl" style={{ fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
               ) : (
-                <span style={{ fontSize: "22px", fontWeight: 700, color: "#10B981" }}>VS</span>
+                <span className="text-lg md:text-[22px]" style={{ fontWeight: 700, color: "#10B981" }}>VS</span>
+              )}
+              {match.prediction && (
+                <span style={{ background: "rgba(16,185,129,0.15)", color: "#34d399", borderRadius: "6px", padding: "2px 8px", fontSize: "11px", fontWeight: 700 }}>
+                  {match.prediction}
+                </span>
               )}
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", minWidth: 0 }}>
@@ -361,15 +366,10 @@ export default function NewsletterReport({
             </div>
           </div>
 
-          {/* Confidence + prediction */}
+          {/* Confidence + bigMatch */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", flexWrap: "wrap" }}>
             {match.confidenceLabel && (
               <span style={{ fontSize: "14px", color: "#d4d4d4" }}>{match.confidenceLabel}</span>
-            )}
-            {match.prediction && (
-              <span style={{ background: "rgba(16,185,129,0.15)", color: "#34d399", borderRadius: "8px", padding: "4px 12px", fontSize: "13px", fontWeight: 700 }}>
-                {match.prediction}
-              </span>
             )}
           </div>
 

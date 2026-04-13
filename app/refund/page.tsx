@@ -72,6 +72,7 @@ export default function RefundPage() {
             <section>
               <h2 className="text-lg font-bold text-[#F1F5F9] mb-2">5. 정기결제 해지</h2>
               <p>
+                월 정기 구독 — 결제일로부터 1개월(30일) 이용 후 자동 갱신 / 매월 동일한 날짜에 자동 결제됩니다.
                 마이페이지에서 언제든지 정기결제를 해지할 수 있습니다.
               </p>
               <ul className="list-disc list-inside mt-2 space-y-1">

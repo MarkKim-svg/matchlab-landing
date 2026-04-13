@@ -104,6 +104,7 @@ export default function PricingPage() {
               <span style={{ fontSize: "14px", color: "#6B7280" }}>/월</span>
             </div>
             <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "4px" }}>커피 3잔 가격으로 매일 AI 분석</p>
+            <p style={{ fontSize: "11px", color: "#64748B", marginTop: "6px", lineHeight: 1.5 }}>월 정기 구독 — 결제일로부터 1개월(30일) 이용 후 자동 갱신 / 매월 동일한 날짜에 자동 결제</p>
             {/* Mobile: accordion toggle (hidden on sm+) */}
             <button
               onClick={() => setProOpen(!proOpen)}

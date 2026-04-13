@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
+import { createClient } from "@/lib/supabase/client";
+
+declare global {
+  interface Window {
+    PortOne?: any;
+  }
+}
 
 function Donut({ percent, label, sub }: { percent: number; label: string; sub: string }) {
   const r = 42, C = 2 * Math.PI * r;
@@ -26,10 +34,20 @@ function Donut({ percent, label, sub }: { percent: number; label: string; sub: s
 }
 
 export default function PricingPage() {
+  const router = useRouter();
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [dashData, setDashData] = useState<any>(null);
   const [freeOpen, setFreeOpen] = useState(false);
   const [proOpen, setProOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [paying, setPaying] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user ?? null);
+    });
+  }, []);
 
   useEffect(() => {
     fetch("/api/dashboard?period=all")
@@ -37,6 +55,43 @@ export default function PricingPage() {
       .then(d => setDashData(d))
       .catch(() => {});
   }, []);
+
+  const handleProPayment = async () => {
+    if (!user) {
+      router.push("/login?redirect=/pricing");
+      return;
+    }
+    if (paying) return;
+    if (!window.PortOne) {
+      alert("결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+    setPaying(true);
+    try {
+      const response = await window.PortOne.requestPayment({
+        storeId: "store-0d24560d-adce-4b91-abf0-597d75232c89",
+        channelKey: "channel-key-b9612a06-870a-43ea-b8a9-744e83eee356",
+        paymentId: `payment-${Date.now()}`,
+        orderName: "MATCHLAB Pro 월 구독",
+        totalAmount: 9900,
+        currency: "CURRENCY_KRW",
+        payMethod: "CARD",
+        customer: {
+          email: user.email || "",
+          fullName: user.user_metadata?.full_name || user.user_metadata?.name || "MATCHLAB 회원",
+        },
+      });
+      if (response.code) {
+        console.log("결제 취소/실패:", response.message);
+      } else {
+        alert("결제가 완료되었습니다. (테스트 결제 - 자동 환불)");
+      }
+    } catch (err) {
+      console.error("결제 오류:", err);
+    } finally {
+      setPaying(false);
+    }
+  };
 
   const overallRate = dashData?.overall?.hitRate ?? dashData?.overall?.hit_rate ?? 0;
   const highConfRate = dashData?.highConfidence?.hitRate ?? dashData?.high_confidence?.hit_rate ?? 0;
@@ -132,8 +187,8 @@ export default function PricingPage() {
                 ))}
               </ul>
             </div>
-            <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", background: "#10B981", color: "white", textAlign: "center", fontSize: "15px", fontWeight: 700, width: "100%", border: "none" }}>
-              Pro 시작하기
+            <button onClick={handleProPayment} disabled={paying} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", background: "#10B981", color: "white", textAlign: "center", fontSize: "15px", fontWeight: 700, width: "100%", border: "none", opacity: paying ? 0.6 : 1 }}>
+              {paying ? "결제 진행중..." : "Pro 시작하기"}
             </button>
           </div>
         </div>
@@ -217,8 +272,8 @@ export default function PricingPage() {
       <section style={{ marginTop: "80px", paddingBottom: "80px", textAlign: "center", padding: "0 16px" }}>
         <p style={{ color: "#6B7280", fontSize: "14px" }}>지금 Pro를 시작하면</p>
         <p style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700, marginTop: "4px" }}>오늘의 빅매치 분석을 바로 확인할 수 있습니다</p>
-        <button onClick={() => alert("결제 시스템 준비중입니다. 카카오톡으로 문의해주세요!")} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ background: "#10B981", color: "white", fontWeight: 700, padding: "14px 32px", borderRadius: "12px", marginTop: "24px", border: "none", fontSize: "16px" }}>
-          Pro 시작하기
+        <button onClick={handleProPayment} disabled={paying} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ background: "#10B981", color: "white", fontWeight: 700, padding: "14px 32px", borderRadius: "12px", marginTop: "24px", border: "none", fontSize: "16px", opacity: paying ? 0.6 : 1 }}>
+          {paying ? "결제 진행중..." : "Pro 시작하기"}
         </button>
         <p style={{ fontSize: "12px", color: "#64748B", marginTop: "12px" }}>
           또는 <Link href="/login" style={{ color: "#10B981", textDecoration: "underline" }}>무료로 시작하기</Link>

@@ -52,13 +52,16 @@ export default function PricingPage() {
   }, []);
 
   const handleProPayment = async () => {
+    alert("1. 버튼 클릭됨");
     if (!user) {
       router.push("/login?redirect=/pricing");
       return;
     }
+    alert("2. 유저 확인: " + (user ? user.email : "없음"));
     if (paying) return;
     setPaying(true);
     try {
+      alert("3. 결제 호출 직전");
       const response = await PortOne.requestPayment({
         storeId: "store-0d24560d-adce-4b91-abf0-597d75232c89",
         channelKey: "channel-key-b9612a06-870a-43ea-b8a9-744e83eee356",
@@ -75,12 +78,12 @@ export default function PricingPage() {
       });
       if (!response) return;
       if (response.code) {
-        console.log("결제 취소/실패:", response.message);
+        alert("결제 취소/실패: " + response.message);
       } else {
         alert("결제가 완료되었습니다. (테스트 결제 - 자동 환불)");
       }
-    } catch (err) {
-      console.error("결제 오류:", err);
+    } catch (err: any) {
+      alert("4. 에러: " + (err?.message || String(err)));
     } finally {
       setPaying(false);
     }

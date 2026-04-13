@@ -363,21 +363,21 @@ export default function ReportPage() {
           </div>
 
           {/* Teams */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "24px", marginBottom: "28px" }}>
-            <Link href={`/team/${match.homeTeamId}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textDecoration: "none" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "12px", marginBottom: "28px", overflow: "hidden" }}>
+            <Link href={`/team/${match.homeTeamId}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textDecoration: "none", minWidth: 0 }}>
               <TeamLogo teamId={match.homeTeamId} teamName={home} size={88} />
-              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }} className="hover:text-emerald-400 transition-colors">{home}</span>
+              <span className="text-base md:text-[22px] hover:text-emerald-400 transition-colors" style={{ fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>{home}</span>
             </Link>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
               {match.result ? (
                 <span style={{ fontSize: "36px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
               ) : (
                 <span style={{ fontSize: "22px", fontWeight: 700, color: "#10B981" }}>VS</span>
               )}
             </div>
-            <Link href={`/team/${match.awayTeamId}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textDecoration: "none" }}>
+            <Link href={`/team/${match.awayTeamId}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textDecoration: "none", minWidth: 0 }}>
               <TeamLogo teamId={match.awayTeamId} teamName={away} size={88} />
-              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }} className="hover:text-emerald-400 transition-colors">{away}</span>
+              <span className="text-base md:text-[22px] hover:text-emerald-400 transition-colors" style={{ fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>{away}</span>
             </Link>
           </div>
 

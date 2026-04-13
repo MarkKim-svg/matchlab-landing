@@ -343,21 +343,21 @@ export default function NewsletterReport({
           </div>
 
           {/* Teams */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "24px", marginBottom: "28px" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "12px", marginBottom: "28px", overflow: "hidden" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", minWidth: 0 }}>
               <TeamLogo teamId={match.homeTeamId} teamName={home} size={88} />
-              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }}>{home}</span>
+              <span className="text-base md:text-[22px]" style={{ fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>{home}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
               {match.result ? (
                 <span style={{ fontSize: "36px", fontWeight: 700, color: "#E1E7EF", fontFamily: "'JetBrains Mono',monospace" }}>{match.result}</span>
               ) : (
                 <span style={{ fontSize: "22px", fontWeight: 700, color: "#10B981" }}>VS</span>
               )}
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", minWidth: 0 }}>
               <TeamLogo teamId={match.awayTeamId} teamName={away} size={88} />
-              <span style={{ fontSize: "22px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+              <span className="text-base md:text-[22px]" style={{ fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>{away}</span>
             </div>
           </div>
 

@@ -62,7 +62,7 @@ export default function PricingPage() {
       const response = await PortOne.requestPayment({
         storeId: "store-0d24560d-adce-4b91-abf0-597d75232c89",
         channelKey: "channel-key-b9612a06-870a-43ea-b8a9-744e83eee356",
-        paymentId: `payment-${crypto.randomUUID()}`,
+        paymentId: `pay-${Date.now()}`,
         orderName: "MATCHLAB Pro 월 구독",
         totalAmount: 9900,
         currency: "KRW",

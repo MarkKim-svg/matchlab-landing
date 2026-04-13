@@ -46,15 +46,15 @@ function MatchCard({ match, locked }: { match: Match; locked: boolean }) {
 
   // 3-column team row: [홈팀명 홈로고 | VS | 원정로고 원정팀명]
   const teamRow = (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-        <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF", textAlign: "right" }}>{home}</span>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "8px", overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px", minWidth: 0 }}>
+        <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", textAlign: "right", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
         <TeamLogo teamId={match.homeTeamId ?? ""} teamName={home} size={32} />
       </div>
-      <span style={{ fontSize: "14px", fontWeight: 700, color: "#10B981", padding: "0 4px" }}>VS</span>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px" }}>
+      <span style={{ fontSize: "14px", fontWeight: 700, color: "#10B981", padding: "0 4px", flexShrink: 0 }}>VS</span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "8px", minWidth: 0 }}>
         <TeamLogo teamId={match.awayTeamId ?? ""} teamName={away} size={32} />
-        <span style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>{away}</span>
+        <span style={{ fontSize: "14px", fontWeight: 700, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{away}</span>
       </div>
     </div>
   );

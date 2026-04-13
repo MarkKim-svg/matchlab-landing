@@ -85,14 +85,14 @@ export default function TopPick({ predictions, loading, isPro }: Props) {
 
           {/* VS Layout */}
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="flex flex-col items-center gap-1.5 flex-1">
+            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
               <TeamLogo teamId={topMatch.homeTeamId ?? ""} teamName={home} size={48} />
-              <span className="text-xl font-bold text-white text-center leading-tight">{home}</span>
+              <span className="text-base md:text-xl font-bold text-white text-center leading-tight truncate max-w-full">{home}</span>
             </div>
-            <span className="text-[18px] font-bold text-text-muted px-2">VS</span>
-            <div className="flex flex-col items-center gap-1.5 flex-1">
+            <span className="text-[18px] font-bold text-text-muted px-2 shrink-0">VS</span>
+            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
               <TeamLogo teamId={topMatch.awayTeamId ?? ""} teamName={away} size={48} />
-              <span className="text-xl font-bold text-white text-center leading-tight">{away}</span>
+              <span className="text-base md:text-xl font-bold text-white text-center leading-tight truncate max-w-full">{away}</span>
             </div>
           </div>
 

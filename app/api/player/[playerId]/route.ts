@@ -84,8 +84,8 @@ export async function GET(
       place: t.place ?? "",
     }));
 
-    // Transfers
-    const transfers = (Array.isArray(transfersData) ? transfersData : [])
+    // Transfers (dedup by date + teamInId + teamOutId)
+    const rawTransfers = (Array.isArray(transfersData) ? transfersData : [])
       .flatMap((t: any) => (t.transfers ?? []).map((tr: any) => ({
         date: tr.date ?? "",
         type: tr.type ?? "",
@@ -95,7 +95,15 @@ export async function GET(
         teamOut: tr.teams?.out?.name ?? "",
         teamOutLogo: tr.teams?.out?.logo ?? "",
         teamOutId: tr.teams?.out?.id ?? 0,
-      })))
+      })));
+    const seen = new Set<string>();
+    const transfers = rawTransfers
+      .filter((t: any) => {
+        const key = `${t.date}|${t.teamInId}|${t.teamOutId}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
       .sort((a: any, b: any) => b.date.localeCompare(a.date));
 
     return NextResponse.json({

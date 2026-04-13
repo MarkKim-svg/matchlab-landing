@@ -222,24 +222,38 @@ export default function PlayerPage() {
             {/* Trophies — grouped & collapsed */}
             {data.trophies.length > 0 && <TrophySection trophies={data.trophies} />}
 
-            {/* Transfers */}
+            {/* 클럽 경력 */}
             {data.transfers.length > 0 && (
               <div>
-                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🔄 이적 히스토리</h2>
+                <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🏆 클럽 경력</h2>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  {data.transfers.map((t, i) => (
-                    <div key={i} style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "8px", padding: "10px 12px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                      <span style={{ fontSize: "10px", color: "#566378", width: "60px", flexShrink: 0 }}>{t.date.slice(0, 7)}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: "4px", flex: 1, minWidth: 0 }}>
-                        {t.teamOutLogo && <img src={t.teamOutLogo} alt="" style={{ width: "18px", height: "18px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                        <span style={{ fontSize: "11px", color: "#8494A7", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.teamOut}</span>
-                        <span style={{ fontSize: "12px", color: "#10B981", flexShrink: 0 }}>→</span>
-                        {t.teamInLogo && <img src={t.teamInLogo} alt="" style={{ width: "18px", height: "18px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                        <span style={{ fontSize: "11px", color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.teamIn}</span>
-                      </div>
-                      <span style={{ fontSize: "9px", color: "#475569", background: "#0F172A", borderRadius: "4px", padding: "2px 6px", flexShrink: 0 }}>{t.type}</span>
-                    </div>
-                  ))}
+                  {(() => {
+                    // transfers는 날짜 desc 정렬 → asc로 변환하여 경력 구간 생성
+                    const sorted = [...data.transfers].sort((a, b) => a.date.localeCompare(b.date));
+                    interface Stint { startYear: number; endYear: number | null; teamName: string; teamLogo: string; teamId: number; isLoan: boolean }
+                    const stints: Stint[] = [];
+                    for (const t of sorted) {
+                      const year = new Date(t.date).getFullYear();
+                      // 이전 stint 종료
+                      if (stints.length > 0 && stints[stints.length - 1].endYear === null) {
+                        stints[stints.length - 1].endYear = year;
+                      }
+                      stints.push({ startYear: year, endYear: null, teamName: t.teamIn, teamLogo: t.teamInLogo, teamId: t.teamInId, isLoan: t.type === "Loan" });
+                    }
+                    // 최신 stint는 "현재"
+                    return stints.reverse().map((s, i) => (
+                      <Link key={i} href={`/team/${s.teamId}`} style={{ textDecoration: "none" }}>
+                        <div style={{ background: "#111827", border: "1px solid #1E2D47", borderRadius: "8px", padding: "10px 12px", display: "flex", alignItems: "center", gap: "10px" }} className="hover:border-emerald-500/30 transition-colors">
+                          <span style={{ fontSize: "12px", color: "#566378", width: "72px", flexShrink: 0, fontFamily: "'JetBrains Mono',monospace" }}>
+                            {s.startYear}~{s.endYear === null ? "현재" : s.endYear}
+                          </span>
+                          {s.teamLogo && <img src={s.teamLogo} alt="" style={{ width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, filter: "drop-shadow(0 0 1px rgba(255,255,255,0.25))" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: "#E1E7EF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, minWidth: 0 }}>{s.teamName}</span>
+                          {s.isLoan && <span style={{ fontSize: "9px", color: "#FBBF24", background: "#FBBF2415", borderRadius: "4px", padding: "2px 6px", flexShrink: 0 }}>임대</span>}
+                        </div>
+                      </Link>
+                    ));
+                  })()}
                 </div>
               </div>
             )}

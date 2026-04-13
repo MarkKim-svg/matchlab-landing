@@ -228,8 +228,11 @@ export default function PlayerPage() {
                 <h2 style={{ fontSize: "15px", fontWeight: 700, color: "#E1E7EF", marginBottom: "10px" }}>🏆 클럽 경력</h2>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   {(() => {
-                    // transfers는 날짜 desc 정렬 → asc로 변환하여 경력 구간 생성
-                    const sorted = [...data.transfers].sort((a, b) => a.date.localeCompare(b.date));
+                    // transfers → dedup(date+teamInId) → asc 정렬 → 경력 구간 생성
+                    const seen = new Set<string>();
+                    const sorted = [...data.transfers]
+                      .filter(t => { const k = `${t.date}|${t.teamInId}`; if (seen.has(k)) return false; seen.add(k); return true; })
+                      .sort((a, b) => a.date.localeCompare(b.date));
                     interface Stint { startYear: number; endYear: number | null; teamName: string; teamLogo: string; teamId: number; isLoan: boolean }
                     const stints: Stint[] = [];
                     for (const t of sorted) {
@@ -238,7 +241,13 @@ export default function PlayerPage() {
                       if (stints.length > 0 && stints[stints.length - 1].endYear === null) {
                         stints[stints.length - 1].endYear = year;
                       }
-                      stints.push({ startYear: year, endYear: null, teamName: t.teamIn, teamLogo: t.teamInLogo, teamId: t.teamInId, isLoan: t.type === "Loan" });
+                      // 같은 클럽 연속이면 기간 합침 (임대 복귀 등)
+                      const prev = stints.length > 0 ? stints[stints.length - 1] : null;
+                      if (prev && prev.teamId === t.teamInId && prev.endYear === year) {
+                        prev.endYear = null; // 다시 열어서 계속
+                      } else {
+                        stints.push({ startYear: year, endYear: null, teamName: t.teamIn, teamLogo: t.teamInLogo, teamId: t.teamInId, isLoan: t.type === "Loan" });
+                      }
                     }
                     // 최신 stint는 "현재"
                     return stints.reverse().map((s, i) => (

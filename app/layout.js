@@ -1,7 +1,6 @@
 import "./globals.css";
 import { Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import Script from "next/script";
 import KakaoInAppBanner from "@/components/KakaoInAppBanner";
 
 const spaceGrotesk = Space_Grotesk({
@@ -44,10 +43,6 @@ export default function RootLayout({ children }) {
         <KakaoInAppBanner />
         {children}
         <Analytics />
-        <Script
-          src="https://cdn.portone.io/v2/browser-sdk.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

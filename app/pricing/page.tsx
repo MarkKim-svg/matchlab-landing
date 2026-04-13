@@ -6,12 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 import { createClient } from "@/lib/supabase/client";
-
-declare global {
-  interface Window {
-    PortOne?: any;
-  }
-}
+import * as PortOne from "@portone/browser-sdk/v2";
 
 function Donut({ percent, label, sub }: { percent: number; label: string; sub: string }) {
   const r = 42, C = 2 * Math.PI * r;
@@ -62,13 +57,9 @@ export default function PricingPage() {
       return;
     }
     if (paying) return;
-    if (!window.PortOne) {
-      alert("결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
-      return;
-    }
     setPaying(true);
     try {
-      const response = await window.PortOne.requestPayment({
+      const response = await PortOne.requestPayment({
         storeId: "store-0d24560d-adce-4b91-abf0-597d75232c89",
         channelKey: "channel-key-b9612a06-870a-43ea-b8a9-744e83eee356",
         paymentId: `payment-${Date.now()}`,
@@ -127,8 +118,8 @@ export default function PricingPage() {
             {/* Mobile: accordion toggle (hidden on sm+) */}
             <button
               onClick={() => setFreeOpen(!freeOpen)}
-              className="cursor-pointer sm:hidden"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #334155", background: "transparent", color: "#94A3B8", fontSize: "13px", fontWeight: 600 }}
+              className="cursor-pointer sm:!hidden flex items-center justify-center gap-1.5 w-full mt-4 p-2 rounded-lg"
+              style={{ border: "1px solid #334155", background: "transparent", color: "#94A3B8", fontSize: "13px", fontWeight: 600 }}
             >
               {freeOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{freeOpen ? "▲" : "▼"}</span>
             </button>
@@ -163,8 +154,8 @@ export default function PricingPage() {
             {/* Mobile: accordion toggle (hidden on sm+) */}
             <button
               onClick={() => setProOpen(!proOpen)}
-              className="cursor-pointer sm:hidden"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%", marginTop: "16px", padding: "8px", borderRadius: "8px", border: "1px solid #FBBF2440", background: "transparent", color: "#FBBF24", fontSize: "13px", fontWeight: 600 }}
+              className="cursor-pointer sm:!hidden flex items-center justify-center gap-1.5 w-full mt-4 p-2 rounded-lg"
+              style={{ border: "1px solid #FBBF2440", background: "transparent", color: "#FBBF24", fontSize: "13px", fontWeight: 600 }}
             >
               {proOpen ? "접기" : "상세 보기"} <span style={{ fontSize: "16px" }}>{proOpen ? "▲" : "▼"}</span>
             </button>

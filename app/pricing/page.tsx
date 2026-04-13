@@ -62,16 +62,18 @@ export default function PricingPage() {
       const response = await PortOne.requestPayment({
         storeId: "store-0d24560d-adce-4b91-abf0-597d75232c89",
         channelKey: "channel-key-b9612a06-870a-43ea-b8a9-744e83eee356",
-        paymentId: `payment-${Date.now()}`,
+        paymentId: `payment-${crypto.randomUUID()}`,
         orderName: "MATCHLAB Pro 월 구독",
         totalAmount: 9900,
-        currency: "CURRENCY_KRW",
+        currency: "KRW",
         payMethod: "CARD",
+        redirectUrl: `${window.location.origin}/pricing`,
         customer: {
-          email: user.email || "",
+          email: user.email || undefined,
           fullName: user.user_metadata?.full_name || user.user_metadata?.name || "MATCHLAB 회원",
         },
       });
+      if (!response) return;
       if (response.code) {
         console.log("결제 취소/실패:", response.message);
       } else {

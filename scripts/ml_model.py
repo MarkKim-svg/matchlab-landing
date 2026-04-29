@@ -122,6 +122,7 @@ def pages_to_dataframe(pages):
             "xg_home": parse_float(rich_text(props, "xG_홈")),
             "xg_away": parse_float(rich_text(props, "xG_원정")),
             "odds_home": parse_pct(rich_text(props, "배당_홈승")),
+            "odds_draw": parse_pct(rich_text(props, "배당_무승부")),
             "odds_away": parse_pct(rich_text(props, "배당_원정승")),
             # 신규 피처
             "home_recent5_pts": parse_float(rich_text(props, "홈팀_최근5경기_승점")),
@@ -150,7 +151,13 @@ NUMERIC_FEATURES = [
     "poisson_home", "poisson_away",
     "elo_home", "elo_away",
     "xg_home", "xg_away",
-    "odds_home", "odds_away",
+    "odds_home", "odds_draw", "odds_away",
+    # 배당 파생 피처 5개 (Phase 1 — Draw Blindness 완화)
+    "odds_implied_home_norm",
+    "odds_implied_draw_norm",
+    "odds_implied_away_norm",
+    "odds_home_away_gap",
+    "odds_ev_top",
     "home_recent5_pts", "away_recent5_pts",
     "home_home_pts", "away_away_pts",
     "rank_diff", "h2h_home_winrate",
@@ -160,8 +167,31 @@ NUMERIC_FEATURES = [
 ]
 
 
+def _add_odds_derived_features(df):
+    """배당 파생 피처 5개. 결측은 NaN 유지 (XGBoost가 missing=NaN으로 처리)."""
+    df = df.copy()
+    h, d, a = df["odds_home"], df["odds_draw"], df["odds_away"]
+    total = h + d + a  # 오버라운드 (보통 105~108%)
+    df["odds_implied_home_norm"] = h / total * 100
+    df["odds_implied_draw_norm"] = d / total * 100
+    df["odds_implied_away_norm"] = a / total * 100
+    df["odds_home_away_gap"] = (h - a).abs()
+    eh = df.get("ensemble_home")
+    ed = df.get("ensemble_draw")
+    ea = df.get("ensemble_away")
+    if eh is not None and ed is not None and ea is not None:
+        ev_home = eh - df["odds_implied_home_norm"]
+        ev_draw = ed - df["odds_implied_draw_norm"]
+        ev_away = ea - df["odds_implied_away_norm"]
+        df["odds_ev_top"] = pd.concat([ev_home, ev_draw, ev_away], axis=1).max(axis=1)
+    else:
+        df["odds_ev_top"] = np.nan
+    return df
+
+
 def build_features(df, league_columns=None):
     """Build feature matrix. Returns X, feature_names, league_columns."""
+    df = _add_odds_derived_features(df)
     X_num = df[NUMERIC_FEATURES].copy()
 
     # League one-hot

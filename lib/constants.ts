@@ -11,6 +11,8 @@ export const PLANS = {
 export const EARLYBIRD_PRICE = 9900;
 export const BETMAN_URL = "https://www.betman.co.kr";
 export const GAMBLING_HELPLINE = "1336";
+export const SUPPORT_PHONE = "010-6481-8265"; // TODO: 070 발급 후 교체
+export const SUPPORT_EMAIL = "minkuikim@gmail.com";
 
 export const LEAGUE_CONFIG: Record<string, { logo: string; color: string }> = {
   프리미어리그: { logo: "https://media.api-sports.io/football/leagues/39.png", color: "#3D195B" },

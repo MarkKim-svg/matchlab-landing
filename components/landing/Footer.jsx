@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BLOG_URL, INSTAGRAM_URL, BETMAN_URL, GAMBLING_HELPLINE } from "@/lib/constants";
+import { BLOG_URL, INSTAGRAM_URL, BETMAN_URL, GAMBLING_HELPLINE, SUPPORT_PHONE, SUPPORT_EMAIL } from "@/lib/constants";
 
 export default function Footer() {
   return (
@@ -24,7 +24,7 @@ export default function Footer() {
         <div className="text-xs text-[#566378] leading-[1.8] font-body space-y-1">
           <p>매치랩 (MATCHLAB) | 대표: 김민규 | 사업자등록번호: 507-61-04570</p>
           <p>주소: 경기도 수원시 영통구 센트럴파크로 60, 6302동 2703호(이의동, 래미안 광교)</p>
-          <p>이메일: minkuikim@gmail.com | 전화: 010-6481-8265</p>
+          <p>이메일: {SUPPORT_EMAIL} | 전화: {SUPPORT_PHONE}</p>
         </div>
 
         {/* 약관 링크 */}

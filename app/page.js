@@ -341,8 +341,8 @@ function MatchPreviewCard({ match, variant }) {
         </div>
         <div className="absolute inset-0 bg-bg-card/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 rounded-xl">
           <span className="text-2xl">🔒</span>
-          <span className="text-emerald-500 font-bold text-sm font-body">Pro 전용 · 고확신 경기</span>
-          <span className="text-gold-400 text-xs font-bold mt-1">어제 Pro 경기: 3전 2승</span>
+          <span className="text-emerald-500 font-bold text-sm font-body">Pro 전용 · 고확신 분석</span>
+          <span className="text-gold-400 text-xs font-bold mt-1">어제 고확신 경기: 3전 2승 적중</span>
           <span className="text-text-muted text-xs font-body">가입 후 확인하세요</span>
         </div>
       </div>
@@ -513,17 +513,20 @@ export default function Home() {
               </div>
 
               <h1 className="font-body font-extrabold text-[28px] sm:text-[36px] md:text-[48px] lg:text-[56px] leading-[1.15] tracking-[-0.5px] text-white mb-2">
-                매일 업데이트되는
+                매일 아침,
                 <br />
-                <span className="text-emerald-400">AI 축구 분석 리포트</span>
+                <span className="text-emerald-400">AI가 쓰는 축구 매거진</span>
               </h1>
+              <p className="text-text-secondary text-[15px] md:text-[16px] font-body mb-4">
+                AI가 경기를 분석하고, 결과가 증명합니다.
+              </p>
               {highConfRate > 0 && (
                 <p className="text-emerald-400 text-lg font-display font-bold mb-4">
-                  ⭐4+ 적중률 {highConfRate}% · {totalGames}경기 검증
+                  AI가 분석한 고확신 경기 적중 기록 {highConfRate}% · {totalGames}경기 (투명 검증)
                 </p>
               )}
               <p className="text-[#6B7280] text-[14px] md:text-[15px] mb-8 max-w-md leading-relaxed font-body break-keep">
-                4개 통계 모델이 매일 수십 경기를 분석합니다. 가장 적중 확률 높은 경기만 골라, 근거와 함께 제공합니다.
+                4개 통계 모델이 매일 경기를 분석해 매거진으로 발행합니다. 경기 전 예측·경기 후 전술 분석·주간 매거진까지 한곳에서 받아보세요.
               </p>
 
               {/* CTAs */}
@@ -548,6 +551,41 @@ export default function Home() {
             <ReportPreview />
           </div>
         </section>
+
+        {/* ═══ 매거진 3섹션 배너 — 한 매거진의 3개 정기 코너 ═══ */}
+        <div className="mx-auto max-w-[960px] px-4 py-6">
+          <div className="rounded-2xl border border-bg-border-subtle bg-bg-card overflow-hidden">
+            <div className="px-5 py-3 border-b border-bg-border-subtle flex items-center justify-between">
+              <span className="text-[11px] tracking-[0.2em] text-text-muted font-display font-bold uppercase">
+                MATCHLAB Magazine
+              </span>
+              <span className="text-[11px] text-text-muted font-body">매일 아침 발행</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-bg-border-subtle">
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold tracking-wider">운영 중</span>
+                </div>
+                <h3 className="font-body font-bold text-[15px] text-text-primary mb-1">경기 전 AI 예측</h3>
+                <p className="text-[13px] text-text-secondary font-body leading-relaxed">매일 아침 4모델 앙상블이 분석한 고확신 경기</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-bg-raised text-text-secondary font-bold tracking-wider">이번 주 오픈</span>
+                </div>
+                <h3 className="font-body font-bold text-[15px] text-text-primary mb-1">경기 후 전술 분석</h3>
+                <p className="text-[13px] text-text-secondary font-body leading-relaxed">Claude AI가 쓰는 800자 전술 리뷰 + 핵심 변수</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-bg-raised text-text-secondary font-bold tracking-wider">다음 주 오픈</span>
+                </div>
+                <h3 className="font-body font-bold text-[15px] text-text-primary mb-1">주간 매거진</h3>
+                <p className="text-[13px] text-text-secondary font-body leading-relaxed">AI 파워 랭킹 + 리그 흐름 + 주말 관전 가이드</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* ═══ 빅매치 배너 ═══ */}
         {bigMatches.length > 0 && (
@@ -851,7 +889,7 @@ export default function Home() {
             <div className="text-center mb-10">
               <span className="section-label mb-3">PRICING</span>
               <h2 className="font-body font-bold text-[24px] md:text-[32px] tracking-[-0.5px] text-text-primary mt-3">
-                AI 축구 분석 리포트 구독
+                AI 축구 매거진 Pro 구독
                 <br />
                 — 월 9,900원
               </h2>
@@ -905,7 +943,7 @@ export default function Home() {
                 <div className="text-[14px] text-text-muted line-through font-body">정가 ₩14,900</div>
                 <div className="font-display font-bold text-[28px] tracking-[-1px] text-gold-400 mb-1">월 ₩9,900</div>
                 <p className="text-emerald-400 text-xs mb-4 font-body">
-                  매일 가장 유리한 경기만 빠르게 받고 싶은 분께
+                  매일 아침 발행되는 매거진 + 고확신 경기 분석을 받고 싶은 분께
                 </p>
                 <ul className="mt-3 mb-6 space-y-2">
                   {[
@@ -1015,9 +1053,9 @@ export default function Home() {
         <section className="py-20 px-5">
           <div className="max-w-[960px] mx-auto text-center">
             <h2 className="font-body font-bold text-[24px] md:text-[32px] text-text-primary">
-              매일 경기 분석, 아직 직접 하세요?
+              매일 아침, AI 축구 매거진을 받아보세요
             </h2>
-            <p className="text-text-secondary text-sm mt-3">AI가 매일 골라주는 경기, 무료로 시작하세요.</p>
+            <p className="text-text-secondary text-sm mt-3">경기 전 예측부터 경기 후 전술 분석까지, 무료로 시작하세요.</p>
             <a
               href="/login"
               className="inline-block bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-8 py-4 rounded-[14px] text-[15px] transition-all font-body mt-6"

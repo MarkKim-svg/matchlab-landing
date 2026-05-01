@@ -115,12 +115,14 @@ export async function POST(request: NextRequest) {
     trace.push(`billingKeySample=${billingKey?.slice(0, 12) ?? "null"}`);
 
     if (!billingKey || !userId) {
-      return NextResponse.json({
+      const responseBody = {
         received: true,
         skipped: "missing_fields",
         trace,
         payloadSample: JSON.stringify(payload).slice(0, 500),
-      });
+      };
+      console.log("[response]", JSON.stringify(responseBody));
+      return NextResponse.json(responseBody);
     }
 
     let admin;
@@ -129,7 +131,9 @@ export async function POST(request: NextRequest) {
       trace.push("admin_ok");
     } catch (e: any) {
       trace.push(`admin_failed=${e?.message ?? String(e)}`);
-      return NextResponse.json({ trace, error: "admin_init_failed" }, { status: 500 });
+      const responseBody = { trace, error: "admin_init_failed" };
+      console.log("[response]", JSON.stringify(responseBody));
+      return NextResponse.json(responseBody, { status: 500 });
     }
 
     const { error } = await admin
@@ -139,13 +143,19 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       trace.push(`update_failed=${error.message}`);
-      return NextResponse.json({ trace, error: "db_update_failed" }, { status: 500 });
+      const responseBody = { trace, error: "db_update_failed" };
+      console.log("[response]", JSON.stringify(responseBody));
+      return NextResponse.json(responseBody, { status: 500 });
     }
 
     trace.push("billing_key_saved");
-    return NextResponse.json({ received: true, processed: "billing_key_saved", trace });
+    const responseBody = { received: true, processed: "billing_key_saved", trace };
+    console.log("[response]", JSON.stringify(responseBody));
+    return NextResponse.json(responseBody);
   }
 
   trace.push("not_handled");
-  return NextResponse.json({ received: true, skipped: "not_handled", trace });
+  const responseBody = { received: true, skipped: "not_handled", trace };
+  console.log("[response]", JSON.stringify(responseBody));
+  return NextResponse.json(responseBody);
 }

@@ -51,34 +51,57 @@ export default function PricingPage() {
       .catch(() => {});
   }, []);
 
+  // 모바일 카카오페이앱 → /pricing?billing=issued 복귀 처리
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get("billing") === "issued") {
+      alert("구독 카드 등록 완료. 첫 결제는 별도 안내 후 진행됩니다");
+      window.history.replaceState({}, "", "/pricing");
+    }
+  }, []);
+
   const handleProPayment = async () => {
     if (!user) {
       router.push("/login?redirect=/pricing");
       return;
     }
     if (paying) return;
+
+    const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
+    const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY_KAKAOPAY;
+    if (!storeId || !channelKey) {
+      console.error("PortOne env missing", { storeId, channelKey });
+      alert("결제 설정 오류. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
     setPaying(true);
     try {
-      const response = await PortOne.requestPayment({
-        storeId: "store-0d24560d-adce-4b91-abf0-597d75232c89",
-        channelKey: "channel-key-b9612a06-870a-43ea-b8a9-744e83eee356",
-        paymentId: `pay-${Date.now()}`,
-        orderName: "MATCHLAB Pro 월 구독",
-        totalAmount: 9900,
-        currency: "KRW",
-        payMethod: "CARD",
-        redirectUrl: `${window.location.origin}/pricing`,
+      const response = await PortOne.requestIssueBillingKey({
+        storeId,
+        channelKey,
+        billingKeyMethod: "EASY_PAY",
+        issueId: `bk-${user.id}-${Date.now()}`,
+        issueName: "MATCHLAB Pro 월 구독",
+        easyPay: { easyPayProvider: "KAKAOPAY" },
         customer: {
+          customerId: user.id,
           email: user.email || undefined,
           fullName: user.user_metadata?.full_name || user.user_metadata?.name || "MATCHLAB 회원",
           phoneNumber: "01000000000",
         },
+        redirectUrl: `${window.location.origin}/pricing?billing=issued`,
       });
+
       if (!response) return;
       if (response.code) {
-        console.log("결제 취소/실패:", response.message);
+        console.log("빌링키 발급 취소/실패:", response.code, response.message);
+        if (!/USER_?CANCEL/i.test(response.code)) {
+          alert("카드 등록 실패: " + (response.message || response.code));
+        }
       } else {
-        alert("결제가 완료되었습니다. (테스트 결제 - 자동 환불)");
+        alert("구독 카드 등록 완료. 첫 결제는 별도 안내 후 진행됩니다");
       }
     } catch (err: any) {
       alert("결제 에러: " + (err?.message || String(err)));
@@ -182,7 +205,7 @@ export default function PricingPage() {
               </ul>
             </div>
             <button onClick={handleProPayment} disabled={paying} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ display: "block", marginTop: "24px", padding: "12px", borderRadius: "12px", background: "#10B981", color: "white", textAlign: "center", fontSize: "15px", fontWeight: 700, width: "100%", border: "none", opacity: paying ? 0.6 : 1 }}>
-              {paying ? "결제 진행중..." : "Pro 시작하기"}
+              {paying ? "카드 등록 중..." : "Pro 시작하기"}
             </button>
           </div>
         </div>
@@ -267,7 +290,7 @@ export default function PricingPage() {
         <p style={{ color: "#6B7280", fontSize: "14px" }}>지금 Pro를 시작하면</p>
         <p style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700, marginTop: "4px" }}>오늘의 빅매치 분석을 바로 확인할 수 있습니다</p>
         <button onClick={handleProPayment} disabled={paying} className="cursor-pointer hover:bg-emerald-400 transition-colors" style={{ background: "#10B981", color: "white", fontWeight: 700, padding: "14px 32px", borderRadius: "12px", marginTop: "24px", border: "none", fontSize: "16px", opacity: paying ? 0.6 : 1 }}>
-          {paying ? "결제 진행중..." : "Pro 시작하기"}
+          {paying ? "카드 등록 중..." : "Pro 시작하기"}
         </button>
         <p style={{ fontSize: "12px", color: "#64748B", marginTop: "12px" }}>
           또는 <Link href="/login" style={{ color: "#10B981", textDecoration: "underline" }}>무료로 시작하기</Link>

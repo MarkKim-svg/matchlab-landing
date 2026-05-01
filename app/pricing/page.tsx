@@ -101,6 +101,23 @@ export default function PricingPage() {
           alert("카드 등록 실패: " + (response.message || response.code));
         }
       } else {
+        // PortOne webhook payload에 customer.id가 안 와서 user 매칭 불가 → 클라이언트가
+        // 직접 server API로 billingKey 전달, server가 인증된 user.id로 UPDATE 처리.
+        const billingKey = (response as any).billingKey as string | undefined;
+        if (!billingKey) {
+          alert("빌링키 발급은 됐지만 키 정보 누락. 관리자에게 문의해주세요");
+          return;
+        }
+        const saveRes = await fetch("/api/billing-key/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ billingKey }),
+        });
+        if (!saveRes.ok) {
+          const err = await saveRes.json().catch(() => ({}));
+          alert("카드 등록은 됐지만 저장 실패: " + (err?.error || saveRes.status) + ". 관리자에게 문의해주세요");
+          return;
+        }
         alert("구독 카드 등록 완료. 첫 결제는 별도 안내 후 진행됩니다");
       }
     } catch (err: any) {

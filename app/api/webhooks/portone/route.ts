@@ -86,14 +86,18 @@ export async function POST(request: NextRequest) {
   }
 
   const eventType: string | undefined = payload?.type;
+  const trace: string[] = [];
+  trace.push(`webhookId=${webhookId}`);
+  trace.push(`type=${eventType}`);
+  trace.push(`payloadKeys=${Object.keys(payload ?? {}).join(",")}`);
+  trace.push(`dataKeys=${payload?.data ? Object.keys(payload.data).join(",") : "null"}`);
+
   console.log("[portone webhook] verified event", { webhookId, type: eventType });
-  console.log("[wh] payload type:", eventType);
-  console.log("[wh] payload full:", JSON.stringify(payload).slice(0, 2000));
 
   // BillingKey.Issued / BillingKey.Ready: 빌링키 발급 완료 → profiles.billing_key 저장
-  // 카카오페이 V2가 Ready에 키 싣는 케이스 대응. UPDATE라 idempotent (둘 다 와도 같은 키 덮어쓰기)
+  // 카카오페이 V2가 Ready에 키 싣는 케이스 대응. UPDATE라 idempotent
   if (eventType === "BillingKey.Issued" || eventType === "BillingKey.Ready") {
-    console.log("[wh] entering billing key branch");
+    trace.push("entered_branch");
 
     // V2 페이로드 변형 대비: 여러 path에서 추출
     const billingKey: string | undefined =
@@ -105,30 +109,27 @@ export async function POST(request: NextRequest) {
       payload?.data?.billingKeyInfo?.customer?.customerId ??
       payload?.customer?.customerId;
 
-    console.log("[wh] extracted", {
-      hasKey: !!billingKey,
-      hasUser: !!userId,
-      userIdSample: userId?.slice(0, 8),
-      payloadKeys: Object.keys(payload ?? {}),
-      dataKeys: payload?.data ? Object.keys(payload.data) : null,
-    });
+    trace.push(`hasKey=${!!billingKey}`);
+    trace.push(`hasUser=${!!userId}`);
+    trace.push(`userIdSample=${userId?.slice(0, 8) ?? "null"}`);
+    trace.push(`billingKeySample=${billingKey?.slice(0, 12) ?? "null"}`);
 
     if (!billingKey || !userId) {
-      console.error("[wh] missing fields", {
-        hasKey: !!billingKey,
-        hasUser: !!userId,
-        keys: Object.keys(payload?.data ?? {}),
+      return NextResponse.json({
+        received: true,
+        skipped: "missing_fields",
+        trace,
+        payloadSample: JSON.stringify(payload).slice(0, 500),
       });
-      return NextResponse.json({ received: true, skipped: "missing_fields" });
     }
 
     let admin;
     try {
       admin = createAdminClient();
-      console.log("[wh] admin client OK");
+      trace.push("admin_ok");
     } catch (e: any) {
-      console.error("[wh] admin client FAILED", e?.message ?? String(e));
-      return NextResponse.json({ error: "admin_init_failed" }, { status: 500 });
+      trace.push(`admin_failed=${e?.message ?? String(e)}`);
+      return NextResponse.json({ trace, error: "admin_init_failed" }, { status: 500 });
     }
 
     const { error } = await admin
@@ -137,15 +138,14 @@ export async function POST(request: NextRequest) {
       .eq("id", userId);
 
     if (error) {
-      console.error("[wh] profiles update 실패", { userId, error: error.message });
-      return NextResponse.json({ error: "db_update_failed" }, { status: 500 });
+      trace.push(`update_failed=${error.message}`);
+      return NextResponse.json({ trace, error: "db_update_failed" }, { status: 500 });
     }
 
-    console.log("[wh] billing_key saved", { userId, eventType });
-    return NextResponse.json({ received: true, processed: "billing_key_saved" });
+    trace.push("billing_key_saved");
+    return NextResponse.json({ received: true, processed: "billing_key_saved", trace });
   }
 
-  // 기타 이벤트 (Transaction.Paid, Transaction.Cancelled 등)는 다음 세션 영역.
-  // 일단 200으로 응답해서 포트원 재시도 방지.
-  return NextResponse.json({ received: true, skipped: "not_handled_yet" });
+  trace.push("not_handled");
+  return NextResponse.json({ received: true, skipped: "not_handled", trace });
 }

@@ -151,9 +151,9 @@ def main():
     print("[1/5] Notion 판정 완료 데이터 로드...")
     pages = notion_query_all()
     df = pages_to_dataframe(pages)
-    df["y"] = df["actual"].apply(map_result)
+    df["y"] = df["actual_result"].apply(map_result)
     df = df[df["y"] >= 0].copy()
-    df = df.sort_values("kickoff").reset_index(drop=True)
+    df = df.sort_values("date").reset_index(drop=True)
     print(f"  → {len(df)}건 로드")
 
     if len(df) < 50:

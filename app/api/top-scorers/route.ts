@@ -18,22 +18,30 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "API key not configured" }, { status: 500 });
     }
 
-    const res = await fetch(
-      `https://v3.football.api-sports.io/players/topscorers?league=${league}&season=${season}`,
-      {
-        headers: { "x-apisports-key": apiKey },
-        next: { revalidate: 3600 },
-      }
-    );
+    const headers = { "x-apisports-key": apiKey };
+    const next = { revalidate: 3600 };
+    const [scorersRes, assistsRes] = await Promise.all([
+      fetch(`https://v3.football.api-sports.io/players/topscorers?league=${league}&season=${season}`, { headers, next }),
+      fetch(`https://v3.football.api-sports.io/players/topassists?league=${league}&season=${season}`, { headers, next }),
+    ]);
 
-    const data = await res.json();
-    const players = data?.response ?? [];
+    const [scorersData, assistsData] = await Promise.all([scorersRes.json(), assistsRes.json()]);
+    const scorersList: any[] = scorersData?.response ?? [];
+    const assistsList: any[] = assistsData?.response ?? [];
 
-    if (players.length === 0) {
+    if (scorersList.length === 0 && assistsList.length === 0) {
       return NextResponse.json({ scorers: [] });
     }
 
-    const parsed = players.slice(0, 20).map((p: any, i: number) => ({
+    // Merge by player id, dedupe (top-scorers and top-assists may overlap)
+    const map = new Map<number, any>();
+    for (const p of [...scorersList, ...assistsList]) {
+      const id = p?.player?.id;
+      if (!id || map.has(id)) continue;
+      map.set(id, p);
+    }
+
+    const parsed = Array.from(map.values()).map((p: any, i: number) => ({
       rank: i + 1,
       playerName: p.player.name,
       playerPhoto: p.player.photo,

@@ -375,7 +375,7 @@ function StandingsTable({ standings, leagueId }: { standings: Standing[]; league
                   <td style={{ textAlign: "center" }}>
                     {team.form && (
                       <div style={{ display: "flex", gap: "2px", justifyContent: "center" }}>
-                        {team.form.split("").slice(-5).map((ch, i) => {
+                        {team.form.split("").slice(-5).reverse().map((ch, i) => {
                           const bg = ch === "W" ? "#10B981" : ch === "L" ? "#EF4444" : "#475569";
                           return (
                             <span key={i} style={{ width: "18px", height: "18px", borderRadius: "4px", background: bg, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: 700, color: "#fff" }}>

@@ -55,7 +55,7 @@ export default function HomeSidebar() {
     setScorersLoading(true);
     fetch(`/api/top-scorers?league=${leagueId}`)
       .then((r) => r.json())
-      .then((d) => setScorers((d.scorers ?? []).slice(0, 5)))
+      .then((d) => setScorers(d.scorers ?? []))
       .catch(() => setScorers([]))
       .finally(() => setScorersLoading(false));
   }, [leagueId]);

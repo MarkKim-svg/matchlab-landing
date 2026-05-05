@@ -154,6 +154,53 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(responseBody);
   }
 
+  // Transaction.Cancelled: 환불 → plan 'cancelled' + next_billing_at NULL 다운그레이드
+  // paymentId 형식: `payment-{userId}-{YYYYMM}` — userId는 UUID(36자, 4번째까지 dashed)
+  if (eventType === "Transaction.Cancelled") {
+    trace.push("entered_cancel_branch");
+    const paymentId: string | undefined = payload?.data?.paymentId;
+    trace.push(`paymentId=${paymentId ?? "null"}`);
+
+    if (!paymentId || !paymentId.startsWith("payment-")) {
+      const responseBody = { received: true, skipped: "no_payment_id", trace };
+      console.log("[response]", JSON.stringify(responseBody));
+      return NextResponse.json(responseBody);
+    }
+
+    // payment-{uuid(36)}-{yyyymm(6)} 에서 userId 추출
+    const m = paymentId.match(/^payment-([0-9a-f-]{36})-\d{6}$/i);
+    const userId = m?.[1];
+    trace.push(`userIdSample=${userId?.slice(0, 8) ?? "null"}`);
+    if (!userId) {
+      const responseBody = { received: true, skipped: "bad_payment_id_format", trace };
+      console.log("[response]", JSON.stringify(responseBody));
+      return NextResponse.json(responseBody);
+    }
+
+    let admin;
+    try {
+      admin = createAdminClient();
+    } catch (e: any) {
+      trace.push(`admin_failed=${e?.message ?? String(e)}`);
+      return NextResponse.json({ trace, error: "admin_init_failed" }, { status: 500 });
+    }
+
+    const { error } = await admin
+      .from("profiles")
+      .update({ plan: "cancelled", next_billing_at: null })
+      .eq("id", userId);
+
+    if (error) {
+      trace.push(`update_failed=${error.message}`);
+      return NextResponse.json({ trace, error: "db_update_failed" }, { status: 500 });
+    }
+
+    trace.push("plan_cancelled_synced");
+    const responseBody = { received: true, processed: "plan_cancelled_synced", trace };
+    console.log("[response]", JSON.stringify(responseBody));
+    return NextResponse.json(responseBody);
+  }
+
   trace.push("not_handled");
   const responseBody = { received: true, skipped: "not_handled", trace };
   console.log("[response]", JSON.stringify(responseBody));

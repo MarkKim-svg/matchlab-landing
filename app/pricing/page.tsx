@@ -118,7 +118,25 @@ export default function PricingPage() {
           alert("카드 등록은 됐지만 저장 실패: " + (err?.error || saveRes.status) + ". 관리자에게 문의해주세요");
           return;
         }
-        alert("구독 카드 등록 완료. 첫 결제는 별도 안내 후 진행됩니다");
+
+        // 옵션 A: 빌링키 등록 직후 곧바로 첫 9,900원 결제까지 진행 (one-shot UX)
+        const chargeRes = await fetch("/api/billing/charge-first", { method: "POST" });
+        const chargeJson = await chargeRes.json().catch(() => ({}));
+        if (!chargeRes.ok) {
+          alert(
+            "카드 등록은 됐지만 첫 결제 실패: " +
+              (chargeJson?.error || chargeRes.status) +
+              ". 카카오톡 채널로 문의해주세요",
+          );
+          return;
+        }
+        if (chargeJson?.alreadyPro) {
+          alert("이미 Pro 구독 중입니다. 마이페이지에서 다음 결제일을 확인하세요.");
+          router.push("/home");
+          return;
+        }
+        alert("Pro 구독 시작 — 9,900원 결제 완료. 매달 같은 날 자동 갱신됩니다.");
+        router.push("/home");
       }
     } catch (err: any) {
       alert("결제 에러: " + (err?.message || String(err)));

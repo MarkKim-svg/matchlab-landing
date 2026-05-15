@@ -5,28 +5,19 @@ export const revalidate = 3600;
 const ALLOWED = new Set(["2", "3", "848", "45", "143", "137", "81", "66"]);
 const API_BASE = "https://v3.football.api-sports.io";
 
-// Rounds to fetch (both legs)
-const ROUND_QUERIES = [
-  "Round of 16",
-  "Round of 16 - 2nd Leg",
-  "Quarter-finals",
-  "Quarter-finals - 2nd Leg",
-  "Quarter Finals",
-  "Semi-finals",
-  "Semi-finals - 2nd Leg",
-  "Semi Finals",
-  "Final",
-  "8th Finals",
-];
-
-// Normalize round name to base round
-function baseRound(r: string): string {
-  const rl = r.toLowerCase();
-  if (rl.includes("round of 16") || rl.includes("8th final")) return "R16";
-  if (rl.includes("quarter")) return "QF";
-  if (rl.includes("semi") && !rl.includes("quarter")) return "SF";
-  if (rl === "final" || (rl.includes("final") && !rl.includes("quarter") && !rl.includes("semi") && !rl.includes("8th"))) return "F";
-  return r;
+// API-Football 라운드 표기 → 우리 brackets 키 매핑.
+// 등록되지 않은 라운드(League Stage, Qualifying, Playoff round 등)는 토너먼트 브래킷에서 제외.
+function classifyRound(raw: string): { key: string; order: number } | null {
+  const r = raw.toLowerCase().trim();
+  // R128 / 1/128-finals 통합
+  if (r.includes("round of 128") || r.includes("1/128")) return { key: "R128", order: 1 };
+  if (r.includes("round of 64")) return { key: "R64", order: 2 };
+  if (r.includes("round of 32")) return { key: "R32", order: 3 };
+  if (r.includes("round of 16") || r === "8th finals") return { key: "R16", order: 4 };
+  if (r.includes("quarter")) return { key: "QF", order: 5 };
+  if (r.includes("semi")) return { key: "SF", order: 6 };
+  if (r === "final" || r.endsWith(" final")) return { key: "F", order: 7 };
+  return null;
 }
 
 export interface TieData {
@@ -40,7 +31,7 @@ export interface TieData {
   aggTeam2: number;
   winner: string | null;
   finished: boolean;
-  firstFixtureId: number; // for ordering
+  firstFixtureId: number;
 }
 
 export async function GET(
@@ -60,63 +51,71 @@ export async function GET(
 
     const season = request.nextUrl.searchParams.get("season") || "2025";
 
-    // Fetch all rounds in parallel
-    const allFixtures: any[] = [];
-    const fetches = ROUND_QUERIES.map(async (round) => {
-      try {
-        const res = await fetch(
-          `${API_BASE}/fixtures?league=${leagueId}&season=${season}&round=${encodeURIComponent(round)}`,
-          { headers: { "x-apisports-key": apiKey }, next: { revalidate: 3600 } }
-        );
-        const data = await res.json();
-        const fixtures = data?.response ?? [];
-        console.log(`[tournament] league=${leagueId} round="${round}" fixtures=${fixtures.length}`);
-        for (const f of fixtures) {
-          allFixtures.push({ ...f, _round: round });
-        }
-      } catch { /* skip */ }
-    });
-    await Promise.all(fetches);
+    // 1. 시즌별 사용 가능한 라운드 동적 조회
+    const roundsRes = await fetch(
+      `${API_BASE}/fixtures/rounds?league=${leagueId}&season=${season}`,
+      { headers: { "x-apisports-key": apiKey }, next: { revalidate: 3600 } }
+    );
+    const roundsData = await roundsRes.json();
+    const availableRounds: string[] = roundsData?.response ?? [];
 
-    // Group fixtures by base round, then by tie (team pair)
-    const byRound = new Map<string, Map<string, any[]>>();
-    for (const f of allFixtures) {
-      const br = baseRound(f._round);
-      if (!byRound.has(br)) byRound.set(br, new Map());
-      const tieMap = byRound.get(br)!;
-
-      const hName = f.teams?.home?.name ?? "";
-      const aName = f.teams?.away?.name ?? "";
-      // Key: sorted team names to match across legs
-      const key = [hName, aName].sort().join("|");
-
-      if (!tieMap.has(key)) tieMap.set(key, []);
-      tieMap.get(key)!.push(f);
+    // 토너먼트 라운드만 필터 (League Stage / Qualifying / Group A,B... 제외)
+    const tournamentRounds: { raw: string; key: string; order: number }[] = [];
+    for (const raw of availableRounds) {
+      const cls = classifyRound(raw);
+      if (cls) tournamentRounds.push({ raw, ...cls });
     }
 
-    // Build ties per round
-    const roundOrder = ["R16", "QF", "SF", "F"];
+    if (tournamentRounds.length === 0) {
+      return NextResponse.json({ rounds: {}, availableKeys: [] });
+    }
+
+    // 2. 각 토너먼트 라운드의 fixtures 병렬 fetch
+    const allFixtures: any[] = [];
+    await Promise.all(
+      tournamentRounds.map(async ({ raw }) => {
+        try {
+          const res = await fetch(
+            `${API_BASE}/fixtures?league=${leagueId}&season=${season}&round=${encodeURIComponent(raw)}`,
+            { headers: { "x-apisports-key": apiKey }, next: { revalidate: 3600 } }
+          );
+          const data = await res.json();
+          const fixtures = data?.response ?? [];
+          for (const f of fixtures) allFixtures.push({ ...f, _roundRaw: raw });
+        } catch { /* skip */ }
+      })
+    );
+
+    // 3. 라운드 키별로 그룹핑, 동일 라운드 내에서는 팀쌍(tie) 단위로 묶음 (양다리)
+    const rawToKey = new Map<string, string>();
+    for (const tr of tournamentRounds) rawToKey.set(tr.raw, tr.key);
+
+    const byRound = new Map<string, Map<string, any[]>>();
+    for (const f of allFixtures) {
+      const key = rawToKey.get(f._roundRaw);
+      if (!key) continue;
+      if (!byRound.has(key)) byRound.set(key, new Map());
+      const tieMap = byRound.get(key)!;
+      const hName = f.teams?.home?.name ?? "";
+      const aName = f.teams?.away?.name ?? "";
+      const tieKey = [hName, aName].sort().join("|");
+      if (!tieMap.has(tieKey)) tieMap.set(tieKey, []);
+      tieMap.get(tieKey)!.push(f);
+    }
+
+    // 4. 각 라운드 → TieData 배열
     const rounds: Record<string, TieData[]> = {};
-
-    for (const br of roundOrder) {
-      const tieMap = byRound.get(br);
-      if (!tieMap || tieMap.size === 0) continue;
-
+    for (const [roundKey, tieMap] of byRound) {
       const ties: TieData[] = [];
       for (const [, fixtures] of tieMap) {
-        // Sort by date to get leg1 first
         fixtures.sort((a: any, b: any) => (a.fixture?.date ?? "").localeCompare(b.fixture?.date ?? ""));
-
         const f1 = fixtures[0];
         const f2 = fixtures.length > 1 ? fixtures[1] : null;
-        const isFinal = br === "F";
 
-        // Consistent team1/team2 across legs
         const team1 = f1.teams?.home?.name ?? "";
         const team2 = f1.teams?.away?.name ?? "";
         const team1Logo = f1.teams?.home?.logo ?? "";
         const team2Logo = f1.teams?.away?.logo ?? "";
-
         const firstFixtureId = f1.fixture?.id ?? 0;
         const leg1Home = f1.goals?.home ?? null;
         const leg1Away = f1.goals?.away ?? null;
@@ -124,40 +123,34 @@ export async function GET(
         const leg1Date = f1.fixture?.date?.split("T")[0] ?? "";
         const leg1Kickoff = f1.fixture?.date ?? "";
 
-        let leg2Data: TieData["leg2"] = null;
         if (f2) {
           const f2Home = f2.teams?.home?.name ?? "";
           const isSwapped = f2Home === team2;
-          leg2Data = {
+          const leg2 = {
             home: f2.goals?.home ?? null,
             away: f2.goals?.away ?? null,
             status: f2.fixture?.status?.short ?? "",
             date: f2.fixture?.date?.split("T")[0] ?? "",
             kickoffUTC: f2.fixture?.date ?? "",
           };
-
-          // Aggregate: team1 goals across both legs
           const t1Leg1 = leg1Home ?? 0;
           const t1Leg2 = isSwapped ? (f2.goals?.away ?? 0) : (f2.goals?.home ?? 0);
           const t2Leg1 = leg1Away ?? 0;
           const t2Leg2 = isSwapped ? (f2.goals?.home ?? 0) : (f2.goals?.away ?? 0);
-
           const agg1 = t1Leg1 + t1Leg2;
           const agg2 = t2Leg1 + t2Leg2;
-          const fin = (leg1Status === "FT" || leg1Status === "AET" || leg1Status === "PEN") &&
-                      (leg2Data.status === "FT" || leg2Data.status === "AET" || leg2Data.status === "PEN");
-
+          const fin = ["FT", "AET", "PEN"].includes(leg1Status) && ["FT", "AET", "PEN"].includes(leg2.status);
           ties.push({
             team1, team2, team1Logo, team2Logo,
             leg1: { home: leg1Home, away: leg1Away, status: leg1Status, date: leg1Date, kickoffUTC: leg1Kickoff },
-            leg2: leg2Data,
+            leg2,
             aggTeam1: agg1, aggTeam2: agg2,
             winner: fin ? (agg1 > agg2 ? team1 : agg2 > agg1 ? team2 : null) : null,
             finished: fin,
             firstFixtureId,
           });
         } else {
-          const fin = leg1Status === "FT" || leg1Status === "AET" || leg1Status === "PEN";
+          const fin = ["FT", "AET", "PEN"].includes(leg1Status);
           ties.push({
             team1, team2, team1Logo, team2Logo,
             leg1: { home: leg1Home, away: leg1Away, status: leg1Status, date: leg1Date, kickoffUTC: leg1Kickoff },
@@ -169,13 +162,20 @@ export async function GET(
           });
         }
       }
-      // Sort by fixture ID for consistent seed-based ordering
       ties.sort((a, b) => a.firstFixtureId - b.firstFixtureId);
-      rounds[br] = ties;
+      rounds[roundKey] = ties;
     }
 
-    console.log(`[tournament] league=${leagueId} final rounds:`, Object.keys(rounds).map(k => `${k}(${rounds[k].length})`).join(", "));
-    return NextResponse.json({ rounds });
+    // 5. 응답 — 사용 가능한 라운드 키를 order로 정렬해서 함께 반환
+    const availableKeys = Array.from(new Set(tournamentRounds.map(tr => tr.key)))
+      .filter(k => rounds[k]?.length > 0)
+      .sort((a, b) => {
+        const orderA = tournamentRounds.find(tr => tr.key === a)?.order ?? 99;
+        const orderB = tournamentRounds.find(tr => tr.key === b)?.order ?? 99;
+        return orderA - orderB;
+      });
+
+    return NextResponse.json({ rounds, availableKeys });
   } catch (err) {
     console.error("Tournament API error:", err);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });

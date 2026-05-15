@@ -33,7 +33,7 @@ function formatKSTShort(utc: string): string {
 
 interface Props { leagueId: string; season: string; }
 
-const LABELS: Record<string, string> = { R16: "16강", QF: "8강", SF: "4강", F: "결승" };
+const LABELS: Record<string, string> = { R128: "128강", R64: "64강", R32: "32강", R16: "16강", QF: "8강", SF: "4강", F: "결승" };
 
 const LEAGUE_LOGOS: Record<string, { logo: string; name: string }> = {
   "2": { logo: "https://media.api-sports.io/football/leagues/2.png", name: "챔피언스리그" },
@@ -153,12 +153,13 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     );
   }
 
+  const r32 = rounds["R32"] ?? [];
   const r16 = rounds["R16"] ?? [];
   const qf = rounds["QF"] ?? [];
   const sf = rounds["SF"] ?? [];
   const f = rounds["F"] ?? [];
 
-  const hasData = r16.length > 0 || qf.length > 0 || sf.length > 0 || f.length > 0;
+  const hasData = r32.length > 0 || r16.length > 0 || qf.length > 0 || sf.length > 0 || f.length > 0;
   if (!hasData) {
     return <div style={{ textAlign: "center", padding: "40px 0", color: "#566378", fontSize: "14px" }}>토너먼트 데이터가 아직 없습니다</div>;
   }
@@ -238,8 +239,11 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     else sfR.push(t);
   }
 
+  // R32 — R16과 같은 방식으로 좌우 단순 split (R16과 자동 매칭은 단계 깊어 fragile)
+  const [r32L, r32R] = splitHalf(r32);
+
   // Fill TBD
-  const hasKnockout = r16.length > 0 || qf.length > 0;
+  const hasKnockout = r32.length > 0 || r16.length > 0 || qf.length > 0;
   const finalQfL = hasKnockout ? fillTo(qfL, 2) : qfL;
   const finalQfR = hasKnockout ? fillTo(qfR, 2) : qfR;
   const finalSfL = hasKnockout ? fillTo(sfL, 1) : sfL;
@@ -254,6 +258,12 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     <div ref={bracketRef} style={{ overflowX: "auto", padding: "8px 0" }} className="scrollbar-hide">
       <div style={{ display: "flex", alignItems: "stretch", justifyContent: "center", minWidth: "fit-content", gap: "0px" }}>
         {/* ── Left side ── */}
+        {r32L.length > 0 && (
+          <>
+            <BracketCol ties={r32L} label="32강" connector />
+            <Connector count={Math.floor(r32L.length / 2) || 1} />
+          </>
+        )}
         {r16L.length > 0 && (
           <>
             <BracketCol ties={r16L} label="16강" connector />
@@ -304,7 +314,13 @@ export default function TournamentBracket({ leagueId, season }: Props) {
         {r16R.length > 0 && (
           <>
             <Connector count={Math.floor(r16R.length / 2) || 1} />
-            <BracketCol ties={r16R} label="16강" mirror />
+            <BracketCol ties={r16R} label="16강" mirror connector={r32R.length > 0} />
+          </>
+        )}
+        {r32R.length > 0 && (
+          <>
+            <Connector count={Math.floor(r32R.length / 2) || 1} />
+            <BracketCol ties={r32R} label="32강" mirror />
           </>
         )}
       </div>

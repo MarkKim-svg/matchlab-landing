@@ -107,6 +107,7 @@ interface ApiFixture {
 function FixtureCard({ f }: { f: ApiFixture }) {
   const isFinished = f.status === "FT" || f.status === "AET" || f.status === "PEN";
   const hasScore = f.homeGoals !== null && f.awayGoals !== null;
+  const leagueColor = LEAGUE_CONFIG[f.league || ""]?.color ?? "#334155";
 
   // KST time from kickoffUTC or time field
   let timeLabel = f.time ? `${f.time}` : "";
@@ -119,10 +120,22 @@ function FixtureCard({ f }: { f: ApiFixture }) {
   }
 
   return (
-    <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: "12px", padding: "16px", overflow: "hidden" }}>
-      {/* Row 1: League + Round + time */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-        <span style={{ fontSize: "11px", color: "#566378" }}>{f.league || ""} {f.round || ""}</span>
+    <div
+      className="rounded-xl border-l-4 border border-[#334155]"
+      style={{
+        background: "#1E293B",
+        borderLeftColor: leagueColor,
+        backgroundImage: `linear-gradient(to bottom, ${leagueColor}18, transparent 6px)`,
+        padding: "16px",
+        overflow: "hidden",
+      }}
+    >
+      {/* Row 1: League badge + round + time */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {f.league && <LeagueBadge league={f.league} />}
+          {f.round && <span style={{ fontSize: "11px", color: "#566378" }}>{f.round}</span>}
+        </div>
         {timeLabel && <span style={{ fontSize: "11px", color: "#566378" }}>{timeLabel} KST</span>}
       </div>
 

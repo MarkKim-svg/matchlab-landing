@@ -4,8 +4,23 @@ export const revalidate = 3600;
 
 const API_BASE = "https://v3.football.api-sports.io";
 
-// All supported league IDs
-const LEAGUE_IDS = [39, 140, 135, 78, 61, 2, 3, 848, 45, 143, 137, 81, 66];
+// All supported league IDs + 한글 이름 매핑 (LEAGUE_CONFIG 키와 정확히 일치해야 카드 색/로고 매칭됨)
+const LEAGUE_ID_TO_KR: Record<number, string> = {
+  39: "프리미어리그",
+  140: "라리가",
+  135: "세리에A",
+  78: "분데스리가",
+  61: "리그1",
+  2: "챔피언스리그",
+  3: "유로파리그",
+  848: "컨퍼런스리그",
+  45: "FA컵",
+  143: "코파델레이",
+  137: "코파이탈리아",
+  81: "DFB포칼",
+  66: "쿠프드프랑스",
+};
+const LEAGUE_IDS = Object.keys(LEAGUE_ID_TO_KR).map(Number);
 
 export async function GET(
   _request: NextRequest,
@@ -44,7 +59,7 @@ export async function GET(
           homeGoals: f.goals?.home ?? null,
           awayGoals: f.goals?.away ?? null,
           status: f.fixture?.status?.short ?? "",
-          league: f.league?.name ?? "",
+          league: LEAGUE_ID_TO_KR[f.league?.id] ?? f.league?.name ?? "",
           leagueId: f.league?.id ?? 0,
           round: f.league?.round ?? "",
         }));

@@ -188,59 +188,45 @@ export default function TournamentBracket({ leagueId, season }: Props) {
     return pool.find(t => t.team1.toLowerCase() === tn || t.team2.toLowerCase() === tn || t.winner?.toLowerCase() === tn);
   }
 
-  // Step 1: Split QF left/right
-  const [qfL, qfR] = splitHalf(qf);
+  // Tree 매칭은 안쪽(좁은 라운드)부터 결정해야 안전.
+  // 거꾸로: SF 단순 split → QF는 SF 기준 → R16은 QF 기준 → R32는 R16 기준.
 
-  // Step 2: Order R16 by QF pairing — each QF match maps to 2 R16 matches
-  function orderR16ByQF(qfSide: TieData[]): TieData[] {
-    const r16Pool = [...r16];
-    const ordered: TieData[] = [];
-    const used = new Set<number>();
+  function ownTeams(ties: TieData[]): Set<string> {
+    const s = new Set<string>();
+    for (const t of ties) for (const n of tieTeams(t)) s.add(n);
+    return s;
+  }
 
-    for (const qfTie of qfSide) {
-      // Find R16 matches for team1 and team2 of this QF
-      for (const teamName of [qfTie.team1, qfTie.team2]) {
-        const idx = r16Pool.findIndex((t, i) => {
-          if (used.has(i)) return false;
-          const teams = tieTeams(t);
-          return teams.has(teamName.toLowerCase());
-        });
-        if (idx >= 0) {
-          ordered.push(r16Pool[idx]);
-          used.add(idx);
-        }
-      }
+  // 분배 함수: pool을 leftTeams 포함 여부로 좌/우 분류. 한쪽 비면 splitHalf로 fallback.
+  function partitionBy(pool: TieData[], leftTeams: Set<string>): [TieData[], TieData[]] {
+    if (pool.length === 0) return [[], []];
+    if (leftTeams.size === 0) return splitHalf(pool);
+    const left: TieData[] = [];
+    const right: TieData[] = [];
+    for (const t of pool) {
+      const teams = tieTeams(t);
+      if ([...teams].some(n => leftTeams.has(n))) left.push(t);
+      else right.push(t);
     }
-    return ordered;
+    // 한쪽으로 쏠리면 단순 split fallback (예: UEL SF 케이스)
+    if (left.length === 0 || right.length === 0) return splitHalf(pool);
+    return [left, right];
   }
 
-  const r16L = qf.length > 0 ? orderR16ByQF(qfL) : r16.slice(0, Math.ceil(r16.length / 2));
-  const r16R = qf.length > 0 ? orderR16ByQF(qfR) : r16.slice(Math.ceil(r16.length / 2));
+  // Step 1: SF 단순 split (트리의 안쪽 기준점)
+  const [sfL, sfR] = splitHalf(sf);
 
-  // Collect remaining R16 not assigned (edge cases)
-  if (qf.length > 0) {
-    const assignedTeams = new Set([...r16L, ...r16R].map(t => `${t.team1}|${t.team2}`));
-    for (const t of r16) {
-      if (!assignedTeams.has(`${t.team1}|${t.team2}`)) {
-        if (r16L.length <= r16R.length) r16L.push(t); else r16R.push(t);
-      }
-    }
-  }
+  // Step 2: QF — SF L/R에 포함된 팀 기준
+  const sfLeftTeams = ownTeams(sfL);
+  const [qfL, qfR] = partitionBy(qf, sfLeftTeams);
 
-  // Step 3: SF — match to QF sides
-  const leftQfTeams = new Set<string>();
-  for (const t of qfL) tieTeams(t).forEach(n => leftQfTeams.add(n));
+  // Step 3: R16 — QF L/R에 포함된 팀 기준
+  const qfLeftTeams = ownTeams(qfL);
+  const [r16L, r16R] = partitionBy(r16, qfLeftTeams);
 
-  const sfL: TieData[] = [];
-  const sfR: TieData[] = [];
-  for (const t of sf) {
-    const teams = tieTeams(t);
-    if ([...teams].some(n => leftQfTeams.has(n))) sfL.push(t);
-    else sfR.push(t);
-  }
-
-  // R32 — R16과 같은 방식으로 좌우 단순 split (R16과 자동 매칭은 단계 깊어 fragile)
-  const [r32L, r32R] = splitHalf(r32);
+  // Step 4: R32 — R16 L/R에 포함된 팀 기준 (R32 winner가 R16에 등장하므로 매칭됨)
+  const r16LeftTeams = ownTeams(r16L);
+  const [r32L, r32R] = partitionBy(r32, r16LeftTeams);
 
   // Fill TBD
   const hasKnockout = r32.length > 0 || r16.length > 0 || qf.length > 0;

@@ -372,11 +372,40 @@ export default function MatchesDatePage() {
 
   const isPro = userPlan === "pro";
 
-  // Date tab helpers
-  const leagues = useMemo(() => Array.from(new Set(matches.map(m => m.league).filter(Boolean))), [matches]);
+  // Date tab helpers — 필터 칩은 분석된 matches + 미분석 fixtures 양쪽 리그 모두 표시
+  const leagues = useMemo(() => {
+    const s = new Set<string>();
+    matches.forEach(m => m.league && s.add(m.league));
+    dateFixtures.forEach(f => f.league && s.add(f.league));
+    return Array.from(s).sort((a, b) => {
+      const ai = LEAGUE_TABS.findIndex(l => l.name === a);
+      const bi = LEAGUE_TABS.findIndex(l => l.name === b);
+      const oA = ai === -1 ? 99 : ai;
+      const oB = bi === -1 ? 99 : bi;
+      return oA - oB;
+    });
+  }, [matches, dateFixtures]);
   const filteredMatches = useMemo(() => selectedLeague === "전체" ? matches : matches.filter(m => m.league === selectedLeague), [matches, selectedLeague]);
   const goDate = (d: string) => router.push(`/matches/${d}`);
   const grouped = CONF_SECTIONS.map(sec => ({ ...sec, matches: filteredMatches.filter(m => m.confidence === sec.stars) })).filter(g => g.matches.length > 0);
+
+  // 미분석 fixture 리그/컵별 그룹핑 + 선택된 리그 필터 적용
+  const fixturesByLeague = useMemo(() => {
+    const filtered = selectedLeague === "전체" ? dateFixtures : dateFixtures.filter(f => f.league === selectedLeague);
+    const map = new Map<string, ApiFixture[]>();
+    for (const f of filtered) {
+      const lg = f.league || "기타";
+      if (!map.has(lg)) map.set(lg, []);
+      map.get(lg)!.push(f);
+    }
+    return Array.from(map.entries()).sort((a, b) => {
+      const ai = LEAGUE_TABS.findIndex(l => l.name === a[0]);
+      const bi = LEAGUE_TABS.findIndex(l => l.name === b[0]);
+      const oA = ai === -1 ? 99 : ai;
+      const oB = bi === -1 ? 99 : bi;
+      return oA - oB;
+    });
+  }, [dateFixtures, selectedLeague]);
 
   // Date tab accuracy summary
   const judged = filteredMatches.filter(m => m.isCorrect === "적중" || m.isCorrect === "미적중");
@@ -489,21 +518,25 @@ export default function MatchesDatePage() {
               </section>
             ))}
 
-            {/* Unanalyzed fixtures from API-Football */}
-            {!loading && !error && dateFixtures.length > 0 && (
-              <section style={{ marginBottom: "32px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                  <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#8494A7" }}>
-                    🔬 기타 경기 <span style={{ fontSize: "14px", fontWeight: 400 }}>({dateFixtures.length}경기)</span>
-                  </h2>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {dateFixtures.map(f => (
-                    <FixtureCard key={f.id} f={f} />
-                  ))}
-                </div>
-              </section>
-            )}
+            {/* Unanalyzed fixtures from API-Football — 리그/컵별로 그룹핑 */}
+            {!loading && !error && fixturesByLeague.map(([league, fixtures]) => {
+              const config = LEAGUE_CONFIG[league];
+              return (
+                <section key={league} style={{ marginBottom: "32px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                    {config && <img src={config.logo} alt={league} width={20} height={20} className="rounded-full bg-white p-0.5 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
+                    <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#E1E7EF" }}>
+                      {league} <span style={{ fontSize: "14px", fontWeight: 400, color: "#6B7280" }}>({fixtures.length}경기)</span>
+                    </h2>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {fixtures.map(f => (
+                      <FixtureCard key={f.id} f={f} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </>
         )}
 
